@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão de Obras - Contrapartida Viária Av. do Metrô</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+        :root {
+            --cor-primaria: #01455C;
+            --cor-secundaria: #9FC419;
+            --cor-texto-claro: #ffffff;
+            --cor-texto-escuro: #333;
+            --cor-fundo: #f0f2f5;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto-escuro);
+        }
+        header {
+            background-color: var(--cor-primaria);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--cor-texto-claro);
+        }
+        nav ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        nav a {
+            text-decoration: none;
+            color: var(--cor-texto-claro);
+            font-weight: 500;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+        nav a.active, nav a:hover {
+            color: var(--cor-secundaria);
+        }
+        nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--cor-secundaria);
+        }
+        #landing-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 70px - 75px);
+            padding: 2rem;
+            text-align: center;
+        }
+        .hero {
+            max-width: 800px;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            color: var(--cor-primaria);
+            margin-bottom: 1rem;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: var(--cor-secundaria);
+            color: var(--cor-primaria);
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 0.8rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(159, 196, 25, 0.4);
+        }
+        .container {
+            max-width: 1400px;
+            margin: auto;
+            padding: 20px;
+        }
+        .page-content h1 {
+            color: var(--cor-primaria);
+        }
+        .google-visualization-tooltip {
+            border: 1px solid #ccc !important;
+            border-radius: 8px !important;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
+            padding: 10px !important;
+            background-color: white !important;
+        }
+        .edit-btn {
+            background: none;
+            border: none;
+            color: var(--cor-primaria);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0;
+            margin-left: 8px;
+        }
+        .edit-btn:hover {
+            color: var(--cor-secundaria);
+        }
+        .status-informativo { background-color: #d1d5db; color: #374151; }
+        .status-aberto { background-color: #f87171; color: white; }
+        .status-critico { background-color: #ef4444; color: white; }
+        .status-fechado { background-color: #4ade80; color: white; }
+        .btn-add {
+            background-color: var(--cor-secundaria);
+            color: var(--cor-primaria);
+        }
+        .btn-add:hover {
+            background-color: #8ab717;
+        }
+        .btn-remove {
+            background-color: #ef4444;
+            color: white;
+        }
+        .btn-remove:hover {
+            background-color: #dc2626;
+        }
+        .btn-edit {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .btn-edit:hover {
+            background-color: #2563eb;
+        }
+        .btn-save {
+            background-color: #10b981;
+            color: white;
+        }
+        .btn-save:hover {
+            background-color: #059669;
+        }
+        .btn-cancel {
+            background-color: #9ca3af;
+            color: white;
+        }
+        .btn-cancel:hover {
+            background-color: #6b7280;
+        }
+
+        /* Modal de Edição de Descrição */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        .modal-header {
+            background-color: var(--cor-primaria);
+            color: white;
+            padding: 1rem 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        .modal-body {
+            padding: 1.5rem;
+            flex: 1;
+            overflow: auto;
+        }
+        .modal-body textarea {
+            width: 100%;
+            height: 200px;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+        }
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            background-color: #f9fafb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        /* Tabela inteligente e responsiva */
+        #atas-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+        #atas-table th,
+        #atas-table td {
+            vertical-align: top;
+        }
+        #atas-table .descricao-cell {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+        }
+
+        /* Otimização para impressão */
+        @media print {
+            body {
+                background-color: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .container {
+                max-width: none !important;
+                padding: 10px !important;
+            }
+            #atas-table {
+                font-size: 12px !important;
+            }
+            #atas-table th,
+            #atas-table td {
+                padding: 6px 8px !important;
+            }
+            .page-content > div {
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+            }
+            #atas-table tbody tr {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <header>
+        <div class="logo">Gestão de Obras</div>
+        <nav>
+            <ul>
+                <li><a id="nav-home" class="active">Página Principal</a></li>
+                <li><a id="nav-atas">Atas de Reunião</a></li>
+                <li><a id="nav-projeto">Projeto</a></li>
+                <li><a id="nav-planejamento">Planejamento</a></li>
+                <li><a id="nav-riscos">Riscos</a></li>
+                <li><a id="nav-custos">Custos</a></li>
+                <li><a id="nav-gestao-cava">Gestão Cava</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="landing-page" class="container">
+            <div class="hero">
+                <h1>Sistema de Gestão de Obras</h1>
+                <h2>Contrapartida Viária Avênida do Metrô</h2>
+                <p>
+                    Plataforma centralizada para o monitoramento e gestão de todas as frentes da obra. Navegue pelas guias para aceder a painéis de atas, planejamento, análise de riscos, controle de custos e gestão de cava.
+                </p>
+                <a id="cta-button" class="cta-button">Aceder aos Painéis</a>
+            </div>
+        </section>
+        <div id="atas-page" class="container page-content" style="display: none;">
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h1 class="text-3xl font-bold text-center mb-2" style="color: var(--cor-primaria);">Atas de Reunião</h1>
+                <!-- Filtros -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div>
+                        <label for="filter-status" class="block text-sm font-medium text-gray-700">Filtrar por Status</label>
+                        <select id="filter-status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                            <option value="">Todos os Status</option>
+                            <option value="informativo">Informativo</option>
+                            <option value="aberto">Aberto</option>
+                            <option value="critico">Crítico</option>
+                            <option value="fechado">Fechado</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="filter-tema" class="block text-sm font-medium text-gray-700">Filtrar por Tema</label>
+                        <select id="filter-tema" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                            <option value="">Todos os Temas</option>
+                            <option value="Contrato">Contrato</option>
+                            <option value="Qualidade">Qualidade</option>
+                            <option value="Segurança">Segurança</option>
+                            <option value="Meio Ambiente">Meio Ambiente</option>
+                            <option value="Obra">Obra</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button id="apply-filters-btn" class="w-full btn-add px-4 py-2 rounded-md font-medium shadow-sm">
+                            Aplicar Filtros
+                        </button>
+                    </div>
+                </div>
+                <!-- KPIs -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                        <h3 class="text-lg font-semibold text-blue-800">Atendimento da Construtora</h3>
+                        <p class="text-3xl font-bold text-blue-600" id="kpi-construtora">0%</p>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                        <h3 class="text-lg font-semibold text-green-800">Itens Fechados</h3>
+                        <p class="text-3xl font-bold text-green-600" id="kpi-fechados">0</p>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                        <h3 class="text-lg font-semibold text-purple-800">Tempo Médio de Atendimento</h3>
+                        <p class="text-3xl font-bold text-purple-600" id="kpi-tempo">0 dias</p>
+                    </div>
+                </div>
+                <!-- Botão para adicionar nova linha -->
+                <div class="flex justify-end mb-4">
+                    <button id="add-row-btn" class="btn-add px-4 py-2 rounded-md font-medium shadow-sm">
+                        Adicionar Nova Linha
+                    </button>
+                </div>
+                <!-- Tabela de Atas -->
+                <div class="overflow-x-auto rounded-lg border border-gray-200">
+                    <table id="atas-table" class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase w-12">ID</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Descrição</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase w-32">Tema</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase w-40">Responsável</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase w-28">Status</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase w-32">Abertura</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase w-32">Fechamento</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase w-24">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="atas-table-body" class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-4 py-3 text-sm font-medium text-gray-900 text-center">1</td>
+                                <td class="px-4 py-3 text-sm text-gray-500 descricao-cell">
+                                    <span class="descricao-text">Problemas na fundação da estaca 01. Este é um exemplo de texto longo que deve quebrar corretamente dentro do campo sem invadir outras colunas.</span>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
+                                    <span class="tema-text">Qualidade</span>
+                                    <select class="tema-select hidden w-full p-1 border rounded">
+                                        <option value="Contrato">Contrato</option>
+                                        <option value="Qualidade" selected>Qualidade</option>
+                                        <option value="Segurança">Segurança</option>
+                                        <option value="Meio Ambiente">Meio Ambiente</option>
+                                        <option value="Obra">Obra</option>
+                                        <option value="Outros">Outros</option>
+                                    </select>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
+                                    <span class="responsavel-text">Ana Oliveira</span>
+                                    <input type="text" class="responsavel-input w-full p-1 border rounded hidden" value="Ana Oliveira">
+                                </td>
+                                <td class="px-4 py-3 text-sm whitespace-nowrap">
+                                    <span class="status-text status-critico">Crítico</span>
+                                    <select class="status-select hidden w-full p-1 border rounded">
+                                        <option value="informativo">Informativo</option>
+                                        <option value="aberto">Aberto</option>
+                                        <option value="critico" selected>Crítico</option>
+                                        <option value="fechado">Fechado</option>
+                                    </select>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
+                                    <span class="data-abertura-text">2024-11-01</span>
+                                    <input type="date" class="data-abertura-input hidden w-full p-1 border rounded" value="2024-11-01">
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
+                                    <span class="data-fechamento-text">-</span>
+                                    <input type="date" class="data-fechamento-input hidden w-full p-1 border rounded">
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
+                                    <button class="btn-edit px-2 py-1 rounded text-xs mr-1">Editar</button>
+                                    <button class="btn-save px-2 py-1 rounded text-xs mr-1 hidden">Salvar</button>
+                                    <button class="btn-cancel px-2 py-1 rounded text-xs mr-1 hidden">Cancelar</button>
+                                    <button class="btn-remove px-2 py-1 rounded text-xs">Remover</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 text-sm font-medium text-gray-900 text-center">2</td>
+                                <td class="px-4 py-3 text-sm text-gray-500 descricao-cell">
+                                    <span class="descricao-text">Atraso na entrega de materiais. Outro exemplo de texto longo que deve permanecer dentro do campo de descrição.</span>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
+                                    <span class="tema-text">Contrato</span>
+                                    <select class="tema-select hidden w-full p-1 border rounded">
+                                        <option value="Contrato" selected>Contrato</option>
+                                        <option value="Qualidade">Qualidade</option>
+                                        <option value="Segurança">Segurança</option>
+                                        <option value="Meio Ambiente">Meio Ambiente</option>
+                                        <option value="Obra">Obra</option>
+                                        <option value="Outros">Outros</option>
+                                    </select>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
+                                    <span class="responsavel-text">Pedro Costa</span>
+                                    <input type="text" class="responsavel-input w-full p-1 border rounded hidden" value="Pedro Costa">
+                                </td>
+                                <td class="px-4 py-3 text-sm whitespace-nowrap">
+                                    <span class="status-text status-aberto">Aberto</span>
+                                    <select class="status-select hidden w-full p-1 border rounded">
+                                        <option value="informativo">Informativo</option>
+                                        <option value="aberto" selected>Aberto</option>
+                                        <option value="critico">Crítico</option>
+                                        <option value="fechado">Fechado</option>
+                                    </select>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
+                                    <span class="data-abertura-text">2024-11-05</span>
+                                    <input type="date" class="data-abertura-input hidden w-full p-1 border rounded" value="2024-11-05">
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
+                                    <span class="data-fechamento-text">-</span>
+                                    <input type="date" class="data-fechamento-input hidden w-full p-1 border rounded">
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
+                                    <button class="btn-edit px-2 py-1 rounded text-xs mr-1">Editar</button>
+                                    <button class="btn-save px-2 py-1 rounded text-xs mr-1 hidden">Salvar</button>
+                                    <button class="btn-cancel px-2 py-1 rounded text-xs mr-1 hidden">Cancelar</button>
+                                    <button class="btn-remove px-2 py-1 rounded text-xs">Remover</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="projeto-page" class="container page-content" style="display: none;">
+            <h1>Projeto</h1>
+            <p>Em desenvolvimento. Área dedicada à visualização do projeto, incluindo o traçado da avenida e a locação das estacas.</p>
+        </div>
+        <div id="planejamento-page" class="container page-content" style="display: none;">
+             <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h1 class="text-3xl font-bold text-center mb-2" style="color: var(--cor-primaria);">Planejamento de Atividade</h1>
+                 <div class="flex justify-center mb-6">
+                    <div class="w-full max-w-xs">
+                        <label for="control-date" class="block text-sm font-medium text-gray-700 text-center">Data de Controle</label>
+                        <input type="date" id="control-date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end mb-6">
+                    <div class="md:col-span-2">
+                        <label for="task-name" class="block text-sm font-medium text-gray-700">Nome da Tarefa</label>
+                        <input type="text" id="task-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                    </div>
+                    <div>
+                        <label for="start-date" class="block text-sm font-medium text-gray-700">Início</label>
+                        <input type="date" id="start-date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                    </div>
+                    <div>
+                        <label for="task-duration" class="block text-sm font-medium text-gray-700">Duração (dias)</label>
+                        <input type="number" id="task-duration" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2" min="0">
+                    </div>
+                     <div class="flex items-end gap-2">
+                        <div class="flex-grow">
+                            <label for="task-dependency" class="block text-sm font-medium text-gray-700">Predecessora (ID)</label>
+                            <input type="text" id="task-dependency" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        </div>
+                        <div>
+                            <label for="task-dependency-type" class="block text-sm font-medium text-gray-700">Tipo</label>
+                            <select id="task-dependency-type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                                <option>TI</option>
+                                <option>TT</option>
+                                <option>II</option>
+                                <option>IT</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="task-cost" class="block text-sm font-medium text-gray-700">Custo (R$)</label>
+                        <input type="number" id="task-cost" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2" min="0" step="0.01">
+                    </div>
+                     <div>
+                        <label for="task-progress" class="block text-sm font-medium text-gray-700">Avanço Real (%)</label>
+                        <input type="number" id="task-progress" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2" min="0" max="100">
+                    </div>
+                </div>
+                 <div class="flex justify-end mb-6">
+                    <button id="add-task-btn" class="inline-flex items-center justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm" style="background-color: var(--cor-primaria);">Adicionar Tarefa</button>
+                    <button id="edit-task-btn" class="inline-flex items-center justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm ml-2" style="background-color: #FFA500; display: none;">Salvar Edição</button>
+                </div>
+                <h2 class="text-xl font-semibold mb-3" style="color: var(--cor-primaria);">Lista de Atividades</h2>
+                <div class="overflow-x-auto rounded-lg border border-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nome da Tarefa</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Início</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Término</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Duração (dias)</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Predecessora</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Custo (R$)</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Avanço Planejado (%)</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Avanço Real (%)</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="task-table-body" class="bg-white divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+                <div class="flex items-center justify-end gap-4 mt-6">
+                    <button id="clear-btn" class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm">Limpar</button>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold mb-4 text-center" style="color: var(--cor-primaria);">Gráfico de Gantt</h2>
+                <div id="gantt-container"></div>
+            </div>
+        </div>
+        <div id="riscos-page" class="container page-content" style="display: none;">
+            <h1>Gestão de Riscos</h1>
+            <p>Em desenvolvimento...</p>
+        </div>
+        <div id="custos-page" class="container page-content" style="display: none;">
+            <h1>Controle de Custos</h1>
+            <p>Em desenvolvimento...</p>
+        </div>
+        <div id="gestao-cava-page" class="container page-content" style="display: none;">
+            <h1>Gestão Cava</h1>
+            <p>Em desenvolvimento...</p>
+        </div>
+    </main>
+    <footer class="bg-white text-center p-4 mt-8">
+        <p class="text-sm text-gray-600">Sistema de Gestão de Obras © 2025</p>
+    </footer>
+
+    <!-- Modal de Edição de Descrição -->
+    <div id="descricao-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">Editar Descrição</div>
+            <div class="modal-body">
+                <textarea id="modal-descricao-input" placeholder="Digite a descrição completa..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button id="modal-cancel-btn" class="btn-cancel px-4 py-2 rounded text-sm">Cancelar</button>
+                <button id="modal-save-btn" class="btn-save px-4 py-2 rounded text-sm">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const navLinks = document.querySelectorAll('nav a');
+        const pages = document.querySelectorAll('.page-content');
+        const landingPage = document.getElementById('landing-page');
+        const ctaButton = document.getElementById('cta-button');
+        let planejamentoInicializado = false;
+
+        // Modal elements
+        const modal = document.getElementById('descricao-modal');
+        const modalTextarea = document.getElementById('modal-descricao-input');
+        const modalSaveBtn = document.getElementById('modal-save-btn');
+        const modalCancelBtn = document.getElementById('modal-cancel-btn');
+        let currentDescricaoCell = null;
+
+        // Funções de persistência para Atas
+        function saveAtasToStorage(rows) {
+            const data = [];
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length < 8) return; // Ajuste para 8 células (ID, Descrição, Tema, Responsável, Status, Abertura, Fechamento, Ações)
+                data.push({
+                    id: cells[0].textContent.trim(),
+                    descricao: cells[1].querySelector('.descricao-text').textContent,
+                    tema: cells[2].querySelector('.tema-text').textContent,
+                    responsavel: cells[3].querySelector('.responsavel-text').textContent,
+                    status: getStatusValueFromText(cells[4].querySelector('.status-text').classList),
+                    dataAbertura: cells[5].querySelector('.data-abertura-text').textContent,
+                    dataFechamento: cells[6].querySelector('.data-fechamento-text').textContent
+                });
+            });
+            localStorage.setItem('atas-reuniao', JSON.stringify(data));
+        }
+
+        function loadAtasFromStorage() {
+            const stored = localStorage.getItem('atas-reuniao');
+            if (stored) {
+                try {
+                    return JSON.parse(stored);
+                } catch (e) {
+                    console.warn('Erro ao carregar atas do localStorage:', e);
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        // Inicialização da página de Atas
+        initializeAtasPage();
+
+        function hideAllPages() {
+            pages.forEach(page => page.style.display = 'none');
+            landingPage.style.display = 'none';
+        }
+
+        function showPage(pageId) {
+            hideAllPages();
+            const pageToShow = document.getElementById(pageId);
+            if (pageToShow) {
+                pageToShow.style.display = 'block';
+                if (pageId === 'landing-page') {
+                    pageToShow.style.display = 'flex';
+                }
+            }
+            navLinks.forEach(link => {
+                const linkPageId = (link.id === 'nav-home') ? 'landing-page' : link.id.replace('nav-', '') + '-page';
+                link.classList.toggle('active', linkPageId === pageId);
+            });
+            if (pageId === 'planejamento-page' && !planejamentoInicializado) {
+                initializeGanttPage();
+                planejamentoInicializado = true;
+            }
+            if (pageId === 'atas-page') {
+                updateKPIs();
+            }
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (event) => {
+                const navId = event.currentTarget.id;
+                const pageId = (navId === 'nav-home') ? 'landing-page' : navId.replace('nav-', '') + '-page';
+                showPage(pageId);
+            });
+        });
+
+        ctaButton.addEventListener('click', () => showPage('planejamento-page'));
+        showPage('landing-page');
+
+        // Modal handlers
+        modalSaveBtn.addEventListener('click', () => {
+            if (currentDescricaoCell) {
+                const textSpan = currentDescricaoCell.querySelector('.descricao-text');
+                textSpan.textContent = modalTextarea.value.trim() || 'Sem descrição';
+                currentDescricaoCell = null;
+            }
+            modal.classList.remove('active');
+            updateKPIs();
+            saveAtasToStorage(document.querySelectorAll('#atas-table-body tr'));
+        });
+
+        modalCancelBtn.addEventListener('click', () => {
+            modal.classList.remove('active');
+            currentDescricaoCell = null;
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+                currentDescricaoCell = null;
+            }
+        });
+
+        function initializeAtasPage() {
+            const addRowBtn = document.getElementById('add-row-btn');
+            const tableBody = document.getElementById('atas-table-body');
+            const filterStatus = document.getElementById('filter-status');
+            const filterTema = document.getElementById('filter-tema');
+            const applyFiltersBtn = document.getElementById('apply-filters-btn');
+
+            // Carregar dados salvos
+            const savedAtas = loadAtasFromStorage();
+            let nextId = 1;
+
+            if (savedAtas && savedAtas.length > 0) {
+                tableBody.innerHTML = '';
+                savedAtas.forEach(item => {
+                    const newRow = createAtaRow(
+                        item.id,
+                        item.descricao,
+                        item.tema,
+                        item.responsavel,
+                        item.status,
+                        item.dataAbertura,
+                        item.dataFechamento
+                    );
+                    tableBody.appendChild(newRow);
+                    attachRowEvents(newRow);
+                    nextId = Math.max(nextId, parseInt(item.id) + 1);
+                });
+            } else {
+                // Manter as linhas iniciais se não houver dados salvos
+                document.querySelectorAll('#atas-table-body tr').forEach(row => {
+                    attachRowEvents(row);
+                    const id = parseInt(row.cells[0].textContent);
+                    nextId = Math.max(nextId, id + 1);
+                });
+            }
+
+            function applyFilters() {
+                const statusFilter = filterStatus.value;
+                const temaFilter = filterTema.value;
+                const rows = document.querySelectorAll('#atas-table-body tr');
+                rows.forEach(row => {
+                    const statusCell = row.querySelector('.status-text');
+                    const temaCell = row.querySelector('.tema-text');
+                    const status = getStatusValueFromText(statusCell.classList);
+                    const tema = temaCell.textContent;
+                    const statusMatch = statusFilter === '' || status === statusFilter;
+                    const temaMatch = temaFilter === '' || tema === temaFilter;
+                    row.style.display = (statusMatch && temaMatch) ? '' : 'none';
+                });
+                updateKPIs();
+            }
+
+            applyFiltersBtn.addEventListener('click', applyFilters);
+            filterStatus.addEventListener('change', applyFilters);
+            filterTema.addEventListener('change', applyFilters);
+
+            addRowBtn.addEventListener('click', () => {
+                const today = getCurrentDate();
+                const newRow = createAtaRow(
+                    nextId,
+                    'Nova descrição',
+                    'Contrato',
+                    '-',
+                    'informativo',
+                    today,
+                    '-'
+                );
+                tableBody.appendChild(newRow);
+                attachRowEvents(newRow);
+                nextId++;
+                updateKPIs();
+                saveAtasToStorage(document.querySelectorAll('#atas-table-body tr'));
+            });
+        }
+
+        function createAtaRow(id, descricao, tema, responsavel, status, dataAbertura, dataFechamento) {
+            const row = document.createElement('tr');
+            const statusClass = getStatusClassFromValue(status);
+            const statusText = getStatusTextFromValue(status);
+
+            row.innerHTML = `
+                <td class="px-6 py-4 text-sm font-medium text-gray-900 text-center">${id}</td>
+                <td class="px-6 py-4 text-sm text-gray-500 descricao-cell">
+                    <span class="descricao-text">${descricao}</span>
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                    <span class="tema-text">${tema}</span>
+                    <select class="tema-select hidden w-full p-1 border rounded">
+                        <option value="Contrato"${tema === 'Contrato' ? ' selected' : ''}>Contrato</option>
+                        <option value="Qualidade"${tema === 'Qualidade' ? ' selected' : ''}>Qualidade</option>
+                        <option value="Segurança"${tema === 'Segurança' ? ' selected' : ''}>Segurança</option>
+                        <option value="Meio Ambiente"${tema === 'Meio Ambiente' ? ' selected' : ''}>Meio Ambiente</option>
+                        <option value="Obra"${tema === 'Obra' ? ' selected' : ''}>Obra</option>
+                        <option value="Outros"${tema === 'Outros' ? ' selected' : ''}>Outros</option>
+                    </select>
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                    <span class="responsavel-text">${responsavel}</span>
+                    <input type="text" class="responsavel-input w-full p-1 border rounded hidden" value="${responsavel}">
+                </td>
+                <td class="px-6 py-4 text-sm whitespace-nowrap">
+                    <span class="status-text ${statusClass}">${statusText}</span>
+                    <select class="status-select hidden w-full p-1 border rounded">
+                        <option value="informativo"${status === 'informativo' ? ' selected' : ''}>Informativo</option>
+                        <option value="aberto"${status === 'aberto' ? ' selected' : ''}>Aberto</option>
+                        <option value="critico"${status === 'critico' ? ' selected' : ''}>Crítico</option>
+                        <option value="fechado"${status === 'fechado' ? ' selected' : ''}>Fechado</option>
+                    </select>
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                    <span class="data-abertura-text">${dataAbertura}</span>
+                    <input type="date" class="data-abertura-input hidden w-full p-1 border rounded" value="${dataAbertura}">
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                    <span class="data-fechamento-text">${dataFechamento}</span>
+                    <input type="date" class="data-fechamento-input hidden w-full p-1 border rounded"${dataFechamento !== '-' ? ` value="${dataFechamento}"` : ''}>
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                    <button class="btn-edit px-2 py-1 rounded text-xs mr-1">Editar</button>
+                    <button class="btn-save px-2 py-1 rounded text-xs mr-1 hidden">Salvar</button>
+                    <button class="btn-cancel px-2 py-1 rounded text-xs mr-1 hidden">Cancelar</button>
+                    <button class="btn-remove px-2 py-1 rounded text-xs">Remover</button>
+                </td>
+            `;
+            return row;
+        }
+
+        function attachRowEvents(row) {
+            const editBtn = row.querySelector('.btn-edit');
+            const saveBtn = row.querySelector('.btn-save');
+            const cancelBtn = row.querySelector('.btn-cancel');
+            const removeBtn = row.querySelector('.btn-remove');
+            const descricaoCell = row.querySelector('.descricao-cell');
+            const descricaoText = descricaoCell.querySelector('.descricao-text');
+            const temaText = row.querySelector('.tema-text');
+            const temaSelect = row.querySelector('.tema-select');
+            const responsavelText = row.querySelector('.responsavel-text');
+            const responsavelInput = row.querySelector('.responsavel-input');
+            const statusText = row.querySelector('.status-text');
+            const statusSelect = row.querySelector('.status-select');
+            const dataAberturaText = row.querySelector('.data-abertura-text');
+            const dataAberturaInput = row.querySelector('.data-abertura-input');
+            const dataFechamentoText = row.querySelector('.data-fechamento-text');
+            const dataFechamentoInput = row.querySelector('.data-fechamento-input');
+
+            editBtn.addEventListener('click', () => {
+                // Salva valor atual da descrição para o modal
+                modalTextarea.value = descricaoText.textContent;
+                currentDescricaoCell = descricaoCell;
+
+                // Mostra modal
+                modal.classList.add('active');
+
+                // Mostra campos editáveis dos demais campos
+                temaText.classList.add('hidden');
+                temaSelect.classList.remove('hidden');
+                responsavelText.classList.add('hidden');
+                responsavelInput.classList.remove('hidden');
+                statusText.classList.add('hidden');
+                statusSelect.classList.remove('hidden');
+                dataAberturaText.classList.add('hidden');
+                dataAberturaInput.classList.remove('hidden');
+                dataFechamentoText.classList.add('hidden');
+                dataFechamentoInput.classList.remove('hidden');
+
+                editBtn.classList.add('hidden');
+                saveBtn.classList.remove('hidden');
+                cancelBtn.classList.remove('hidden');
+
+                // Define valor do select de status
+                statusSelect.value = getStatusValueFromText(statusText.classList);
+            });
+
+            saveBtn.addEventListener('click', () => {
+                // Fecha modal
+                modal.classList.remove('active');
+
+                // Atualiza descrição com o valor do modal
+                descricaoText.textContent = modalTextarea.value.trim() || 'Sem descrição';
+
+                // Atualiza demais campos
+                temaText.textContent = temaSelect.value;
+                responsavelText.textContent = responsavelInput.value || '-';
+                dataAberturaText.textContent = dataAberturaInput.value || '-';
+                dataFechamentoText.textContent = dataFechamentoInput.value || '-';
+
+                // Atualiza status
+                statusText.className = 'status-text';
+                statusText.classList.add(getStatusClassFromValue(statusSelect.value));
+                statusText.textContent = getStatusTextFromValue(statusSelect.value);
+
+                // Esconde campos editáveis
+                descricaoText.classList.remove('hidden');
+                temaText.classList.remove('hidden');
+                temaSelect.classList.add('hidden');
+                responsavelText.classList.remove('hidden');
+                responsavelInput.classList.add('hidden');
+                statusText.classList.remove('hidden');
+                statusSelect.classList.add('hidden');
+                dataAberturaText.classList.remove('hidden');
+                dataAberturaInput.classList.add('hidden');
+                dataFechamentoText.classList.remove('hidden');
+                dataFechamentoInput.classList.add('hidden');
+
+                editBtn.classList.remove('hidden');
+                saveBtn.classList.add('hidden');
+                cancelBtn.classList.add('hidden');
+
+                updateKPIs();
+                saveAtasToStorage(document.querySelectorAll('#atas-table-body tr'));
+            });
+
+            cancelBtn.addEventListener('click', () => {
+                modal.classList.remove('active');
+                currentDescricaoCell = null;
+
+                descricaoText.classList.remove('hidden');
+                temaText.classList.remove('hidden');
+                temaSelect.classList.add('hidden');
+                responsavelText.classList.remove('hidden');
+                responsavelInput.classList.add('hidden');
+                statusText.classList.remove('hidden');
+                statusSelect.classList.add('hidden');
+                dataAberturaText.classList.remove('hidden');
+                dataAberturaInput.classList.add('hidden');
+                dataFechamentoText.classList.remove('hidden');
+                dataFechamentoInput.classList.add('hidden');
+
+                editBtn.classList.remove('hidden');
+                saveBtn.classList.add('hidden');
+                cancelBtn.classList.add('hidden');
+            });
+
+            removeBtn.addEventListener('click', () => {
+                if (confirm('Tem certeza que deseja remover esta linha?')) {
+                    row.remove();
+                    updateKPIs();
+                    saveAtasToStorage(document.querySelectorAll('#atas-table-body tr'));
+                }
+            });
+
+            statusSelect.addEventListener('change', updateKPIs);
+            temaSelect.addEventListener('change', updateKPIs);
+        }
+
+        function getStatusClassFromValue(value) {
+            switch(value) {
+                case 'informativo': return 'status-informativo';
+                case 'aberto': return 'status-aberto';
+                case 'critico': return 'status-critico';
+                case 'fechado': return 'status-fechado';
+                default: return 'status-informativo';
+            }
+        }
+
+        function getStatusTextFromValue(value) {
+            switch(value) {
+                case 'informativo': return 'Informativo';
+                case 'aberto': return 'Aberto';
+                case 'critico': return 'Crítico';
+                case 'fechado': return 'Fechado';
+                default: return 'Informativo';
+            }
+        }
+
+        function getStatusValueFromText(classList) {
+            if (classList.contains('status-informativo')) return 'informativo';
+            if (classList.contains('status-aberto')) return 'aberto';
+            if (classList.contains('status-critico')) return 'critico';
+            if (classList.contains('status-fechado')) return 'fechado';
+            return 'informativo';
+        }
+
+        function getCurrentDate() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function updateKPIs() {
+            const rows = document.querySelectorAll('#atas-table-body tr');
+            let totalItems = 0;
+            let closedItems = 0;
+            let openItems = 0;
+            let totalDays = 0;
+            rows.forEach(row => {
+                if (row.style.display === 'none') return;
+                const statusCell = row.querySelector('.status-text');
+                const status = getStatusValueFromText(statusCell.classList);
+                if (status !== 'informativo') {
+                    totalItems++;
+                    if (status === 'fechado') {
+                        closedItems++;
+                        const openDateText = row.querySelector('.data-abertura-text').textContent;
+                        const closeDateText = row.querySelector('.data-fechamento-text').textContent;
+                        if (openDateText && closeDateText && closeDateText !== '-' && closeDateText !== '') {
+                            const openDate = new Date(openDateText);
+                            const closeDate = new Date(closeDateText);
+                            const diffTime = Math.abs(closeDate - openDate);
+                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                            totalDays += diffDays;
+                        }
+                    } else if (status === 'aberto' || status === 'critico') {
+                        openItems++;
+                    }
+                }
+            });
+            const atendimentoConstrutora = totalItems > 0 ? Math.round((closedItems / totalItems) * 100) : 0;
+            document.getElementById('kpi-construtora').textContent = `${atendimentoConstrutora}%`;
+            document.getElementById('kpi-fechados').textContent = closedItems;
+            const tempoMedio = closedItems > 0 ? Math.round(totalDays / closedItems) : 0;
+            document.getElementById('kpi-tempo').textContent = `${tempoMedio} dias`;
+        }
+
+        function initializeGanttPage() {
+            google.charts.load('current', {'packages':['gantt']});
+            google.charts.setOnLoadCallback(setupGanttListeners);
+
+            function loadTasksFromStorage() {
+                const stored = localStorage.getItem('planejamento-tasks');
+                if (stored) {
+                    try {
+                        const parsed = JSON.parse(stored);
+                        return parsed.map(task => ({
+                            ...task,
+                            start: new Date(task.start),
+                            end: new Date(task.end)
+                        }));
+                    } catch (e) {
+                        console.warn('Erro ao carregar tarefas do localStorage:', e);
+                        return [];
+                    }
+                }
+                return [];
+            }
+
+            function saveTasksToStorage(tasks) {
+                const serializable = tasks.map(task => ({
+                    ...task,
+                    start: task.start.toISOString(),
+                    end: task.end.toISOString()
+                }));
+                localStorage.setItem('planejamento-tasks', JSON.stringify(serializable));
+            }
+
+            function setupGanttListeners() {
+                const addTaskBtn = document.getElementById('add-task-btn');
+                const editTaskBtn = document.getElementById('edit-task-btn');
+                const taskNameInput = document.getElementById('task-name');
+                const startDateInput = document.getElementById('start-date');
+                const taskDurationInput = document.getElementById('task-duration');
+                const taskDependencyInput = document.getElementById('task-dependency');
+                const taskDependencyTypeInput = document.getElementById('task-dependency-type');
+                const taskCostInput = document.getElementById('task-cost');
+                const taskProgressInput = document.getElementById('task-progress');
+                const taskTableBody = document.getElementById('task-table-body');
+                const clearBtn = document.getElementById('clear-btn');
+                const controlDateInput = document.getElementById('control-date');
+                const ganttContainer = document.getElementById('gantt-container');
+
+                function parseLocalDate(dateStr) {
+                    const [year, month, day] = dateStr.split('-').map(Number);
+                    return new Date(year, month - 1, day);
+                }
+
+                let tasks = loadTasksFromStorage();
+                let editingIndex = -1;
+
+                controlDateInput.addEventListener('change', renderTableAndChart);
+
+                function renderTableAndChart() {
+                    renderTable();
+                    drawGanttChart();
+                }
+
+                function resetForm() {
+                    taskNameInput.value = '';
+                    startDateInput.value = '';
+                    taskDurationInput.value = '';
+                    taskDependencyInput.value = '';
+                    taskDependencyTypeInput.value = 'TI';
+                    taskCostInput.value = '';
+                    taskProgressInput.value = '';
+                    addTaskBtn.style.display = 'inline-flex';
+                    editTaskBtn.style.display = 'none';
+                    editingIndex = -1;
+                }
+
+                addTaskBtn.addEventListener('click', () => {
+                    const name = taskNameInput.value.trim();
+                    const start = startDateInput.value;
+                    const duration = parseInt(taskDurationInput.value, 10);
+                    const dependency = taskDependencyInput.value.trim();
+                    const dependencyType = taskDependencyTypeInput.value;
+                    const cost = parseFloat(taskCostInput.value) || 0;
+                    const progress = taskProgressInput.value;
+                    if (!name || !start || isNaN(duration) || duration < 0) {
+                        alert('Por favor, preencha nome, início e duração.');
+                        return;
+                    }
+                    const startDate = parseLocalDate(start);
+                    const endDate = new Date(startDate);
+                    endDate.setDate(endDate.getDate() + duration);
+                    let dependencyString = null;
+                    if (dependency) {
+                        dependencyString = `${dependency},${dependencyType}`;
+                    }
+                    const newTask = {
+                        id: 'Task' + tasks.length,
+                        name: name,
+                        start: startDate,
+                        end: endDate,
+                        duration: duration,
+                        progress: parseInt(progress) || 0,
+                        dependencies: dependencyString,
+                        cost: cost
+                    };
+                    tasks.push(newTask);
+                    saveTasksToStorage(tasks);
+                    renderTableAndChart();
+                    resetForm();
+                    taskNameInput.focus();
+                });
+
+                editTaskBtn.addEventListener('click', () => {
+                    const name = taskNameInput.value.trim();
+                    const start = startDateInput.value;
+                    const duration = parseInt(taskDurationInput.value, 10);
+                    const dependency = taskDependencyInput.value.trim();
+                    const dependencyType = taskDependencyTypeInput.value;
+                    const cost = parseFloat(taskCostInput.value) || 0;
+                    const progress = taskProgressInput.value;
+                    if (!name || !start || isNaN(duration) || duration < 0) {
+                        alert('Por favor, preencha nome, início e duração.');
+                        return;
+                    }
+                    const startDate = parseLocalDate(start);
+                    const endDate = new Date(startDate);
+                    endDate.setDate(endDate.getDate() + duration);
+                    let dependencyString = null;
+                    if (dependency) {
+                        dependencyString = `${dependency},${dependencyType}`;
+                    }
+                    tasks[editingIndex] = {
+                        ...tasks[editingIndex],
+                        name: name,
+                        start: startDate,
+                        end: endDate,
+                        duration: duration,
+                        progress: parseInt(progress) || 0,
+                        dependencies: dependencyString,
+                        cost: cost
+                    };
+                    saveTasksToStorage(tasks);
+                    renderTableAndChart();
+                    resetForm();
+                });
+
+                function renderTable() {
+                    taskTableBody.innerHTML = '';
+                    if (tasks.length === 0) {
+                        taskTableBody.innerHTML = '<tr><td colspan="10" class="text-center text-gray-500 py-4">Nenhuma atividade adicionada.</td></tr>';
+                        return;
+                    }
+                    const controlDate = controlDateInput.value ? parseLocalDate(controlDateInput.value) : null;
+                    tasks.forEach((task, index) => {
+                        const row = document.createElement('tr');
+                        const plannedProgress = controlDate ? calculatePlannedProgress(task, controlDate) : 'N/A';
+                        row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${task.id}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${task.name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${task.start.toLocaleDateString('pt-BR')}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${task.end.toLocaleDateString('pt-BR')}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${task.duration}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${task.dependencies ? task.dependencies.replace(',', ' ') : 'N/A'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${task.cost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${plannedProgress === 'N/A' ? 'N/A' : plannedProgress + '%'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${task.progress}%</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <button class="edit-btn" data-index="${index}">✏️</button>
+                            </td>
+                        `;
+                        taskTableBody.appendChild(row);
+                    });
+                    document.querySelectorAll('.edit-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const index = parseInt(e.currentTarget.dataset.index);
+                            const task = tasks[index];
+                            editingIndex = index;
+                            taskNameInput.value = task.name;
+                            startDateInput.value = task.start.toISOString().split('T')[0];
+                            taskDurationInput.value = task.duration;
+                            if (task.dependencies) {
+                                const [depId, depType] = task.dependencies.split(',');
+                                taskDependencyInput.value = depId;
+                                taskDependencyTypeInput.value = depType;
+                            } else {
+                                taskDependencyInput.value = '';
+                                taskDependencyTypeInput.value = 'TI';
+                            }
+                            taskCostInput.value = task.cost;
+                            taskProgressInput.value = task.progress;
+                            addTaskBtn.style.display = 'none';
+                            editTaskBtn.style.display = 'inline-flex';
+                        });
+                    });
+                }
+
+                function calculatePlannedProgress(task, controlDate) {
+                    const startDate = new Date(task.start);
+                    const endDate = new Date(task.end);
+                    startDate.setHours(0, 0, 0, 0);
+                    endDate.setHours(0, 0, 0, 0);
+                    const ctrl = new Date(controlDate);
+                    ctrl.setHours(0, 0, 0, 0);
+                    if (ctrl < startDate) return 0;
+                    if (ctrl >= endDate) return 100;
+                    const totalDuration = (endDate - startDate) / (1000 * 60 * 60 * 24);
+                    if (totalDuration <= 0) return 100;
+                    const elapsedDuration = (ctrl - startDate) / (1000 * 60 * 60 * 24);
+                    const percentage = (elapsedDuration / totalDuration) * 100;
+                    return Math.min(100, Math.round(percentage));
+                }
+
+                function drawGanttChart() {
+                    ganttContainer.innerHTML = '';
+                    if (tasks.length === 0) return;
+                    const data = new google.visualization.DataTable();
+                    data.addColumn('string', 'Task ID');
+                    data.addColumn('string', 'Task Name');
+                    data.addColumn('date', 'Start Date');
+                    data.addColumn('date', 'End Date');
+                    data.addColumn('number', 'Duration');
+                    data.addColumn('number', 'Percent Complete');
+                    data.addColumn('string', 'Dependencies');
+                    const dataRows = tasks.map(task => {
+                        const dependencyId = task.dependencies ? task.dependencies.split(',')[0] : null;
+                        return [
+                            task.id,
+                            task.name,
+                            task.start,
+                            task.end,
+                            null,
+                            task.progress,
+                            dependencyId
+                        ];
+                    });
+                    data.addRows(dataRows);
+                    const chart = new google.visualization.Gantt(ganttContainer);
+                    const trackHeight = 24;
+                    const barHeight = 16;
+                    const chartHeight = 60 + (data.getNumberOfRows() * trackHeight);
+                    const options = {
+                        height: chartHeight,
+                        gantt: {
+                            trackHeight: trackHeight,
+                            barHeight: barHeight,
+                            criticalPathEnabled: false,
+                            arrow: {
+                                angle: 20,
+                                width: 0.8,
+                                color: '#666',
+                                radius: 2
+                            },
+                            palette: [
+                                {
+                                    "color": "#01455C",
+                                    "dark": "#013346",
+                                    "light": "#3b7a91"
+                                }
+                            ]
+                        }
+                    };
+                    chart.draw(data, options);
+                }
+
+                clearBtn.addEventListener('click', () => {
+                    if (confirm('Tem certeza de que deseja limpar todas as tarefas?')) {
+                        tasks = [];
+                        saveTasksToStorage(tasks);
+                        renderTableAndChart();
+                        resetForm();
+                    }
+                });
+
+                renderTableAndChart();
+            }
+        }
+    });
+</script>
+</body>
+</html>
