@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestão de Obras - Contrapartida Viária Av. do Metrô</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Frappe Gantt JS e CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.css">
+    <!-- Google Charts (AGORA USADO PARA FÍSICO-FINANCEIRO) -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    
     <style>
         :root {
             --cor-primaria: #01455C;
@@ -13,6 +18,7 @@
             --cor-texto-claro: #ffffff;
             --cor-texto-escuro: #333;
             --cor-fundo: #f0f2f5;
+            --cor-linha-ff: #d95f02; /* Laranja escuro para a linha da Curva S */
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -105,144 +111,297 @@
             margin: auto;
             padding: 20px;
         }
+        /* Classe de container para largura total com padding */
+        .container-full-width {
+            width: 100%;
+            padding-left: 1.5rem;  /* 24px */
+            padding-right: 1.5rem; /* 24px */
+            margin-left: auto;
+            margin-right: auto;
+        }
         .page-content h1 {
             color: var(--cor-primaria);
-        }
-        .google-visualization-tooltip {
-            border: 1px solid #ccc !important;
-            border-radius: 8px !important;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
-            padding: 10px !important;
-            background-color: white !important;
-        }
-        .edit-btn {
-            background: none;
-            border: none;
-            color: var(--cor-primaria);
-            cursor: pointer;
-            font-size: 1.1rem;
-            padding: 0;
-            margin-left: 8px;
-        }
-        .edit-btn:hover {
-            color: var(--cor-secundaria);
-        }
-        .status-informativo { background-color: #d1d5db; color: #374151; }
-        .status-aberto { background-color: #f87171; color: white; }
-        .status-critico { background-color: #ef4444; color: white; }
-        .status-fechado { background-color: #4ade80; color: white; }
-        .btn-add {
-            background-color: var(--cor-secundaria);
-            color: var(--cor-primaria);
-        }
-        .btn-add:hover {
-            background-color: #8ab717;
-        }
-        .btn-remove {
-            background-color: #ef4444;
-            color: white;
-        }
-        .btn-remove:hover {
-            background-color: #dc2626;
-        }
-        .btn-edit {
-            background-color: #3b82f6;
-            color: white;
-        }
-        .btn-edit:hover {
-            background-color: #2563eb;
-        }
-        .btn-save {
-            background-color: #10b981;
-            color: white;
-        }
-        .btn-save:hover {
-            background-color: #059669;
-        }
-        .btn-cancel {
-            background-color: #9ca3af;
-            color: white;
-        }
-        .btn-cancel:hover {
-            background-color: #6b7280;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 1.875rem; /* 3xl */
+            font-weight: 700;
         }
 
-        /* Modal de Edição de Descrição */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
-        }
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 700px;
-            max-height: 80vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-        .modal-header {
-            background-color: var(--cor-primaria);
-            color: white;
-            padding: 1rem 1.5rem;
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-        .modal-body {
-            padding: 1.5rem;
-            flex: 1;
-            overflow: auto;
-        }
-        .modal-body textarea {
-            width: 100%;
-            height: 200px;
-            padding: 0.75rem;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-family: inherit;
-            font-size: 1rem;
-            resize: vertical;
-        }
-        .modal-footer {
-            padding: 1rem 1.5rem;
-            background-color: #f9fafb;
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
-            border-top: 1px solid #e5e7eb;
-        }
-
-        /* Tabela inteligente e responsiva */
-        #atas-table {
+        /* Estilos da tabela (reaproveitados de 'atas') */
+        .styled-table {
             table-layout: fixed;
             width: 100%;
         }
-        #atas-table th,
-        #atas-table td {
+        .styled-table th,
+        .styled-table td {
             vertical-align: top;
+            padding: 0.75rem 1rem; /* 12px 16px */
         }
-        #atas-table .descricao-cell {
+        .styled-table .break-words {
             word-wrap: break-word;
-            overflow-wrap: break-word;
+            word-break: break-word;
             white-space: normal;
         }
+        .styled-table th {
+            font-size: 0.75rem; /* 12px */
+            font-weight: 500;
+            text-transform: uppercase;
+            color: #6b7280; /* text-gray-500 */
+            text-align: left;
+        }
+        .styled-table td {
+            font-size: 0.875rem; /* 14px */
+            color: #374151; /* text-gray-700 */
+        }
+        .styled-table tbody tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+        .styled-table tbody tr:nth-child(even) {
+            background-color: #f9fafb; /* bg-gray-50 */
+        }
+
+        /* Estilos para Frappe Gantt */
+        .gantt .bar-progress {
+            fill: var(--cor-secundaria) !important; /* Cor do progresso */
+        }
+        .gantt .bar {
+            fill: var(--cor-primaria) !important; /* Cor principal da barra */
+        }
+        .gantt .bar-label {
+            font-weight: 500;
+            font-size: 13px;
+            fill: #fff !important; /* Cor do texto dentro da barra */
+        }
+        .gantt .bar-label.big {
+             fill: var(--cor-texto-escuro) !important; /* Cor do texto fora da barra */
+             font-weight: 500;
+        }
+        
+        .gantt-today-marker .line-today {
+            stroke: #ef4444 !important; /* Cor vermelha (red-500) */
+            stroke-width: 2 !important;
+            stroke-dasharray: 4, 4 !important;
+        }
+        .gantt-today-marker .today-text {
+            fill: #dc2626 !important; /* Vermelho mais escuro (red-600) */
+            font-weight: 600 !important;
+        }
+
+        .gantt-wrapper-outer {
+             border: 1px solid #e5e7eb; /* Borda suave */
+             border-radius: 8px; /* Cantos arredondados */
+             overflow-x: auto; /* Mantém apenas o scroll horizontal necessário */
+        }
+
+        .gantt-wrapper-outer .gantt {
+            overflow-y: hidden !important; /* Força a biblioteca a não mostrar o scroll Y */
+        }
+
+        .btn-gantt-view {
+            background-color: #f3f4f6;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .btn-gantt-view:hover {
+            background-color: #e5e7eb;
+        }
+        .btn-gantt-view.active {
+            background-color: var(--cor-primaria);
+            color: white;
+            border-color: var(--cor-primaria);
+        }
+
+        /* Estilos para os botões-abas de Fase */
+        .phase-tab {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            background-color: transparent;
+            color: #6b7280; /* Cor de inativo (cinza) */
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            transition: color 0.3s, border-color 0.3s;
+            margin-bottom: -2px; /* Alinha com a borda inferior */
+        }
+        .phase-tab:hover {
+            color: var(--cor-primaria);
+        }
+        .phase-tab.active {
+            color: var(--cor-primaria);
+            border-bottom-color: var(--cor-primaria);
+        }
+
+        /* Estilos para a tabela de progresso */
+        .progress-table-wrapper {
+            max-height: 40vh; /* Limita a altura */
+            overflow-y: auto; /* Adiciona scroll vertical */
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background-color: #ffffff;
+            display: none; /* Oculto por padrão, JS controla a visibilidade */
+        }
+        .progress-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .progress-table th, .progress-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+            white-space: nowrap;
+        }
+        .progress-table th {
+            background-color: #f9fafb; /* bg-gray-50 */
+            font-weight: 600;
+            color: #374151; /* text-gray-700 */
+            position: sticky; /* Cabeçalho fixo */
+            top: 0;
+        }
+        .progress-table td:first-child {
+            white-space: normal; /* Permite que o nome da tarefa quebre a linha */
+        }
+        .progress-bar-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem; /* 8px */
+        }
+        .progress-bar-bg {
+            width: 100px;
+            height: 16px;
+            background-color: #e5e7eb; /* bg-gray-200 */
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--cor-secundaria); /* Verde */
+            border-radius: 8px;
+            transition: width 0.3s ease;
+        }
+        .progress-text {
+            width: 40px; /* Espaço para o texto (ex: 100%) */
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        /* Estilos para o KPI */
+        .kpi-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            padding: 1.5rem; /* 24px */
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        }
+        .kpi-title {
+            font-size: 1.125rem; /* 18px */
+            font-weight: 600;
+            color: var(--cor-primaria);
+            margin-bottom: 1rem; /* 16px */
+        }
+        .kpi-value {
+            font-size: 2.25rem; /* 36px */
+            font-weight: 800;
+            color: var(--cor-secundaria);
+            line-height: 1;
+        }
+        .kpi-progress-bar-bg {
+            width: 100%;
+            height: 24px;
+            background-color: #e5e7eb; /* bg-gray-200 */
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 1rem; /* 16px */
+            position: relative; /* Contexto para o marcador */
+        }
+        .kpi-progress-bar-fill {
+            height: 100%;
+            background-color: var(--cor-secundaria);
+            border-radius: 12px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--cor-primaria);
+            font-weight: 600;
+            font-size: 0.875rem;
+            position: relative; /* Para garantir que fique abaixo do marcador */
+            z-index: 1;
+        }
+        .kpi-meta {
+            margin-top: 0.75rem; /* 12px */
+            font-size: 0.875rem; /* 14px */
+            color: #6b7280; /* text-gray-500 */
+        }
+        
+        .kpi-limit-marker {
+            position: absolute;
+            top: -4px; /* Ajuste para centralizar na barra */
+            bottom: -4px;
+            left: 64.83%; /* Posição calculada (25000 / 38561.224) */
+            width: 3px; /* Largura da linha */
+            background-color: #ef4444; /* Vermelho (red-500) */
+            border-radius: 2px;
+            z-index: 2; /* Fica por cima da barra de progresso */
+            cursor: help; /* Indica que tem tooltip */
+        }
+        .kpi-limit-marker .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #1f2937; /* bg-gray-800 */
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 10;
+            bottom: 125%; /* Posição acima do marcador */
+            left: 50%;
+            margin-left: -100px; /* Metade da largura para centralizar */
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.75rem; /* 12px */
+            font-weight: 400;
+            line-height: 1.4;
+        }
+        .kpi-limit-marker:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .kpi-legend {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem; /* 8px */
+            margin-top: 1rem; /* 16px */
+            font-size: 0.875rem; /* 14px */
+            color: #4b5563; /* text-gray-600 */
+        }
+        .kpi-legend-line {
+            width: 24px;
+            height: 3px;
+            background-color: #ef4444; /* Vermelho (red-500) */
+            border-radius: 2px;
+        }
+
+        /* ADICIONADO: Wrapper para os gráficos Físico-Financeiros */
+        .ff-chart-wrapper {
+            width: 100%;
+            min-height: 500px; /* Altura mínima para o gráfico */
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            background-color: #ffffff;
+        }
+
 
         /* Otimização para impressão */
         @media print {
@@ -255,19 +414,43 @@
                 max-width: none !important;
                 padding: 10px !important;
             }
-            #atas-table {
-                font-size: 12px !important;
+             .container-full-width {
+                padding: 10px !important;
             }
-            #atas-table th,
-            #atas-table td {
-                padding: 6px 8px !important;
+            .styled-table {
+                font-size: 10px !important;
+                table-layout: auto;
+            }
+            .styled-table th,
+            .styled-table td {
+                padding: 4px 6px !important;
+            }
+            .styled-table tbody tr {
+                page-break-inside: avoid;
             }
             .page-content > div {
                 box-shadow: none !important;
                 border: 1px solid #ccc !important;
             }
-            #atas-table tbody tr {
-                page-break-inside: avoid;
+            
+            .gantt-wrapper-outer {
+                max-height: none !important;
+                overflow: visible !important;
+                border: none !important;
+            }
+            /* Oculta tabelas de progresso na impressão */
+            .progress-table-wrapper, .progress-title {
+                display: none !important;
+            }
+            /* Oculta KPI na impressão */
+            .kpi-card {
+                display: none !important;
+            }
+            /* Ajusta gráficos FF para impressão */
+            .ff-chart-wrapper {
+                border: none !important;
+                padding: 0 !important;
+                min-height: auto !important;
             }
         }
     </style>
@@ -278,12 +461,13 @@
         <nav>
             <ul>
                 <li><a id="nav-home" class="active">Página Principal</a></li>
-                <li><a id="nav-atas">Atas de Reunião</a></li>
-                <li><a id="nav-projeto">Projeto</a></li>
+                <li><a id="nav-assuntos">Assuntos Relevantes</a></li>
                 <li><a id="nav-planejamento">Planejamento</a></li>
-                <li><a id="nav-riscos">Riscos</a></li>
-                <li><a id="nav-custos">Custos</a></li>
+                <!-- ATUALIZADO: Guia oculta -->
+                <li style="display: none;"><a id="nav-fisico-financeiro">Físico-Financeiro</a></li>
                 <li><a id="nav-gestao-cava">Gestão Cava</a></li>
+                <!-- NOVO: Guia Diário de Obra -->
+                <li><a id="nav-diario">Diário de Obra</a></li>
             </ul>
         </nav>
     </header>
@@ -293,287 +477,473 @@
                 <h1>Sistema de Gestão de Obras</h1>
                 <h2>Contrapartida Viária Avênida do Metrô</h2>
                 <p>
-                    Plataforma centralizada para o monitoramento e gestão de todas as frentes da obra. Navegue pelas guias para aceder a painéis de atas, planejamento, análise de riscos, controle de custos e gestão de cava.
+                    Plataforma centralizada para o monitoramento e gestão de todas as frentes da obra. Navegue pelas guias para aceder a painéis de assuntos, planejamento, análise de riscos, controle de custos e gestão de cava.
                 </p>
                 <a id="cta-button" class="cta-button">Aceder aos Painéis</a>
             </div>
         </section>
-        <div id="atas-page" class="container page-content" style="display: none;">
+
+        <!-- MANTIDO: assuntos-page -->
+        <div id="assuntos-page" class="container page-content" style="display: none;">
             <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-                <h1 class="text-3xl font-bold text-center mb-2" style="color: var(--cor-primaria);">Atas de Reunião</h1>
-                <!-- Filtros -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <div>
-                        <label for="filter-status" class="block text-sm font-medium text-gray-700">Filtrar por Status</label>
-                        <select id="filter-status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
-                            <option value="">Todos os Status</option>
-                            <option value="informativo">Informativo</option>
-                            <option value="aberto">Aberto</option>
-                            <option value="critico">Crítico</option>
-                            <option value="fechado">Fechado</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="filter-tema" class="block text-sm font-medium text-gray-700">Filtrar por Tema</label>
-                        <select id="filter-tema" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
-                            <option value="">Todos os Temas</option>
-                            <option value="Contrato">Contrato</option>
-                            <option value="Qualidade">Qualidade</option>
-                            <option value="Segurança">Segurança</option>
-                            <option value="Meio Ambiente">Meio Ambiente</option>
-                            <option value="Obra">Obra</option>
-                            <option value="Outros">Outros</option>
-                        </select>
-                    </div>
-                    <div class="flex items-end">
-                        <button id="apply-filters-btn" class="w-full btn-add px-4 py-2 rounded-md font-medium shadow-sm">
-                            Aplicar Filtros
-                        </button>
-                    </div>
-                </div>
-                <!-- KPIs -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                        <h3 class="text-lg font-semibold text-blue-800">Atendimento da Construtora</h3>
-                        <p class="text-3xl font-bold text-blue-600" id="kpi-construtora">0%</p>
-                    </div>
-                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
-                        <h3 class="text-lg font-semibold text-green-800">Itens Fechados</h3>
-                        <p class="text-3xl font-bold text-green-600" id="kpi-fechados">0</p>
-                    </div>
-                    <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
-                        <h3 class="text-lg font-semibold text-purple-800">Tempo Médio de Atendimento</h3>
-                        <p class="text-3xl font-bold text-purple-600" id="kpi-tempo">0 dias</p>
-                    </div>
-                </div>
-                <!-- Botão para adicionar nova linha -->
-                <div class="flex justify-end mb-4">
-                    <button id="add-row-btn" class="btn-add px-4 py-2 rounded-md font-medium shadow-sm">
-                        Adicionar Nova Linha
-                    </button>
-                </div>
-                <!-- Tabela de Atas -->
+                <h1>Assuntos Relevantes</h1>
+                <!-- Tabela de Assuntos -->
                 <div class="overflow-x-auto rounded-lg border border-gray-200">
-                    <table id="atas-table" class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+                    <table id="assuntos-table" class="styled-table min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-100">
                             <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase w-12">ID</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Descrição</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase w-32">Tema</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase w-40">Responsável</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase w-28">Status</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase w-32">Abertura</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase w-32">Fechamento</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase w-24">Ações</th>
+                                <th class="w-16">Item</th>
+                                <th class="w-48">Assunto</th>
+                                <th>Descrição</th>
+                                <th class="w-48">Responsável</th>
                             </tr>
                         </thead>
-                        <tbody id="atas-table-body" class="bg-white divide-y divide-gray-200">
+                        <tbody class="divide-y divide-gray-200">
+                            <!-- Dados Inseridos da Análise -->
                             <tr>
-                                <td class="px-4 py-3 text-sm font-medium text-gray-900 text-center">1</td>
-                                <td class="px-4 py-3 text-sm text-gray-500 descricao-cell">
-                                    <span class="descricao-text">Problemas na fundação da estaca 01. Este é um exemplo de texto longo que deve quebrar corretamente dentro do campo sem invadir outras colunas.</span>
+                                <td class="text-center font-medium">01</td>
+                                <td>Remanejamento rede gás</td>
+                                <td class="break-words">
+                                    Consórcio-Rede de 79mm de gas- já identificada por sondagens manuais na área da obra, porém essa rede não consta do cadastro da Comgás- Fizemos a solicitação de atualização do cadastro para poder fazer um projeto de rede alternativo e remoção da existente-teriamos uma visita técnica da Congás hoje, porém devido ao mau tempo foi adiada para segunda -13/10. Foram feitas 2 visitas técnicas da Comgás ao local:
+                                    <br>-Na primeira, foi constatado que a rede não está no cadastro da Congás, e foi acionando o departamento responsável para confirmação e possível inclusão da rede no cadastro, para seguir com os passos de remoção;
+                                    <br>Na segunda, foi confirmado que a rede é rede interna do GPA, - foi solicitado os projetos e algumas sondagens, e a solicitação de remoção será encaminhada ao gerente Congás que cuida especificamente dessa conta- GPA.
+                                    <br>2810//25-Foram solicitados orçamentos para remanejamento da rede. Prazo 06/11/25.
                                 </td>
-                                <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
-                                    <span class="tema-text">Qualidade</span>
-                                    <select class="tema-select hidden w-full p-1 border rounded">
-                                        <option value="Contrato">Contrato</option>
-                                        <option value="Qualidade" selected>Qualidade</option>
-                                        <option value="Segurança">Segurança</option>
-                                        <option value="Meio Ambiente">Meio Ambiente</option>
-                                        <option value="Obra">Obra</option>
-                                        <option value="Outros">Outros</option>
-                                    </select>
-                                </td>
-                                <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
-                                    <span class="responsavel-text">Ana Oliveira</span>
-                                    <input type="text" class="responsavel-input w-full p-1 border rounded hidden" value="Ana Oliveira">
-                                </td>
-                                <td class="px-4 py-3 text-sm whitespace-nowrap">
-                                    <span class="status-text status-critico">Crítico</span>
-                                    <select class="status-select hidden w-full p-1 border rounded">
-                                        <option value="informativo">Informativo</option>
-                                        <option value="aberto">Aberto</option>
-                                        <option value="critico" selected>Crítico</option>
-                                        <option value="fechado">Fechado</option>
-                                    </select>
-                                </td>
-                                <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
-                                    <span class="data-abertura-text">2024-11-01</span>
-                                    <input type="date" class="data-abertura-input hidden w-full p-1 border rounded" value="2024-11-01">
-                                </td>
-                                <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
-                                    <span class="data-fechamento-text">-</span>
-                                    <input type="date" class="data-fechamento-input hidden w-full p-1 border rounded">
-                                </td>
-                                <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
-                                    <button class="btn-edit px-2 py-1 rounded text-xs mr-1">Editar</button>
-                                    <button class="btn-save px-2 py-1 rounded text-xs mr-1 hidden">Salvar</button>
-                                    <button class="btn-cancel px-2 py-1 rounded text-xs mr-1 hidden">Cancelar</button>
-                                    <button class="btn-remove px-2 py-1 rounded text-xs">Remover</button>
-                                </td>
+                                <td>Penna</td>
                             </tr>
                             <tr>
-                                <td class="px-4 py-3 text-sm font-medium text-gray-900 text-center">2</td>
-                                <td class="px-4 py-3 text-sm text-gray-500 descricao-cell">
-                                    <span class="descricao-text">Atraso na entrega de materiais. Outro exemplo de texto longo que deve permanecer dentro do campo de descrição.</span>
+                                <td class="text-center font-medium">02</td>
+                                <td>PV de esgoto assoreados</td>
+                                <td class="break-words">
+                                    Consórcio-Estamos concluindo o levantamento da área (são 11 tampões-de PVs, que estão assoreados e aparentemente fora de uso)- Limpamos e sondamos ao redor e imediação e estaremos apresentando os quantitativos para autorização de remoção/demolição dos mesmos, pois vão interferir na execução das estacas de brita; Identificamos novas interligações na região, e estamos cadastrando as novas redes e PVS.
+                                    <br>28/10/25-Consórcio estuda a demolição das caixas dos PVs ou ajuste da malha da coluna de brita. Prazo:07/11/25
                                 </td>
-                                <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
-                                    <span class="tema-text">Contrato</span>
-                                    <select class="tema-select hidden w-full p-1 border rounded">
-                                        <option value="Contrato" selected>Contrato</option>
-                                        <option value="Qualidade">Qualidade</option>
-                                        <option value="Segurança">Segurança</option>
-                                        <option value="Meio Ambiente">Meio Ambiente</option>
-                                        <option value="Obra">Obra</option>
-                                        <option value="Outros">Outros</option>
-                                    </select>
+                                <td>Penna</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center font-medium">03</td>
+                                <td>Rede de esgoto coletor Paes Mendonça</td>
+                                <td class="break-words">28/10/25-Consórcio vai solicitar cadastro oficial da rede de esgoto da Sabesp do coletor paes mendonça acredita-se estar ao lado da galeria pluvial, também sondara para encontrar a rede e/ou ajustar a malha das colunas de brita conforme reunião com GBX (21/10) e Tecnogeo (24/10) para evitar danos a rede.</td>
+                                <td>Penna</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center font-medium">04</td>
+                                <td>Rede de esgoto Mercado e Ice Brasil</td>
+                                <td class="break-words">28/10/25-Em reunião com Fábio da GBX (21/10) ficou definido o ajuste da malha da coluna de brita para não sobrepor com a rede de esgoto, consorcio apenas precisa levantar as redes e sobrepor com o projeto de fundação.</td>
+                                <td>Penna</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center font-medium">05</td>
+                                <td>Galeria Pluvial</td>
+                                <td class="break-words">
+                                    Consórcio-Galeria de águas pluviais- já identificada no cadastro, falta confirmar as profundidades da mesma e verificar a capacidade de suporte-pois está cruzando na perpendicular as pistas da av projetada. Profundidade já foi cadastrada e encaminhada para a GBX, que está fazendo as verificações.
+                                    <br>28/10/25-Em reunião com GBX (21/10) ficou definido ajuste da locação das colunas de brita para não sobrepor com a galeria.
                                 </td>
-                                <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
-                                    <span class="responsavel-text">Pedro Costa</span>
-                                    <input type="text" class="responsavel-input w-full p-1 border rounded hidden" value="Pedro Costa">
+                                <td>Penna</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center font-medium">06</td>
+                                <td>Remanejamento postes da ENEL</td>
+                                <td class="break-words">
+                                    Postes Enel-foi solicitada a remoção/remanejamento de 2 postes - processo em andamento, o processo de solicitação foi aberto em nome da ARCONTE e apresentou restrições, encaminhamos os documentos para nova solicitação em nome da Golf.
+                                    <br>28/10/25-Processo ainda não formalizado em nome da Golf, Thiago da Arc enviou modelo de procuração para assinatura da Golf (27/10/25). CTP acredita que a o poste que ficou na ilha da saida da benedito monte próximo a estaca 25 deva ser remanejado também.
                                 </td>
-                                <td class="px-4 py-3 text-sm whitespace-nowrap">
-                                    <span class="status-text status-aberto">Aberto</span>
-                                    <select class="status-select hidden w-full p-1 border rounded">
-                                        <option value="informativo">Informativo</option>
-                                        <option value="aberto" selected>Aberto</option>
-                                        <option value="critico">Crítico</option>
-                                        <option value="fechado">Fechado</option>
-                                    </select>
+                                <td>Penna</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center font-medium">07</td>
+                                <td>Remanejamento ponto de ônibus</td>
+                                <td class="break-words">
+                                    Ponto de ônibus-haverá necessidade de remanejar, foi encaminhado a SPTRans fotos e projeto do local.
+                                    <br>28/10/25-Será necessario reencaminhar documentração conforme orientação SPTrans.
                                 </td>
-                                <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
-                                    <span class="data-abertura-text">2024-11-05</span>
-                                    <input type="date" class="data-abertura-input hidden w-full p-1 border rounded" value="2024-11-05">
-                                </td>
-                                <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
-                                    <span class="data-fechamento-text">-</span>
-                                    <input type="date" class="data-fechamento-input hidden w-full p-1 border rounded">
-                                </td>
-                                <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
-                                    <button class="btn-edit px-2 py-1 rounded text-xs mr-1">Editar</button>
-                                    <button class="btn-save px-2 py-1 rounded text-xs mr-1 hidden">Salvar</button>
-                                    <button class="btn-cancel px-2 py-1 rounded text-xs mr-1 hidden">Cancelar</button>
-                                    <button class="btn-remove px-2 py-1 rounded text-xs">Remover</button>
-                                </td>
+                                <td>Penna</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center font-medium">08</td>
+                                <td>TPOV</td>
+                                <td class="break-words">Aguarda-se aprovação na Siurb.</td>
+                                <td>Thiago M. (Arc)</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center font-medium">09</td>
+                                <td>ATO Shibuya</td>
+                                <td class="break-words">28/10/25-A Shibuya realizou levantamento no dia 17/10/25 dos pontos locados pela Topografare (Consorcio), os pontos que foram locados na região do pão de açúcar (na face da guia) foram coincidentes, pede-se que no acesso da Marginal Local a Topografares faça também a locação dos pontos (face da guia) para facilitar a conferência pela Shibuya e visualização do levantamento.</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center font-medium">10</td>
+                                <td>Escavação</td>
+                                <td class="break-words">FBS e BNX-C (24/10/25) ajustaram a mudança de local na frente de escavação até a BNX-C fazer o remanejamento da rede elétrica,</td>
+                                <td>Penna Consórcio x Luis M. BNX-C</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center font-medium">11</td>
+                                <td>Processo llume/SP Regula Av metrő</td>
+                                <td class="break-words">Em 14/10/25, a Arc enviou para SPRegula os projetos para andamento no processo</td>
+                                <td>Thiago M. (Arc)</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center font-medium">12</td>
+                                <td>Postes da marginal local llume/SP Regula</td>
+                                <td class="break-words">Arc solicitou a remoção dos postes para SPRegula, CTP orienta que o consórcio registre o envio desses materiais com quantidades, especificações, fotos e assinatura do responsável pela remoção dos postes e luminárias.</td>
+                                <td>Thiago/Penna</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center font-medium">13</td>
+                                <td>Coluna de Brita</td>
+                                <td class="break-words">2810//25-Em reunião com GBX (21/10) o Fábio Romero esclareceu duvidas sobre a execução das colunas de brita, e que a medida do avanço da execução pode-se realizar ajustes na malha para evitar as interferencias, desde que devidamente noicados/alinhados.com o projetista,</td>
+                                <td>Penna</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-        <div id="projeto-page" class="container page-content" style="display: none;">
-            <h1>Projeto</h1>
-            <p>Em desenvolvimento. Área dedicada à visualização do projeto, incluindo o traçado da avenida e a locação das estacas.</p>
-        </div>
-        <div id="planejamento-page" class="container page-content" style="display: none;">
+
+        <!-- MANTIDO: planejamento-page -->
+        <div id="planejamento-page" class="container-full-width page-content" style="display: none; padding-top: 20px;">
              <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-                <h1 class="text-3xl font-bold text-center mb-2" style="color: var(--cor-primaria);">Planejamento de Atividade</h1>
-                 <div class="flex justify-center mb-6">
-                    <div class="w-full max-w-xs">
-                        <label for="control-date" class="block text-sm font-medium text-gray-700 text-center">Data de Controle</label>
-                        <input type="date" id="control-date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                <h1 class="text-3xl font-bold text-center mb-6" style="color: var(--cor-primaria);">Gráfico de Gantt do Projeto</h1>
+                
+                <div class="flex justify-center border-b border-gray-300 mb-4">
+                    <button id="btn-fase-1" class="phase-tab active">FASE 01</button>
+                    <button id="btn-fase-2" class="phase-tab">FASE 02</button>
+                </div>
+
+                <div class="flex flex-col md:flex-row items-center justify-end mb-4 gap-2">
+                    <span class="text-sm font-medium text-gray-700">Zoom:</span>
+                    <button id="gantt-view-day" class="btn-gantt-view">Dia</button>
+                    <button id="gantt-view-week" class="btn-gantt-view active">Semana</button>
+                    <button id="gantt-view-month" class="btn-gantt-view">Mês</button>
+                </div>
+
+                <div id="gantt-fase-1-wrapper" class="gantt-wrapper-outer mt-4">
+                    <div id="gantt-chart-fase-1"></div>
+                </div>
+
+                <div id="gantt-fase-2-wrapper" class="gantt-wrapper-outer mt-4" style="display: none;">
+                    <div id="gantt-chart-fase-2"></div>
+                </div>
+
+                <div class="mt-8">
+                    <h2 class="text-2xl font-bold text-center mb-4 progress-title" style="color: var(--cor-primaria);">
+                        Avanço Previsto (Data de Controle: <span id="control-date-display">--/--/----</span>)
+                    </h2>
+                    
+                    <div id="progress-table-fase-1" class="progress-table-wrapper" style="display: block;">
+                        <!-- A tabela será gerada pelo JS -->
+                    </div>
+
+                    <div id="progress-table-fase-2" class="progress-table-wrapper" style="display: none;">
+                        <!-- A tabela será gerada pelo JS -->
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end mb-6">
-                    <div class="md:col-span-2">
-                        <label for="task-name" class="block text-sm font-medium text-gray-700">Nome da Tarefa</label>
-                        <input type="text" id="task-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
-                    </div>
-                    <div>
-                        <label for="start-date" class="block text-sm font-medium text-gray-700">Início</label>
-                        <input type="date" id="start-date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
-                    </div>
-                    <div>
-                        <label for="task-duration" class="block text-sm font-medium text-gray-700">Duração (dias)</label>
-                        <input type="number" id="task-duration" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2" min="0">
-                    </div>
-                     <div class="flex items-end gap-2">
-                        <div class="flex-grow">
-                            <label for="task-dependency" class="block text-sm font-medium text-gray-700">Predecessora (ID)</label>
-                            <input type="text" id="task-dependency" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+
+            </div>
+        </div>
+
+        <!-- MANTIDO: fisico-financeiro-page -->
+        <div id="fisico-financeiro-page" class="container-full-width page-content" style="display: none; padding-top: 20px;">
+             <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h1 class="text-3xl font-bold text-center mb-6" style="color: var(--cor-primaria);">Curva S - Físico-Financeiro</h1>
+                
+                <div class="flex justify-center border-b border-gray-300 mb-4">
+                    <button id="btn-ff-fase-1" class="phase-tab active">FASE 01</button>
+                    <button id="btn-ff-fase-2" class="phase-tab">FASE 02</button>
+                </div>
+
+                <!-- Wrapper do Gráfico Fase 1 -->
+                <div id="ff-chart-fase-1-wrapper" class="ff-chart-wrapper" style="display: block;">
+                    <div id="ff-chart-fase-1" style="width: 100%; height: 500px;"></div>
+                </div>
+                
+                <!-- Wrapper do Gráfico Fase 2 -->
+                <div id="ff-chart-fase-2-wrapper" class="ff-chart-wrapper" style="display: none;">
+                    <div id="ff-chart-fase-2" style="width: 100%; height: 500px;"></div>
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- MANTIDO: gestao-cava-page -->
+        <div id="gestao-cava-page" class="container page-content" style="display: none;">
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h1>Gestão Cava - Controle de Escavação</h1>
+                
+                <div class="max-w-md mx-auto my-8">
+                    <div class="kpi-card">
+                        <h3 class="kpi-title">Avanço Total da Escavação</h3>
+                        <div class="kpi-value" id="kpi-cava-percent">0%</div>
+                        <div class="kpi-progress-bar-bg">
+                            <div id="kpi-cava-bar" class="kpi-progress-bar-fill" style="width: 0%;">
+                                <span id="kpi-cava-bar-text">0%</span>
+                            </div>
+                            <div class="kpi-limit-marker">
+                                <span class="tooltip-text">*Limite contratado CAVA (25.000 m³), consórcio precisar revisar o contrato com o fornecedor.</span>
+                            </div>
                         </div>
-                        <div>
-                            <label for="task-dependency-type" class="block text-sm font-medium text-gray-700">Tipo</label>
-                            <select id="task-dependency-type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
-                                <option>TI</option>
-                                <option>TT</option>
-                                <option>II</option>
-                                <option>IT</option>
-                            </select>
+                        <p class="kpi-meta">
+                            <span id="kpi-cava-acumulado">0,00</span> m³ de <span id="kpi-cava-total">38.561,224</span> m³
+                        </p>
+                        
+                        <div class="kpi-legend">
+                            <span class="kpi-legend-line"></span>
+                            Limite contratual (25.000 m³)
                         </div>
                     </div>
-                    <div>
-                        <label for="task-cost" class="block text-sm font-medium text-gray-700">Custo (R$)</label>
-                        <input type="number" id="task-cost" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2" min="0" step="0.01">
-                    </div>
-                     <div>
-                        <label for="task-progress" class="block text-sm font-medium text-gray-700">Avanço Real (%)</label>
-                        <input type="number" id="task-progress" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2" min="0" max="100">
-                    </div>
                 </div>
-                 <div class="flex justify-end mb-6">
-                    <button id="add-task-btn" class="inline-flex items-center justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm" style="background-color: var(--cor-primaria);">Adicionar Tarefa</button>
-                    <button id="edit-task-btn" class="inline-flex items-center justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm ml-2" style="background-color: #FFA500; display: none;">Salvar Edição</button>
-                </div>
-                <h2 class="text-xl font-semibold mb-3" style="color: var(--cor-primaria);">Lista de Atividades</h2>
+                
+                <h2 class="text-2xl font-bold text-center mb-4 mt-8" style="color: var(--cor-primaria);">Histórico de Escavação</h2>
                 <div class="overflow-x-auto rounded-lg border border-gray-200">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+                    <table id="cava-table" class="styled-table min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-100">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nome da Tarefa</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Início</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Término</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Duração (dias)</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Predecessora</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Custo (R$)</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Avanço Planejado (%)</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Avanço Real (%)</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th>
+                                <th>Data</th>
+                                <th>Viagens</th>
+                                <th>Viagens Acum</th>
+                                <th>Volume Aprox</th>
+                                <th>Volume Acum</th>
+                                <th>OBS</th>
                             </tr>
                         </thead>
-                        <tbody id="task-table-body" class="bg-white divide-y divide-gray-200"></tbody>
+                        <tbody class="divide-y divide-gray-200">
+                            <!-- Dados da imagem -->
+                            <tr>
+                                <td>03/out</td>
+                                <td>3</td>
+                                <td>3</td>
+                                <td>55,50</td>
+                                <td>55,50</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>08/out</td>
+                                <td>10</td>
+                                <td>13</td>
+                                <td>185,00</td>
+                                <td>240,50</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>09/out</td>
+                                <td>15</td>
+                                <td>28</td>
+                                <td>277,50</td>
+                                <td>518,00</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10/out</td>
+                                <td>19</td>
+                                <td>47</td>
+                                <td>351,50</td>
+                                <td>869,50</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>11/out</td>
+                                <td>20</td>
+                                <td>67</td>
+                                <td>370,00</td>
+                                <td>1.239,50</td>
+                                <td></td>
+                            </tr>
+                            <tr style="background-color: #fff7ed;">
+                                <td>12/out</td>
+                                <td>0</td>
+                                <td>67</td>
+                                <td>-</td>
+                                <td>1.239,50</td>
+                                <td>Dom</td>
+                            </tr>
+                            <tr>
+                                <td>13/out</td>
+                                <td>19</td>
+                                <td>86</td>
+                                <td>351,50</td>
+                                <td>1.591,00</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>14/out</td>
+                                <td>33</td>
+                                <td>119</td>
+                                <td>610,50</td>
+                                <td>2.201,50</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>15/out</td>
+                                <td>34</td>
+                                <td>153</td>
+                                <td>629,00</td>
+                                <td>2.830,50</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>16/out</td>
+                                <td>34</td>
+                                <td>187</td>
+                                <td>629,00</td>
+                                <td>3.459,50</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>17/out</td>
+                                <td>31</td>
+                                <td>218</td>
+                                <td>573,50</td>
+                                <td>4.033,00</td>
+                                <td></td>
+                            </tr>
+                            <tr style="background-color: #fef2f2;">
+                                <td>18/out</td>
+                                <td>10</td>
+                                <td>228</td>
+                                <td>185,00</td>
+                                <td>4.218,00</td>
+                                <td>Sab/Chuva</td>
+                            </tr>
+                            <tr style="background-color: #fff7ed;">
+                                <td>19/out</td>
+                                <td>0</td>
+                                <td>228</td>
+                                <td>-</td>
+                                <td>4.218,00</td>
+                                <td>Dom</td>
+                            </tr>
+                            <tr style="background-color: #fef2f2;">
+                                <td>20/out</td>
+                                <td>21</td>
+                                <td>249</td>
+                                <td>388,50</td>
+                                <td>4.606,50</td>
+                                <td>Terreno molhado</td>
+                            </tr>
+                            <tr>
+                                <td>21/out</td>
+                                <td>29</td>
+                                <td>278</td>
+                                <td>536,50</td>
+                                <td>5.143,00</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>22/out</td>
+                                <td>24</td>
+                                <td>302</td>
+                                <td>444,00</td>
+                                <td>5.587,00</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>23/out</td>
+                                <td>26</td>
+                                <td>328</td>
+                                <td>481,00</td>
+                                <td>6.068,00</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>24/out</td>
+                                <td>11</td>
+                                <td>339</td>
+                                <td>203,50</td>
+                                <td>6.271,50</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>25/out</td>
+                                <td>18</td>
+                                <td>357</td>
+                                <td>333,00</td>
+                                <td>6.604,50</td>
+                                <td></td>
+                            </tr>
+                            <tr style="background-color: #fff7ed;">
+                                <td>26/out</td>
+                                <td>0</td>
+                                <td>357</td>
+                                <td>0</td>
+                                <td>6.604,50</td>
+                                <td>Dom</td>
+                            </tr>
+                            <tr>
+                                <td>27/out</td>
+                                <td>28</td>
+                                <td>385</td>
+                                <td>518,00</td>
+                                <td>7.122,50</td>
+                                <td></td>
+                            </tr>
+                            <tr style="background-color: #fef2f2;">
+                                <td>28/out</td>
+                                <td>24</td>
+                                <td>409</td>
+                                <td>444,00</td>
+                                <td>7.566,50</td>
+                                <td>Chuva</td>
+                            </tr>
+                            <tr style="background-color: #fef2f2;">
+                                <td>29/out</td>
+                                <td>21</td>
+                                <td>430</td>
+                                <td>388,50</td>
+                                <td>7.955,00</td>
+                                <td>Chuva</td>
+                            </tr>
+                            <tr>
+                                <td>30/out</td>
+                                <td>24</td>
+                                <td>454</td>
+                                <td>444,00</td>
+                                <td>8.399,00</td>
+                                <td style="color: #ea580c;">Prev</td>
+                            </tr>
+                            <tr>
+                                <td>31/out</td>
+                                <td>32</td>
+                                <td>486</td>
+                                <td>592,00</td>
+                                <td>8.991,00</td>
+                                <td style="color: #ea580c;">Prev</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
-                <div class="flex items-center justify-end gap-4 mt-6">
-                    <button id="clear-btn" class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm">Limpar</button>
+            </div>
+        </div>
+
+        <!-- NOVO: Página Diário de Obra -->
+        <div id="diario-page" class="container-full-width page-content" style="display: none; padding-top: 20px;">
+             <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h1 class="text-3xl font-bold text-center mb-6" style="color: var(--cor-primaria);">Diário de Obra</h1>
+                
+                <div class="flex justify-end mb-4">
+                    <button id="maximize-diario-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m0 0v4m0-4l-5 5M4 16v4m0 0h4m0 0l5-5m11 5h-4m0 0v-4m0 4l-5-5" />
+                        </svg>
+                        Maximizar
+                    </button>
                 </div>
+                
+                <!-- Container para iframe (para fullscreen) -->
+                <div id="diario-iframe-container" class="w-full h-[80vh] border border-gray-300 rounded-lg overflow-hidden bg-gray-100">
+                    <iframe id="diario-iframe" 
+                            src="https://web.diariodeobra.app/#/app/obras" 
+                            class="w-full h-full border-0"
+                            sandbox="allow-same-origin allow-scripts allow-popups allow-forms">
+                    </iframe>
+                </div>
+                 <p class="text-sm text-gray-500 mt-2 text-center">Carregando Diário de Obra... (Se a tela permanecer em branco, clique em "Maximizar" ou abra o link <a href="https://web.diariodeobra.app/#/app/obras" target="_blank" class="text-blue-600 hover:underline">numa nova guia</a>).</p>
             </div>
-            <div class="bg-white rounded-lg shadow-lg p-6">
-                <h2 class="text-xl font-semibold mb-4 text-center" style="color: var(--cor-primaria);">Gráfico de Gantt</h2>
-                <div id="gantt-container"></div>
-            </div>
-        </div>
-        <div id="riscos-page" class="container page-content" style="display: none;">
-            <h1>Gestão de Riscos</h1>
-            <p>Em desenvolvimento...</p>
-        </div>
-        <div id="custos-page" class="container page-content" style="display: none;">
-            <h1>Controle de Custos</h1>
-            <p>Em desenvolvimento...</p>
-        </div>
-        <div id="gestao-cava-page" class="container page-content" style="display: none;">
-            <h1>Gestão Cava</h1>
-            <p>Em desenvolvimento...</p>
         </div>
     </main>
     <footer class="bg-white text-center p-4 mt-8">
         <p class="text-sm text-gray-600">Sistema de Gestão de Obras © 2025</p>
     </footer>
-
-    <!-- Modal de Edição de Descrição -->
-    <div id="descricao-modal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">Editar Descrição</div>
-            <div class="modal-body">
-                <textarea id="modal-descricao-input" placeholder="Digite a descrição completa..."></textarea>
-            </div>
-            <div class="modal-footer">
-                <button id="modal-cancel-btn" class="btn-cancel px-4 py-2 rounded text-sm">Cancelar</button>
-                <button id="modal-save-btn" class="btn-save px-4 py-2 rounded text-sm">Salvar</button>
-            </div>
-        </div>
-    </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -581,49 +951,37 @@
         const pages = document.querySelectorAll('.page-content');
         const landingPage = document.getElementById('landing-page');
         const ctaButton = document.getElementById('cta-button');
+        
         let planejamentoInicializado = false;
+        let fisicoFinanceiroInicializado = false; // Flag para FF
+        
+        // Lógica do KPI de Gestão Cava
+        function initializeCavaPage() {
+            const volumeTotal = 38561.224; // m³
+            const volumeAcumulado = 8991.00; // m³ (último valor da tabela)
 
-        // Modal elements
-        const modal = document.getElementById('descricao-modal');
-        const modalTextarea = document.getElementById('modal-descricao-input');
-        const modalSaveBtn = document.getElementById('modal-save-btn');
-        const modalCancelBtn = document.getElementById('modal-cancel-btn');
-        let currentDescricaoCell = null;
-
-        // Funções de persistência para Atas
-        function saveAtasToStorage(rows) {
-            const data = [];
-            rows.forEach(row => {
-                const cells = row.querySelectorAll('td');
-                if (cells.length < 8) return; // Ajuste para 8 células (ID, Descrição, Tema, Responsável, Status, Abertura, Fechamento, Ações)
-                data.push({
-                    id: cells[0].textContent.trim(),
-                    descricao: cells[1].querySelector('.descricao-text').textContent,
-                    tema: cells[2].querySelector('.tema-text').textContent,
-                    responsavel: cells[3].querySelector('.responsavel-text').textContent,
-                    status: getStatusValueFromText(cells[4].querySelector('.status-text').classList),
-                    dataAbertura: cells[5].querySelector('.data-abertura-text').textContent,
-                    dataFechamento: cells[6].querySelector('.data-fechamento-text').textContent
-                });
-            });
-            localStorage.setItem('atas-reuniao', JSON.stringify(data));
-        }
-
-        function loadAtasFromStorage() {
-            const stored = localStorage.getItem('atas-reuniao');
-            if (stored) {
-                try {
-                    return JSON.parse(stored);
-                } catch (e) {
-                    console.warn('Erro ao carregar atas do localStorage:', e);
-                    return null;
-                }
+            const percentual = (volumeAcumulado / volumeTotal) * 100;
+            const percentualFormatado = percentual.toFixed(2);
+            
+            function formatNumber(num) {
+                return num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             }
-            return null;
-        }
+            function formatNumberMeta(num) {
+                 return num.toLocaleString('pt-BR', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+            }
 
-        // Inicialização da página de Atas
-        initializeAtasPage();
+            const kpiPercent = document.getElementById('kpi-cava-percent');
+            const kpiBar = document.getElementById('kpi-cava-bar');
+            const kpiBarText = document.getElementById('kpi-cava-bar-text');
+            const kpiAcumulado = document.getElementById('kpi-cava-acumulado');
+            const kpiTotal = document.getElementById('kpi-cava-total');
+            
+            if (kpiPercent) kpiPercent.textContent = `${percentualFormatado}%`;
+            if (kpiBar) kpiBar.style.width = `${percentualFormatado}%`;
+            if (kpiBarText) kpiBarText.textContent = `${percentual.toFixed(1)}%`;
+            if (kpiAcumulado) kpiAcumulado.textContent = formatNumber(volumeAcumulado);
+            if (kpiTotal) kpiTotal.textContent = formatNumberMeta(volumeTotal);
+        }
 
         function hideAllPages() {
             pages.forEach(page => page.style.display = 'none');
@@ -643,12 +1001,19 @@
                 const linkPageId = (link.id === 'nav-home') ? 'landing-page' : link.id.replace('nav-', '') + '-page';
                 link.classList.toggle('active', linkPageId === pageId);
             });
+            
+            // Inicializa Gantt
             if (pageId === 'planejamento-page' && !planejamentoInicializado) {
                 initializeGanttPage();
                 planejamentoInicializado = true;
             }
-            if (pageId === 'atas-page') {
-                updateKPIs();
+            // Inicializa Físico-Financeiro
+            if (pageId === 'fisico-financeiro-page' && !fisicoFinanceiroInicializado) {
+                initializeFisicoFinanceiroPage();
+                // Flag é movida para dentro do callback do Google Charts
+            }
+            if (pageId === 'gestao-cava-page') {
+                initializeCavaPage();
             }
         }
 
@@ -663,352 +1028,210 @@
         ctaButton.addEventListener('click', () => showPage('planejamento-page'));
         showPage('landing-page');
 
-        // Modal handlers
-        modalSaveBtn.addEventListener('click', () => {
-            if (currentDescricaoCell) {
-                const textSpan = currentDescricaoCell.querySelector('.descricao-text');
-                textSpan.textContent = modalTextarea.value.trim() || 'Sem descrição';
-                currentDescricaoCell = null;
-            }
-            modal.classList.remove('active');
-            updateKPIs();
-            saveAtasToStorage(document.querySelectorAll('#atas-table-body tr'));
-        });
+        // --- NOVO: Lógica do Diário de Obra ---
+        const maximizeDiarioBtn = document.getElementById('maximize-diario-btn');
+        const diarioIframeContainer = document.getElementById('diario-iframe-container');
 
-        modalCancelBtn.addEventListener('click', () => {
-            modal.classList.remove('active');
-            currentDescricaoCell = null;
-        });
-
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.remove('active');
-                currentDescricaoCell = null;
-            }
-        });
-
-        function initializeAtasPage() {
-            const addRowBtn = document.getElementById('add-row-btn');
-            const tableBody = document.getElementById('atas-table-body');
-            const filterStatus = document.getElementById('filter-status');
-            const filterTema = document.getElementById('filter-tema');
-            const applyFiltersBtn = document.getElementById('apply-filters-btn');
-
-            // Carregar dados salvos
-            const savedAtas = loadAtasFromStorage();
-            let nextId = 1;
-
-            if (savedAtas && savedAtas.length > 0) {
-                tableBody.innerHTML = '';
-                savedAtas.forEach(item => {
-                    const newRow = createAtaRow(
-                        item.id,
-                        item.descricao,
-                        item.tema,
-                        item.responsavel,
-                        item.status,
-                        item.dataAbertura,
-                        item.dataFechamento
-                    );
-                    tableBody.appendChild(newRow);
-                    attachRowEvents(newRow);
-                    nextId = Math.max(nextId, parseInt(item.id) + 1);
-                });
-            } else {
-                // Manter as linhas iniciais se não houver dados salvos
-                document.querySelectorAll('#atas-table-body tr').forEach(row => {
-                    attachRowEvents(row);
-                    const id = parseInt(row.cells[0].textContent);
-                    nextId = Math.max(nextId, id + 1);
-                });
-            }
-
-            function applyFilters() {
-                const statusFilter = filterStatus.value;
-                const temaFilter = filterTema.value;
-                const rows = document.querySelectorAll('#atas-table-body tr');
-                rows.forEach(row => {
-                    const statusCell = row.querySelector('.status-text');
-                    const temaCell = row.querySelector('.tema-text');
-                    const status = getStatusValueFromText(statusCell.classList);
-                    const tema = temaCell.textContent;
-                    const statusMatch = statusFilter === '' || status === statusFilter;
-                    const temaMatch = temaFilter === '' || tema === temaFilter;
-                    row.style.display = (statusMatch && temaMatch) ? '' : 'none';
-                });
-                updateKPIs();
-            }
-
-            applyFiltersBtn.addEventListener('click', applyFilters);
-            filterStatus.addEventListener('change', applyFilters);
-            filterTema.addEventListener('change', applyFilters);
-
-            addRowBtn.addEventListener('click', () => {
-                const today = getCurrentDate();
-                const newRow = createAtaRow(
-                    nextId,
-                    'Nova descrição',
-                    'Contrato',
-                    '-',
-                    'informativo',
-                    today,
-                    '-'
-                );
-                tableBody.appendChild(newRow);
-                attachRowEvents(newRow);
-                nextId++;
-                updateKPIs();
-                saveAtasToStorage(document.querySelectorAll('#atas-table-body tr'));
-            });
-        }
-
-        function createAtaRow(id, descricao, tema, responsavel, status, dataAbertura, dataFechamento) {
-            const row = document.createElement('tr');
-            const statusClass = getStatusClassFromValue(status);
-            const statusText = getStatusTextFromValue(status);
-
-            row.innerHTML = `
-                <td class="px-6 py-4 text-sm font-medium text-gray-900 text-center">${id}</td>
-                <td class="px-6 py-4 text-sm text-gray-500 descricao-cell">
-                    <span class="descricao-text">${descricao}</span>
-                </td>
-                <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                    <span class="tema-text">${tema}</span>
-                    <select class="tema-select hidden w-full p-1 border rounded">
-                        <option value="Contrato"${tema === 'Contrato' ? ' selected' : ''}>Contrato</option>
-                        <option value="Qualidade"${tema === 'Qualidade' ? ' selected' : ''}>Qualidade</option>
-                        <option value="Segurança"${tema === 'Segurança' ? ' selected' : ''}>Segurança</option>
-                        <option value="Meio Ambiente"${tema === 'Meio Ambiente' ? ' selected' : ''}>Meio Ambiente</option>
-                        <option value="Obra"${tema === 'Obra' ? ' selected' : ''}>Obra</option>
-                        <option value="Outros"${tema === 'Outros' ? ' selected' : ''}>Outros</option>
-                    </select>
-                </td>
-                <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                    <span class="responsavel-text">${responsavel}</span>
-                    <input type="text" class="responsavel-input w-full p-1 border rounded hidden" value="${responsavel}">
-                </td>
-                <td class="px-6 py-4 text-sm whitespace-nowrap">
-                    <span class="status-text ${statusClass}">${statusText}</span>
-                    <select class="status-select hidden w-full p-1 border rounded">
-                        <option value="informativo"${status === 'informativo' ? ' selected' : ''}>Informativo</option>
-                        <option value="aberto"${status === 'aberto' ? ' selected' : ''}>Aberto</option>
-                        <option value="critico"${status === 'critico' ? ' selected' : ''}>Crítico</option>
-                        <option value="fechado"${status === 'fechado' ? ' selected' : ''}>Fechado</option>
-                    </select>
-                </td>
-                <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                    <span class="data-abertura-text">${dataAbertura}</span>
-                    <input type="date" class="data-abertura-input hidden w-full p-1 border rounded" value="${dataAbertura}">
-                </td>
-                <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                    <span class="data-fechamento-text">${dataFechamento}</span>
-                    <input type="date" class="data-fechamento-input hidden w-full p-1 border rounded"${dataFechamento !== '-' ? ` value="${dataFechamento}"` : ''}>
-                </td>
-                <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                    <button class="btn-edit px-2 py-1 rounded text-xs mr-1">Editar</button>
-                    <button class="btn-save px-2 py-1 rounded text-xs mr-1 hidden">Salvar</button>
-                    <button class="btn-cancel px-2 py-1 rounded text-xs mr-1 hidden">Cancelar</button>
-                    <button class="btn-remove px-2 py-1 rounded text-xs">Remover</button>
-                </td>
-            `;
-            return row;
-        }
-
-        function attachRowEvents(row) {
-            const editBtn = row.querySelector('.btn-edit');
-            const saveBtn = row.querySelector('.btn-save');
-            const cancelBtn = row.querySelector('.btn-cancel');
-            const removeBtn = row.querySelector('.btn-remove');
-            const descricaoCell = row.querySelector('.descricao-cell');
-            const descricaoText = descricaoCell.querySelector('.descricao-text');
-            const temaText = row.querySelector('.tema-text');
-            const temaSelect = row.querySelector('.tema-select');
-            const responsavelText = row.querySelector('.responsavel-text');
-            const responsavelInput = row.querySelector('.responsavel-input');
-            const statusText = row.querySelector('.status-text');
-            const statusSelect = row.querySelector('.status-select');
-            const dataAberturaText = row.querySelector('.data-abertura-text');
-            const dataAberturaInput = row.querySelector('.data-abertura-input');
-            const dataFechamentoText = row.querySelector('.data-fechamento-text');
-            const dataFechamentoInput = row.querySelector('.data-fechamento-input');
-
-            editBtn.addEventListener('click', () => {
-                // Salva valor atual da descrição para o modal
-                modalTextarea.value = descricaoText.textContent;
-                currentDescricaoCell = descricaoCell;
-
-                // Mostra modal
-                modal.classList.add('active');
-
-                // Mostra campos editáveis dos demais campos
-                temaText.classList.add('hidden');
-                temaSelect.classList.remove('hidden');
-                responsavelText.classList.add('hidden');
-                responsavelInput.classList.remove('hidden');
-                statusText.classList.add('hidden');
-                statusSelect.classList.remove('hidden');
-                dataAberturaText.classList.add('hidden');
-                dataAberturaInput.classList.remove('hidden');
-                dataFechamentoText.classList.add('hidden');
-                dataFechamentoInput.classList.remove('hidden');
-
-                editBtn.classList.add('hidden');
-                saveBtn.classList.remove('hidden');
-                cancelBtn.classList.remove('hidden');
-
-                // Define valor do select de status
-                statusSelect.value = getStatusValueFromText(statusText.classList);
-            });
-
-            saveBtn.addEventListener('click', () => {
-                // Fecha modal
-                modal.classList.remove('active');
-
-                // Atualiza descrição com o valor do modal
-                descricaoText.textContent = modalTextarea.value.trim() || 'Sem descrição';
-
-                // Atualiza demais campos
-                temaText.textContent = temaSelect.value;
-                responsavelText.textContent = responsavelInput.value || '-';
-                dataAberturaText.textContent = dataAberturaInput.value || '-';
-                dataFechamentoText.textContent = dataFechamentoInput.value || '-';
-
-                // Atualiza status
-                statusText.className = 'status-text';
-                statusText.classList.add(getStatusClassFromValue(statusSelect.value));
-                statusText.textContent = getStatusTextFromValue(statusSelect.value);
-
-                // Esconde campos editáveis
-                descricaoText.classList.remove('hidden');
-                temaText.classList.remove('hidden');
-                temaSelect.classList.add('hidden');
-                responsavelText.classList.remove('hidden');
-                responsavelInput.classList.add('hidden');
-                statusText.classList.remove('hidden');
-                statusSelect.classList.add('hidden');
-                dataAberturaText.classList.remove('hidden');
-                dataAberturaInput.classList.add('hidden');
-                dataFechamentoText.classList.remove('hidden');
-                dataFechamentoInput.classList.add('hidden');
-
-                editBtn.classList.remove('hidden');
-                saveBtn.classList.add('hidden');
-                cancelBtn.classList.add('hidden');
-
-                updateKPIs();
-                saveAtasToStorage(document.querySelectorAll('#atas-table-body tr'));
-            });
-
-            cancelBtn.addEventListener('click', () => {
-                modal.classList.remove('active');
-                currentDescricaoCell = null;
-
-                descricaoText.classList.remove('hidden');
-                temaText.classList.remove('hidden');
-                temaSelect.classList.add('hidden');
-                responsavelText.classList.remove('hidden');
-                responsavelInput.classList.add('hidden');
-                statusText.classList.remove('hidden');
-                statusSelect.classList.add('hidden');
-                dataAberturaText.classList.remove('hidden');
-                dataAberturaInput.classList.add('hidden');
-                dataFechamentoText.classList.remove('hidden');
-                dataFechamentoInput.classList.add('hidden');
-
-                editBtn.classList.remove('hidden');
-                saveBtn.classList.add('hidden');
-                cancelBtn.classList.add('hidden');
-            });
-
-            removeBtn.addEventListener('click', () => {
-                if (confirm('Tem certeza que deseja remover esta linha?')) {
-                    row.remove();
-                    updateKPIs();
-                    saveAtasToStorage(document.querySelectorAll('#atas-table-body tr'));
+        if (maximizeDiarioBtn && diarioIframeContainer) {
+            maximizeDiarioBtn.addEventListener('click', () => {
+                if (diarioIframeContainer.requestFullscreen) {
+                    diarioIframeContainer.requestFullscreen();
+                } else if (diarioIframeContainer.webkitRequestFullscreen) { /* Safari */
+                    diarioIframeContainer.webkitRequestFullscreen();
+                } else if (diarioIframeContainer.msRequestFullscreen) { /* IE11 */
+                    diarioIframeContainer.msRequestFullscreen();
                 }
             });
-
-            statusSelect.addEventListener('change', updateKPIs);
-            temaSelect.addEventListener('change', updateKPIs);
         }
+        // --- FIM NOVO ---
+        
+        // Lógica da Página Físico-Financeiro
+        function initializeFisicoFinanceiroPage() {
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawFFCharts);
 
-        function getStatusClassFromValue(value) {
-            switch(value) {
-                case 'informativo': return 'status-informativo';
-                case 'aberto': return 'status-aberto';
-                case 'critico': return 'status-critico';
-                case 'fechado': return 'status-fechado';
-                default: return 'status-informativo';
+            let formatter; // Declarado aqui
+
+            // Função para formatar os dados da Tooltip
+            function createTooltip(periodo, despInd, trecho, cumul) {
+                // O formatter será inicializado em drawFFCharts antes disto ser chamado
+                if (!formatter) return ''; // Proteção caso o formatter não esteja pronto
+                return `
+                    <div class="p-2 shadow-md rounded-md bg-white text-sm" style="min-width: 250px;">
+                        <h4 class="font-bold text-base mb-2" style="color: var(--cor-primaria);">${periodo}</h4>
+                        <div class="flex justify-between"><span>Despesas Indiretas:</span> <span class="font-medium">${formatter.formatValue(despInd)}</span></div>
+                        <div class="flex justify-between"><span>Trecho: Av. Marginal:</span> <span class="font-medium">${formatter.formatValue(trecho)}</span></div>
+                        <hr class="my-1">
+                        <div class="flex justify-between font-bold"><span>Total Período:</span> <span>${formatter.formatValue(despInd + trecho)}</span></div>
+                        <div class="flex justify-between font-bold mt-2" style="color: var(--cor-linha-ff);">
+                            <span>Cumulativo:</span> <span>${formatter.formatValue(cumul)}</span>
+                        </div>
+                    </div>
+                `;
             }
-        }
 
-        function getStatusTextFromValue(value) {
-            switch(value) {
-                case 'informativo': return 'Informativo';
-                case 'aberto': return 'Aberto';
-                case 'critico': return 'Crítico';
-                case 'fechado': return 'Fechado';
-                default: return 'Informativo';
+            function getFase1FFData() {
+                const data = new google.visualization.DataTable();
+                data.addColumn('string', 'Período');
+                data.addColumn('number', 'Despesas Indiretas');
+                data.addColumn('number', 'Trecho: Av. Marginal');
+                data.addColumn('number', 'Cumulativo');
+                data.addColumn({type: 'string', role: 'tooltip', p: {html: true}}); 
+
+                const rows = [
+                    ['Período 1', 417428.94, 787061.56,  1204490.5],
+                    ['Período 2', 337250.95, 983826.95,  2525568.4],
+                    ['Período 3', 337250.95, 196765.39,  3059584.74],
+                    ['Período 4', 592306.85, 0,          3651891.59]
+                ];
+                
+                rows.forEach(row => {
+                    data.addRow([
+                        row[0], row[1], row[2], row[3],
+                        createTooltip(row[0], row[1], row[2], row[3])
+                    ]);
+                });
+
+                formatter.format(data, 1);
+                formatter.format(data, 2);
+                formatter.format(data, 3);
+                return data;
             }
-        }
 
-        function getStatusValueFromText(classList) {
-            if (classList.contains('status-informativo')) return 'informativo';
-            if (classList.contains('status-aberto')) return 'aberto';
-            if (classList.contains('status-critico')) return 'critico';
-            if (classList.contains('status-fechado')) return 'fechado';
-            return 'informativo';
-        }
+            function getFase2FFData() {
+                const data = new google.visualization.DataTable();
+                data.addColumn('string', 'Período');
+                data.addColumn('number', 'Despesas Indiretas');
+                data.addColumn('number', 'Trecho: Av. Marginal');
+                data.addColumn('number', 'Cumulativo');
+                data.addColumn({type: 'string', role: 'tooltip', p: {html: true}}); 
+                
+                const rows = [
+                    ['P1', 1030331.80, 0,           1030331.80],
+                    ['P2', 337250.95,  3340022.17,  4707604.92],
+                    ['P3', 337250.95,  3904914.19,  8949770.06],
+                    ['P4', 337250.95,  3771313.31,  13058334.32],
+                    ['P5', 400650.68,  5616172.08,  19075157.08],
+                    ['P6', 337250.95,  6579571.81,  25991979.84], 
+                    ['P7', 337250.95,  4000009.76,  30329240.55], 
+                    ['P8', 337250.95,  4748593.88,  35415085.38], 
+                    ['P9', 337250.95,  715592.14,   36467928.47], 
+                    ['P10', 341459.76, -261281.77,  36548106.46] 
+                ];
 
-        function getCurrentDate() {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        function updateKPIs() {
-            const rows = document.querySelectorAll('#atas-table-body tr');
-            let totalItems = 0;
-            let closedItems = 0;
-            let openItems = 0;
-            let totalDays = 0;
-            rows.forEach(row => {
-                if (row.style.display === 'none') return;
-                const statusCell = row.querySelector('.status-text');
-                const status = getStatusValueFromText(statusCell.classList);
-                if (status !== 'informativo') {
-                    totalItems++;
-                    if (status === 'fechado') {
-                        closedItems++;
-                        const openDateText = row.querySelector('.data-abertura-text').textContent;
-                        const closeDateText = row.querySelector('.data-fechamento-text').textContent;
-                        if (openDateText && closeDateText && closeDateText !== '-' && closeDateText !== '') {
-                            const openDate = new Date(openDateText);
-                            const closeDate = new Date(closeDateText);
-                            const diffTime = Math.abs(closeDate - openDate);
-                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                            totalDays += diffDays;
+                rows.forEach(row => {
+                    data.addRow([
+                        row[0], row[1], row[2], row[3],
+                        createTooltip(row[0], row[1], row[2], row[3])
+                    ]);
+                });
+                
+                formatter.format(data, 1);
+                formatter.format(data, 2);
+                formatter.format(data, 3);
+                return data;
+            }
+            
+            function drawChart(data, elementId, title) {
+                const options = {
+                    title: title,
+                    titleTextStyle: { color: '#333', fontSize: 18, bold: false },
+                    fontName: 'system-ui',
+                    chartArea: {'width': '85%', 'height': '75%'},
+                    legend: { position: 'top', alignment: 'center' },
+                    vAxes: {
+                        0: { title: 'Valor Periódico (R$)', gridlines: { color: '#e5e7eb' }, format: 'R$ #,##0.00' },
+                        1: { title: 'Valor Cumulativo (R$)', gridlines: { color: 'transparent' }, format: 'R$ #,##0.00' }
+                    },
+                    hAxis: { title: 'Período', slantedText: false },
+                    seriesType: 'bars',
+                    isStacked: true,
+                    series: {
+                        2: { 
+                            type: 'line', 
+                            targetAxisIndex: 1, 
+                            color: 'var(--cor-linha-ff)',
+                            lineWidth: 3,
+                            pointSize: 6,
+                            pointsVisible: true
                         }
-                    } else if (status === 'aberto' || status === 'critico') {
-                        openItems++;
+                    },
+                    colors: ['var(--cor-primaria)', 'var(--cor-secundaria)'],
+                    tooltip: { isHtml: true } 
+                };
+
+                const chart = new google.visualization.ComboChart(document.getElementById(elementId));
+                chart.draw(data, options);
+            }
+
+            function drawFFCharts() {
+                // ATUALIZADO: Inicializado aqui, dentro do callback
+                formatter = new google.visualization.NumberFormat({
+                    prefix: 'R$ ',
+                    decimalSymbol: ',',
+                    groupingSymbol: '.',
+                    fractionDigits: 2
+                });
+
+                drawChart(getFase1FFData(), 'ff-chart-fase-1', 'Curva S - Físico-Financeiro (Fase 01)');
+                drawChart(getFase2FFData(), 'ff-chart-fase-2', 'Curva S - Físico-Financeiro (Fase 02)');
+
+                // Lógica das Abas
+                const btnFase1 = document.getElementById('btn-ff-fase-1');
+                const btnFase2 = document.getElementById('btn-ff-fase-2');
+                const wrapperFase1 = document.getElementById('ff-chart-fase-1-wrapper');
+                const wrapperFase2 = document.getElementById('ff-chart-fase-2-wrapper');
+                
+                btnFase1.addEventListener('click', () => {
+                    btnFase1.classList.add('active');
+                    btnFase2.classList.remove('active');
+                    wrapperFase1.style.display = 'block';
+                    wrapperFase2.style.display = 'none';
+                });
+                
+                btnFase2.addEventListener('click', () => {
+                    btnFase2.classList.add('active');
+                    btnFase1.classList.remove('active');
+                    wrapperFase2.style.display = 'block';
+                    wrapperFase1.style.display = 'none';
+                });
+                
+                // ATUALIZADO: Flag de inicialização movida para o FIM do callback
+                fisicoFinanceiroInicializado = true;
+            }
+             
+             // Redesenha os gráficos quando a janela muda de tamanho
+             window.addEventListener('resize', function() {
+                // ATUALIZADO: Verifica a flag ANTES de tentar redesenhar
+                if (fisicoFinanceiroInicializado && document.getElementById('fisico-financeiro-page').style.display === 'block') {
+                    // Adicionado try...catch para robustez
+                    try {
+                        drawFFCharts();
+                    } catch (e) {
+                        console.error("Erro ao redesenhar gráficos FF:", e);
                     }
                 }
-            });
-            const atendimentoConstrutora = totalItems > 0 ? Math.round((closedItems / totalItems) * 100) : 0;
-            document.getElementById('kpi-construtora').textContent = `${atendimentoConstrutora}%`;
-            document.getElementById('kpi-fechados').textContent = closedItems;
-            const tempoMedio = closedItems > 0 ? Math.round(totalDays / closedItems) : 0;
-            document.getElementById('kpi-tempo').textContent = `${tempoMedio} dias`;
+            }, true);
         }
 
+        // Lógica de Gantt (Frappe)
         function initializeGanttPage() {
-            google.charts.load('current', {'packages':['gantt']});
-            google.charts.setOnLoadCallback(setupGanttListeners);
+            
+            let activeGantt = { instance: null };
+            let ganttFase1 = null;
+            let ganttFase2 = null;
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); 
 
-            function loadTasksFromStorage() {
-                const stored = localStorage.getItem('planejamento-tasks');
+            const controlDateString = today.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            const controlDateDisplay = document.getElementById('control-date-display');
+            if(controlDateDisplay) {
+                controlDateDisplay.textContent = controlDateString;
+            }
+            
+            function loadTasksFromStorage(key) {
+                const stored = localStorage.getItem(key);
                 if (stored) {
                     try {
                         const parsed = JSON.parse(stored);
@@ -1018,266 +1241,422 @@
                             end: new Date(task.end)
                         }));
                     } catch (e) {
-                        console.warn('Erro ao carregar tarefas do localStorage:', e);
                         return [];
                     }
                 }
                 return [];
             }
 
-            function saveTasksToStorage(tasks) {
+            function saveTasksToStorage(key, tasks) {
                 const serializable = tasks.map(task => ({
                     ...task,
                     start: task.start.toISOString(),
-                    end: task.end.toISOString()
+                    end: task.end.toISOString(),
+                    progress: task.progress
                 }));
-                localStorage.setItem('planejamento-tasks', JSON.stringify(serializable));
+                localStorage.setItem(key, JSON.stringify(serializable));
             }
 
-            function setupGanttListeners() {
-                const addTaskBtn = document.getElementById('add-task-btn');
-                const editTaskBtn = document.getElementById('edit-task-btn');
-                const taskNameInput = document.getElementById('task-name');
-                const startDateInput = document.getElementById('start-date');
-                const taskDurationInput = document.getElementById('task-duration');
-                const taskDependencyInput = document.getElementById('task-dependency');
-                const taskDependencyTypeInput = document.getElementById('task-dependency-type');
-                const taskCostInput = document.getElementById('task-cost');
-                const taskProgressInput = document.getElementById('task-progress');
-                const taskTableBody = document.getElementById('task-table-body');
-                const clearBtn = document.getElementById('clear-btn');
-                const controlDateInput = document.getElementById('control-date');
-                const ganttContainer = document.getElementById('gantt-container');
+            function formatDateForFrappe(date) {
+                const d = new Date(date);
+                let month = '' + (d.getMonth() + 1);
+                let day = '' + d.getDate();
+                const year = d.getFullYear();
+                if (month.length < 2) month = '0' + month;
+                if (day.length < 2) day = '0' + day;
+                return [year, month, day].join('-');
+            }
 
-                function parseLocalDate(dateStr) {
-                    const [year, month, day] = dateStr.split('-').map(Number);
-                    return new Date(year, month - 1, day);
+            function parseImgDate(dateStr) {
+                if (!dateStr || dateStr.split('/').length < 3) {
+                    console.warn('Data inválida encontrada:', dateStr);
+                    return new Date(); 
+                }
+                const [day, month, year] = dateStr.split('/').map(Number);
+                if (isNaN(day) || isNaN(month) || isNaN(year)) {
+                    console.warn('Data NaN:', dateStr);
+                    return new Date();
+                }
+                // CORRIGIDO: 2F025 -> 2025
+                let fullYear = (year < 100) ? (year + 2000) : year;
+                if (year > 2000 && year < 2020) { // Suposição para anos "25"
+                     fullYear = year + 2000;
+                }
+                // Tratamento específico para o erro que vimos
+                if (dateStr.includes("2F025")) {
+                    fullYear = 2025;
                 }
 
-                let tasks = loadTasksFromStorage();
-                let editingIndex = -1;
+                return new Date(fullYear, month - 1, day, 0, 0, 0);
+            }
+            
+            function calculatePlannedProgress(task, controlDate) {
+                const endOfDay = new Date(task.end.getTime());
+                endOfDay.setHours(23, 59, 59, 999);
 
-                controlDateInput.addEventListener('change', renderTableAndChart);
+                const start = task.start.getTime();
+                const end = endOfDay.getTime();
+                const todayTime = controlDate.getTime(); 
 
-                function renderTableAndChart() {
-                    renderTable();
-                    drawGanttChart();
+                if (todayTime < start) return 0;
+                if (todayTime >= end) return 100;
+                if (start === end && todayTime >= start) return 100;
+                
+                const totalDuration = end - start;
+                if (totalDuration <= 0) { 
+                     return (todayTime >= start) ? 100 : 0;
                 }
+                
+                const elapsedDuration = todayTime - start;
+                const progress = (elapsedDuration / totalDuration) * 100;
+                
+                return Math.max(0, Math.min(100, Math.round(progress)));
+            }
 
-                function resetForm() {
-                    taskNameInput.value = '';
-                    startDateInput.value = '';
-                    taskDurationInput.value = '';
-                    taskDependencyInput.value = '';
-                    taskDependencyTypeInput.value = 'TI';
-                    taskCostInput.value = '';
-                    taskProgressInput.value = '';
-                    addTaskBtn.style.display = 'inline-flex';
-                    editTaskBtn.style.display = 'none';
-                    editingIndex = -1;
+            // --- DADOS FASE 01 ---
+            const defaultTasksFase1 = [
+                { id: "Task0", name: "FASE 01 - TRECHO AVENIDADE DO METRÔ", start: parseImgDate("14/07/2025"), end: parseImgDate("24/10/2025"), dependencies: null, progress: 0 },
+                { id: "Task1", name: "INICIO DA OS", start: parseImgDate("14/07/2025"), end: parseImgDate("14/07/2025"), dependencies: null, progress: 0 },
+                { id: "Task2", name: "Inicio da OS", start: parseImgDate("14/07/2025"), end: parseImgDate("14/07/2025"), dependencies: null, progress: 0 },
+                { id: "Task3", name: "MOBILIZAÇÃO DO CANTEIRO", start: parseImgDate("14/07/2025"), end: parseImgDate("12/08/2025"), dependencies: null, progress: 0 },
+                { id: "Task4", name: "Mobilização do canteiro", start: parseImgDate("14/07/2025"), end: parseImgDate("12/08/2025"), dependencies: "Task2", progress: 0 },
+                { id: "Task5", name: "TERRAPLENAGEM", start: parseImgDate("12/08/2025"), end: parseImgDate("10/10/2025"), dependencies: null, progress: 0 },
+                { id: "Task6", name: "ESCAVAÇÃO MECÂNICA, CARGA E REMOÇÃO DE TERRA SOLO RUIM", start: parseImgDate("12/08/2025"), end: parseImgDate("25/09/2025"), dependencies: "Task4", progress: 0 },
+                { id: "Task7", name: "ESCAVAÇÃO MECÂNICA, CARGA E REMOÇÃO DE TERRA SOLO BOM", start: parseImgDate("13/08/2025"), end: parseImgDate("26/09/2025"), dependencies: "Task6", progress: 0 },
+                { id: "Task8", name: "COMPACTAÇÃO DE TERRA, MEDIDA NO ATERRO", start: parseImgDate("14/08/2025"), end: parseImgDate("10/10/2025"), dependencies: "Task7", progress: 0 },
+                { id: "Task9", name: "DISPOSIÇÃO FINAL DE SOLOS E RESÍDUOS, CLASSE I - PERIGOSOS", start: parseImgDate("19/08/2025"), end: parseImgDate("10/10/2025"), dependencies: "Task6", progress: 0 },
+                { id: "Task10", name: "REMOÇÃO DE TERRA ALÉM DO PRIMEIRO KM, COM CAMINHÃO DE 17M3", start: parseImgDate("01/09/2025"), end: parseImgDate("10/10/2025"), dependencies: null, progress: 0 },
+                { id: "Task11", name: "REMOÇÃO DE TERRA ALÉM DO PRIMEIRO KM, COM CAMINHÃO DE 17M3", start: parseImgDate("01/09/2025"), end: parseImgDate("10/10/2025"), dependencies: "Task10", progress: 0 },
+                { id: "Task12", name: "DESMOBILIZAÇÃO DO CANTEIRO", start: parseImgDate("25/09/2025"), end: parseImgDate("24/10/2025"), dependencies: null, progress: 0 },
+                { id: "Task13", name: "Desmobilização do canteiro", start: parseImgDate("25/09/2025"), end: parseImgDate("24/10/2025"), dependencies: "Task11", progress: 0 },
+                { id: "Task14", name: "TERMINO DA OS", start: parseImgDate("24/10/2025"), end: parseImgDate("24/10/2025"), dependencies: null, progress: 0 },
+                { id: "Task15", name: "Termino da OS", start: parseImgDate("24/10/2025"), end: parseImgDate("24/10/2025"), dependencies: "Task13", progress: 0 }
+            ];
+
+            // --- DADOS FASE 02 ---
+            // (Esta é a lista que estava corrompida, agora completa)
+            const defaultTasksFase2 = [
+                { id: "Task0", name: "FASE 02 - TRECHO AVENIDA DO METRÔ", start: parseImgDate("01/10/2025"), end: parseImgDate("01/07/2026"), dependencies: null, progress: 0 },
+                { id: "Task1", name: "INICIO DA OS", start: parseImgDate("01/10/2025"), end: parseImgDate("01/10/2025"), dependencies: null, progress: 0 },
+                { id: "Task2", name: "Inicio da OS", start: parseImgDate("01/10/2025"), end: parseImgDate("01/10/2025"), dependencies: null, progress: 0 },
+                { id: "Task3", name: "MOBILIZAÇÃO DO CANTEIRO", start: parseImgDate("01/10/2025"), end: parseImgDate("26/06/2026"), dependencies: null, progress: 0 },
+                { id: "Task4", name: "Mobilização do canteiro", start: parseImgDate("01/10/2025"), end: parseImgDate("26/06/2026"), dependencies: "Task2", progress: 0 },
+                { id: "Task5", name: "MANUTENÇÃO DO CANTEIRO", start: parseImgDate("01/10/2025"), end: parseImgDate("26/06/2026"), dependencies: null, progress: 0 },
+                { id: "Task6", name: "MANUTENÇÃO DO CANTEIRO", start: parseImgDate("01/10/2025"), end: parseImgDate("26/06/2026"), dependencies: "Task5", progress: 0 },
+                { id: "Task7", name: "TERRAPLENAGEM", start: parseImgDate("01/10/2025"), end: parseImgDate("10/10/2025"), dependencies: null, progress: 0 },
+                { id: "Task8", name: "LIMPEZA DA CAMADA VEGETAL", start: parseImgDate("01/10/2025"), end: parseImgDate("29/01/2026"), dependencies: "Task2", progress: 0 },
+                { id: "Task9", name: "DISPOSIÇÃO FINAL DE SOLOS E RESÍDUOS, CLASSE I - PERIGOSOS", start: parseImgDate("01/10/2025"), end: parseImgDate("29/01/2026"), dependencies: "Task6", progress: 0 },
+                { id: "Task10", name: "REMOÇÃO DE TERRA ALÉM DO PRIMEIRO KM, COM CAMINHÃO DE 17M3", start: parseImgDate("01/10/2025"), end: parseImgDate("29/01/2026"), dependencies: "Task9", progress: 0 },
+                { id: "Task11", name: "REMOÇÃO DE TERRA ALÉM DO PRIMEIRO KM, COM CAMINHÃO DE 17M3", start: parseImgDate("01/10/2025"), end: parseImgDate("29/01/2026"), dependencies: "Task9", progress: 0 },
+                { id: "Task12", name: "OMISSO", start: parseImgDate("01/10/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task10", progress: 0 },
+                { id: "Task13", name: "EXECUÇÃO DE COLUNA DE BRITA D=0,60M C=1,0M", start: parseImgDate("01/10/2025"), end: parseImgDate("01/11/2025"), dependencies: "Task11", progress: 0 },
+                { id: "Task14", name: "EXECUÇÃO DE GEODRENO - DRENAGEM SUB-HORIZONTAL", start: parseImgDate("01/10/2025"), end: parseImgDate("01/11/2025"), dependencies: "Task12", progress: 0 },
+                { id: "Task15", name: "Geogrelha - Categoria 150KN/M", start: parseImgDate("01/11/2025"), end: parseImgDate("01/11/2025"), dependencies: "Task13", progress: 0 },
+                { id: "Task16", name: "ATERRO - TRANSPORTE INTERNO ATÉ 500M - MATERIAL PROVENIENTE BOTA ESPERA", start: parseImgDate("01/11/2025"), end: parseImgDate("30/01/2026"), dependencies: "Task14", progress: 0 },
+                { id: "Task17", name: "MANUTENÇÃO DO ATERRO DE SOBRECARGA", start: parseImgDate("01/11/2025"), end: parseImgDate("11/07/2026"), dependencies: "Task15", progress: 0 }, 
+                { id: "Task18", name: "DRENAGEM", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task22", progress: 0 },
+                { id: "Task19", name: "BASE DE BICA CORRIDA", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task18", progress: 0 },
+                { id: "Task20", name: "ESCAVAÇÃO MECÂNICA PARA FUNDAÇÕES E VALAS COM PROFUNDIDADE MENOR OU IGUAL A 4,0M", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task22", progress: 0 },
+                { id: "Task21", name: "ARRANCAMENTO E REMOÇÃO DE CAMALEÃO, 30,0CM < D < OU = A 45CM", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: null, progress: 0 },
+                { id: "Task22", name: "BASE DE BICA CORRIDA", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task21", progress: 0 }, 
+                { id: "Task23", name: "BASE DE BICA CORRIDA", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task22", progress: 0 }, 
+                { id: "Task24", name: "REATERRO DE VALA COM COMPACTAÇÃO, SEM FORNECIMENTO DE TERRA", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task23", progress: 0 },
+                { id: "Task25", name: "FORNECIMENTO DE TERRA, INCLUINDO ESCAVAÇÃO, CARGA E TRANSPORTE ATÉ A DISTÂNCIA MÉDIA DE 1", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task24", progress: 0 },
+                { id: "Task26", name: "FORNECIMENTO DE PEDRA RACHÃO OU DE MÃO, INCLUSIVE TRANSPORTE", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task25", progress: 0 },
+                { id: "Task27", name: "FORNECIMENTO E ASSENTAMENTO DE TUBO DE CONCRETO SIMPLES, DIÂMETRO 60CM - TIPO PA-1", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task26", progress: 0 },
+                { id: "Task28", name: "FORNECIMENTO E ASSENTAMENTO DE TUBOS DE CONCRETO ARMADO, DIÂMETRO 80CM - TIPO PA-2", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task27", progress: 0 },
+                { id: "Task29", name: "POÇO DE VISITA TIPO 1, 1,20 X 1,20 X 1,20M", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task28", progress: 0 },
+                { id: "Task30", name: "POÇO DE VISITA TIPO 2, 1,60 X 1,60 X 1,60M", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task29", progress: 0 },
+                { id: "Task31", name: "POÇO DE VISITA TIPO 3, 2,20 X 2,20 X 2,20M", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task30", progress: 0 },
+                { id: "Task32", name: "CAIXA DE LIGAÇÃO PLUVIAL, COM OU SEM BOCA DE LOBO, TIPO CAIXA", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task31", progress: 0 },
+                { id: "Task33", name: "FORNECIMENTO DE TAMPÃO - GRELHA DE FERRO FUNDIDO DÚCTIL, CLASSE MÍNIMA 400 (40T) D=600MM", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task32", progress: 0 },
+                { id: "Task34", name: "BOCA DE LOBO TIPO 1", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task33", progress: 0 },
+                { id: "Task35", name: "BOCA DE LOBO TIPO 2", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task34", progress: 0 },
+                { id: "Task36", name: "ESCAVAÇÃO MECÂNICA PARA FUNDAÇÕES E VALAS COM PROFUNDIDADE MENOR OU IGUAL A 4,0M", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task35", progress: 0 },
+                { id: "Task37", name: "REATERRO DE VALA COM COMPACTAÇÃO, SEM FORNECIMENTO DE TERRA", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task36", progress: 0 },
+                { id: "Task38", name: "FORNECIMENTO DE TERRA, INCLUINDO ESCAVAÇÃO, CARGA E TRANSPORTE ATÉ A DISTÂNCIA MÉDIA DE 1", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task37", progress: 0 },
+                { id: "Task39", name: "PAVIMENTAÇÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task86", progress: 0 },
+                { id: "Task40", name: "840.23 - FORNECIMENTO E ASSENTAMENTO DE TUBO DE PEAD CORRUGADO E PREFUADO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task86", progress: 0 },
+                { id: "Task41", name: "840.24 - FORNECIMENTO E ASSENTAMENTO DE GEOTÊXTIL, COM EXECUÇÃO E DRENAGEM", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task86", progress: 0 },
+                { id: "Task42", name: "SERVIÇOS COMPLEMENTARES", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: null, progress: 0 },
+                { id: "Task43", name: "REMOÇÃO DE GUIAS OU PASSEIO DE CONCRETO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task22", progress: 0 },
+                { id: "Task44", name: "ARRANCAMENTO E REMOÇÃO DE CAMALEÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task42", progress: 0 },
+                { id: "Task45", name: "ARRANCAMENTO E RECOLOCAÇÃO DE PLACAS DE SINALIZAÇÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task43", progress: 0 },
+                { id: "Task46", name: "REMOÇÃO DE PLACAS DE SINALIZAÇÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task44", progress: 0 },
+                { id: "Task47", name: "ARRANCAMENTO E RECOLOCAÇÃO DE POSTES", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task45", progress: 0 },
+                { id: "Task48", name: "REMOÇÃO DE POSTES DE ILUMINAÇÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task46", progress: 0 },
+                { id: "Task49", name: "PAVIMENTO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: null, progress: 0 },
+                { id: "Task50", name: "DEMOLIÇÃO DE GUIAS, INCLUI CARGA EM CAMINHÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task86", progress: 0 },
+                { id: "Task51", name: "DEMOLIÇÃO DE SARJETA OU SARJETÃO, INCLUSIVE CARGA, INCLUI CARGA EM CAMINHÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task86", progress: 0 },
+                { id: "Task52", name: "DEMOLIÇÃO DE PAVIMENTO ASFÁLTICO, INCLUSIVE CAPA, INCLUI CARGA EM CAMINHÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task86", progress: 0 },
+                { id: "Task53", name: "ABERTURA DE CAIXA PARA REFORÇO DE BASE DE PAVIMENTO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task51", progress: 0 },
+                { id: "Task54", name: "ABERTURA DE CAIXA ATÉ 1,80M, INCLUI ESCAVAÇÃO, COMPACTAÇÃO, TRANSPORTE E PREPARO DO SUB-LEI", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task52", progress: 0 },
+                { id: "Task55", name: "FORNECIMENTO DE CIMENTO PORTLAND CP-II-32, POSTO NA OBRA (EM SACO)", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task53", progress: 0 },
+                { id: "Task56", name: "FORNECIMENTO DE SAIBRO, EM QUALQUER DOS TIPOS 'A' OU 'B', INCLUSIVE ENCOSTAMENTO DE TERRA - FOR", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task54", progress: 0 },
+                { id: "Task57", name: "EXECUÇÃO DE SARJETA, COM GUIA TIPO PMSP - H = 0,15M; L = 0,40M", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task55", progress: 0 },
+                { id: "Task58", name: "GUIA DE CONCRETO EXTRUSADA", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task60", progress: 0 },
+                { id: "Task59", name: "BASE DE BRITA GRADUADA TRATADA COM CIMENTO - BGTC", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task58", progress: 0 },
+                { id: "Task60", name: "BASE DE MACADAME SECO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task58", progress: 0 },
+                { id: "Task61", name: "IMPRIMAÇÃO BETUMINOSA LIGANTE", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task59", progress: 0 },
+                { id: "Task62", name: "PINTURA DE LIGAÇÃO BETUMINOSA OBRIGATÓRIA", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task60", progress: 0 },
+                { id: "Task63", name: "REVESTIMENTO DE CONCRETO ASFÁLTICO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task61", progress: 0 },
+                { id: "Task64", name: "BASE DE MACADAME HIDRÁULICO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task62", progress: 0 },
+                { id: "Task65", name: "BASE DE MACADAME HIDRÁULICO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task63", progress: 0 },
+                { id: "Task66", name: "REMOÇÃO DE GUIAS E SARJETAS, LIMPEZA, INCLUSIVE PREPARO DE CAIXA E LASTRO DE BRITA C TELA METÁL", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task64", progress: 0 },
+                { id: "Task67", name: "PASSEIO DE CONCRETO FCK=20MPA, LIMPEZA, INCLUSIVE PREPARO DE CAIXA E LASTRO DE BRITA C TELA METÁL", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task65", progress: 0 },
+                { id: "Task68", name: "PASSEIO DE CONCRETO FCK=20MPA, LIMPEZA, INCLUSIVE PREPARO DE CAIXA E LASTRO DE BRITA C TELA METÁL", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task66", progress: 0 },
+                { id: "Task69", name: "PLANTIO DE GRAMA EM PLACAS", start: parseImgDate("02/02/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task67", progress: 0 },
+                { id: "Task70", name: "FUNDAÇÃO DE RADIÊR", start: parseImgDate("02/02/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task68", progress: 0 },
+                { id: "Task71", name: "PASSEIO DE CONCRETO ASFÁLTICO COM ESPESSURA ATÉ 3CM, EM VIAS EXPRESSAS, INCLUSIVE REMOÇÃO", start: parseImgDate("02/02/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task69", progress: 0 },
+                { id: "Task72", name: "PLANTIO DE GRAMA EM PLACAS", start: parseImgDate("02/02/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task70", progress: 0 },
+                { id: "Task73", name: "PLANTIO DE GRAMA EM PLACAS NO TALUDES", start: parseImgDate("02/02/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task71", progress: 0 },
+                { id: "Task74", name: "EXECUÇÃO DE SINALIZAÇÃO E ALERTA", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task72", progress: 0 },
+                { id: "Task75", name: "MANUTENÇÃO DE ACESSO", start: parseImgDate("29/01/2026"), end: parseImgDate("29/06/2026"), dependencies: null, progress: 0 },
+                { id: "Task76", name: "OMISSO", start: parseImgDate("29/01/2026"), end: parseImgDate("29/06/2026"), dependencies: null, progress: 0 },
+                { id: "Task77", name: "BASE DE BRINDER DENSO", start: parseImgDate("29/01/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task79", progress: 0 },
+                { id: "Task78", name: "FORNECIMENTO E TRANSPORTE DE BRINDER ATÉ A DISTÂNCIA MÉDIA DE IDA E VOLTA DE 1KM", start: parseImgDate("29/01/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task80", progress: 0 },
+                { id: "Task79", name: "TRANSPORTE DE BRINDER ALÉM DO PRIMEIRO KM", start: parseImgDate("29/01/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task81", progress: 0 },
+                { id: "Task80", name: "BASE DE BRINDER DENSO", start: parseImgDate("29/01/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task82", progress: 0 },
+                { id: "Task81", name: "REVESTIMENTO DE BRINDER DENSO", start: parseImgDate("29/01/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task83", progress: 0 },
+                { id: "Task82", name: "FRESAGEM DE PAVIMENTO ASFÁLTICO COM ESPESSURA ATÉ 5CM", start: parseImgDate("29/01/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task84", progress: 0 },
+                { id: "Task83", name: "ILUMINAÇÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("30/06/2026"), dependencies: null, progress: 0 },
+                { id: "Task84", name: "RETIRADA DE POSTE DE ENTRADA DE ENERGIA EM ALTA TENSÃO - CONCRETO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task86", progress: 0 },
+                { id: "Task85", name: "RETIRADA DE POSTE DE ENTRADA DE ENERGIA EM ALTA TENSÃO - FERRO GALVANIZADO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task87", progress: 0 },
+                { id: "Task86", name: "REMANEJAMENTO DE POSTE AUXILIAR - INCLUSIVE RETIRADA E RECOMPOSIÇÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task88", progress: 0 },
+                { id: "Task87", name: "RETIRADA DE ALAMBRADO EM TELA INCLUSIVE ESTRUTURA DE SUSTENTAÇÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task89", progress: 0 },
+                { id: "Task88", name: "DEMOLIÇÃO E REMOÇÃO DE BLOCO DE CONCRETO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task90", progress: 0 },
+                { id: "Task89", name: "DEMOLIÇÃO E REMOÇÃO DE PAVIMENTO OU LAJOTA DE CONCRETO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task91", progress: 0 },
+                { id: "Task90", name: "DEMOLIÇÃO DE PAVIMENTO ASFÁLTICO EM MAU ESTADO, INCLUSIVE CAPA", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task92", progress: 0 },
+                { id: "Task91", name: "DEMOLIÇÃO E REMOÇÃO DE CAPA (LOMBAFAIXA)", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task93", progress: 0 },
+                { id: "Task92", name: "DEMOLIÇÃO E REMOÇÃO DE CONCRETO SIMPLES", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task94", progress: 0 },
+                { id: "Task93", name: "SINALIZAÇÃO HORIZONTAL E VERTICAL", start: parseImgDate("01/04/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task86", progress: 0 },
+                { id: "Task94", name: "PINTURA TERMOPLÁSTICA POR EXTRUSÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task86", progress: 0 },
+                { id: "Task95", name: "PINTURA MANUAL COM TINTA ACRÍLICA", start: parseImgDate("01/04/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task86", progress: 0 },
+                { id: "Task96", name: "PLACAS E PLACAS PADRÃO CET", start: parseImgDate("30/06/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task99", progress: 0 },
+                { id: "Task97", name: "FORNECIMENTO E COLOCAÇÃO DE POSTES", start: parseImgDate("30/06/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task100", progress: 0 },
+                { id: "Task98", name: "ILUMINAÇÃO", start: parseImgDate("30/06/2026"), end: parseImgDate("30/06/2026"), dependencies: null, progress: 0 },
+                { id: "Task99", name: "FORNECIMENTO E INSTALAÇÃO DE LUMINÁRIAS LP-1(LED) COM INFRAESTRUTURA COMPLETA", start: parseImgDate("30/06/2026"), end: parseImgDate("30/06/2026"), dependencies: null, progress: 0 },
+                { id: "Task100", name: "EXECUÇÃO DE SINALIZAÇÃO E ALERTA DO ATERRO DE SOBRECARGA", start: parseImgDate("30/06/2026"), end: parseImgDate("30/06/2026"), dependencies: null, progress: 0 },
+                { id: "Task101", name: "BARREIRA RÍGIDA NEW JERSEY", start: parseImgDate("01/04/2026"), end: parseImgDate("30/06/2026"), dependencies: null, progress: 0 },
+                { id: "Task102", name: "FORMA DE MADEIRA", start: parseImgDate("01/04/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task105", progress: 0 },
+                { id: "Task103", name: "AÇO CA-50 D=1/2''", start: parseImgDate("01/04/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task106", progress: 0 },
+                { id: "Task104", name: "AÇO CA-60 D=1/4''", start: parseImgDate("01/04/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task107", progress: 0 },
+                { id: "Task105", name: "CONCRETO FCK=30MPA", start: parseImgDate("01/04/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task108", progress: 0 },
+                { id: "Task106", name: "DESMOBILIZAÇÃO DO CANTEIRO", start: parseImgDate("30/06/2026"), end: parseImgDate("30/06/2026"), dependencies: null, progress: 0 },
+                { id: "Task107", name: "DESMOBILIZAÇÃO DO CANTEIRO", start: parseImgDate("30/06/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task105", progress: 0 },
+                { id: "Task108", name: "DESMOBILIZAÇÃO DO CANTEIRO", start: parseImgDate("30/06/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task106", progress: 0 },
+                { id: "Task109", name: "TERMINO DA OS", start: parseImgDate("01/07/2026"), end: parseImgDate("01/07/2026"), dependencies: null, progress: 0 },
+                { id: "Task110", name: "TERMINO DA OS", start: parseImgDate("01/07/2026"), end: parseImgDate("01/07/2026"), dependencies: "Task106", progress: 0 },
+                { id: "Task111", name: "TERMINO DA OS", start: parseImgDate("01/07/2026"), end: parseImgDate("01/07/2026"), dependencies: "Task107", progress: 0 },
+                { id: "Task112", name: "TERMINO DA OS", start: parseImgDate("01/07/2026"), end: parseImgDate("01/07/2026"), dependencies: "Task108", progress: 0 },
+                { id: "Task113", name: "TERMINO DA OS", start: parseImgDate("01/07/2026"), end: parseImgDate("01/07/2026"), dependencies: "Task108", progress: 0 },
+                { id: "Task114", name: "TERMINO DA OS", start: parseImgDate("01/07/2026"), end: parseImgDate("01/07/2026"), dependencies: "Task108", progress: 0 },
+                { id: "Task115", name: "TERMINO DA OS", start: parseImgDate("01/07/2026"), end: parseImgDate("01/07/2026"), dependencies: "Task108", progress: 0 },
+                { id: "Task116", name: "TERMINO DA OS", start: parseImgDate("01/07/2026"), end: parseImgDate("01/07/2026"), dependencies: "Task108", progress: 0 }
+            ];
+            
+            // --- FIM DOS DADOS ---
+
+            // Carrega tarefas FASE 1
+            const storageKeyFase1 = 'planejamento-tasks-f1';
+            let tasksFase1 = loadTasksFromStorage(storageKeyFase1);
+            if (tasksFase1.length === 0) {
+                console.log('Nenhuma tarefa no localStorage (F1), carregando dados padrões.');
+                tasksFase1 = defaultTasksFase1;
+            }
+            tasksFase1.forEach(task => task.progress = calculatePlannedProgress(task, today));
+            saveTasksToStorage(storageKeyFase1, tasksFase1);
+            
+             // Carrega tarefas FASE 2
+            const storageKeyFase2 = 'planejamento-tasks-f2';
+            let tasksFase2 = loadTasksFromStorage(storageKeyFase2);
+            if (tasksFase2.length === 0) {
+                console.log('Nenhuma tarefa no localStorage (F2), carregando dados padrões.');
+                tasksFase2 = defaultTasksFase2;
+            }
+            tasksFase2.forEach(task => task.progress = calculatePlannedProgress(task, today));
+            saveTasksToStorage(storageKeyFase2, tasksFase2);
+
+
+            // --- Lógica de criação de Gráfico (Refatorada) ---
+            function createGanttChart(containerSelector, tasksData) {
+                const ganttContainer = document.querySelector(containerSelector);
+                if (!ganttContainer) {
+                    console.error('Container do Gantt não encontrado:', containerSelector);
+                    return null;
                 }
+                ganttContainer.innerHTML = ""; 
 
-                addTaskBtn.addEventListener('click', () => {
-                    const name = taskNameInput.value.trim();
-                    const start = startDateInput.value;
-                    const duration = parseInt(taskDurationInput.value, 10);
-                    const dependency = taskDependencyInput.value.trim();
-                    const dependencyType = taskDependencyTypeInput.value;
-                    const cost = parseFloat(taskCostInput.value) || 0;
-                    const progress = taskProgressInput.value;
-                    if (!name || !start || isNaN(duration) || duration < 0) {
-                        alert('Por favor, preencha nome, início e duração.');
-                        return;
-                    }
-                    const startDate = parseLocalDate(start);
-                    const endDate = new Date(startDate);
-                    endDate.setDate(endDate.getDate() + duration);
-                    let dependencyString = null;
-                    if (dependency) {
-                        dependencyString = `${dependency},${dependencyType}`;
-                    }
-                    const newTask = {
-                        id: 'Task' + tasks.length,
-                        name: name,
-                        start: startDate,
-                        end: endDate,
-                        duration: duration,
-                        progress: parseInt(progress) || 0,
-                        dependencies: dependencyString,
-                        cost: cost
-                    };
-                    tasks.push(newTask);
-                    saveTasksToStorage(tasks);
-                    renderTableAndChart();
-                    resetForm();
-                    taskNameInput.focus();
-                });
+                const tasksDataMap = new Map(tasksData.map(t => [t.id, t]));
 
-                editTaskBtn.addEventListener('click', () => {
-                    const name = taskNameInput.value.trim();
-                    const start = startDateInput.value;
-                    const duration = parseInt(taskDurationInput.value, 10);
-                    const dependency = taskDependencyInput.value.trim();
-                    const dependencyType = taskDependencyTypeInput.value;
-                    const cost = parseFloat(taskCostInput.value) || 0;
-                    const progress = taskProgressInput.value;
-                    if (!name || !start || isNaN(duration) || duration < 0) {
-                        alert('Por favor, preencha nome, início e duração.');
-                        return;
-                    }
-                    const startDate = parseLocalDate(start);
-                    const endDate = new Date(startDate);
-                    endDate.setDate(endDate.getDate() + duration);
-                    let dependencyString = null;
-                    if (dependency) {
-                        dependencyString = `${dependency},${dependencyType}`;
-                    }
-                    tasks[editingIndex] = {
-                        ...tasks[editingIndex],
-                        name: name,
-                        start: startDate,
-                        end: endDate,
-                        duration: duration,
-                        progress: parseInt(progress) || 0,
-                        dependencies: dependencyString,
-                        cost: cost
-                    };
-                    saveTasksToStorage(tasks);
-                    renderTableAndChart();
-                    resetForm();
-                });
+                const frappeTasks = tasksData.map(task => ({
+                    id: task.id,
+                    name: task.name,
+                    start: formatDateForFrappe(task.start),
+                    end: formatDateForFrappe(task.end),
+                    progress: task.progress, 
+                    dependencies: task.dependencies
+                }));
 
-                function renderTable() {
-                    taskTableBody.innerHTML = '';
-                    if (tasks.length === 0) {
-                        taskTableBody.innerHTML = '<tr><td colspan="10" class="text-center text-gray-500 py-4">Nenhuma atividade adicionada.</td></tr>';
-                        return;
-                    }
-                    const controlDate = controlDateInput.value ? parseLocalDate(controlDateInput.value) : null;
-                    tasks.forEach((task, index) => {
-                        const row = document.createElement('tr');
-                        const plannedProgress = controlDate ? calculatePlannedProgress(task, controlDate) : 'N/A';
-                        row.innerHTML = `
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${task.id}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${task.name}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${task.start.toLocaleDateString('pt-BR')}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${task.end.toLocaleDateString('pt-BR')}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${task.duration}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${task.dependencies ? task.dependencies.replace(',', ' ') : 'N/A'}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${task.cost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${plannedProgress === 'N/A' ? 'N/A' : plannedProgress + '%'}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${task.progress}%</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <button class="edit-btn" data-index="${index}">✏️</button>
-                            </td>
-                        `;
-                        taskTableBody.appendChild(row);
-                    });
-                    document.querySelectorAll('.edit-btn').forEach(btn => {
-                        btn.addEventListener('click', (e) => {
-                            const index = parseInt(e.currentTarget.dataset.index);
-                            const task = tasks[index];
-                            editingIndex = index;
-                            taskNameInput.value = task.name;
-                            startDateInput.value = task.start.toISOString().split('T')[0];
-                            taskDurationInput.value = task.duration;
-                            if (task.dependencies) {
-                                const [depId, depType] = task.dependencies.split(',');
-                                taskDependencyInput.value = depId;
-                                taskDependencyTypeInput.value = depType;
-                            } else {
-                                taskDependencyInput.value = '';
-                                taskDependencyTypeInput.value = 'TI';
-                            }
-                            taskCostInput.value = task.cost;
-                            taskProgressInput.value = task.progress;
-                            addTaskBtn.style.display = 'none';
-                            editTaskBtn.style.display = 'inline-flex';
-                        });
-                    });
-                }
+                try {
+                    return new Gantt(containerSelector, frappeTasks, {
+                        header_height: 50,
+                        column_width: 10, 
+                        step: 24,
+                        view_modes: ['Day', 'Week', 'Month'],
+                        bar_height: 25,
+                        bar_corner_radius: 3,
+                        arrow_curve: 5,
+                        padding: 18,
+                        view_mode: 'Week',
+                        date_format: 'YYYY-MM-DD',
+                        today_marker: true, 
+                        custom_popup_html: function(task) {
+                            const originalTask = tasksDataMap.get(task.id);
+                            const startDate = originalTask ? originalTask.start.toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'N/A';
+                            const endDate = originalTask ? originalTask.end.toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'N/A';
 
-                function calculatePlannedProgress(task, controlDate) {
-                    const startDate = new Date(task.start);
-                    const endDate = new Date(task.end);
-                    startDate.setHours(0, 0, 0, 0);
-                    endDate.setHours(0, 0, 0, 0);
-                    const ctrl = new Date(controlDate);
-                    ctrl.setHours(0, 0, 0, 0);
-                    if (ctrl < startDate) return 0;
-                    if (ctrl >= endDate) return 100;
-                    const totalDuration = (endDate - startDate) / (1000 * 60 * 60 * 24);
-                    if (totalDuration <= 0) return 100;
-                    const elapsedDuration = (ctrl - startDate) / (1000 * 60 * 60 * 24);
-                    const percentage = (elapsedDuration / totalDuration) * 100;
-                    return Math.min(100, Math.round(percentage));
-                }
-
-                function drawGanttChart() {
-                    ganttContainer.innerHTML = '';
-                    if (tasks.length === 0) return;
-                    const data = new google.visualization.DataTable();
-                    data.addColumn('string', 'Task ID');
-                    data.addColumn('string', 'Task Name');
-                    data.addColumn('date', 'Start Date');
-                    data.addColumn('date', 'End Date');
-                    data.addColumn('number', 'Duration');
-                    data.addColumn('number', 'Percent Complete');
-                    data.addColumn('string', 'Dependencies');
-                    const dataRows = tasks.map(task => {
-                        const dependencyId = task.dependencies ? task.dependencies.split(',')[0] : null;
-                        return [
-                            task.id,
-                            task.name,
-                            task.start,
-                            task.end,
-                            null,
-                            task.progress,
-                            dependencyId
-                        ];
-                    });
-                    data.addRows(dataRows);
-                    const chart = new google.visualization.Gantt(ganttContainer);
-                    const trackHeight = 24;
-                    const barHeight = 16;
-                    const chartHeight = 60 + (data.getNumberOfRows() * trackHeight);
-                    const options = {
-                        height: chartHeight,
-                        gantt: {
-                            trackHeight: trackHeight,
-                            barHeight: barHeight,
-                            criticalPathEnabled: false,
-                            arrow: {
-                                angle: 20,
-                                width: 0.8,
-                                color: '#666',
-                                radius: 2
-                            },
-                            palette: [
-                                {
-                                    "color": "#01455C",
-                                    "dark": "#013346",
-                                    "light": "#3b7a91"
-                                }
-                            ]
+                            return `
+                                <div class="p-2 shadow-lg rounded-md bg-white text-sm" style="min-width: 200px;">
+                                  <h4 class="font-bold text-base mb-1" style="color: var(--cor-primaria);">${task.name}</h4>
+                                  <p class="text-gray-600 mb-1">Início: ${startDate}</p>
+                                  <p class="text-gray-600 mb-2">Fim: ${endDate}</p>
+                                  <p class="text-gray-600">Progresso: ${task.progress}%</p>
+                                </div>
+                            `;
                         }
-                    };
-                    chart.draw(data, options);
+                    });
+                } catch (e) {
+                    console.error("Erro ao inicializar o Frappe Gantt:", e);
+                    ganttContainer.innerHTML = `<div class="p-4 text-center text-red-600">Ocorreu um erro ao carregar o gráfico de Gantt. Verifique os dados e as datas.</div>`;
+                    return null;
                 }
-
-                clearBtn.addEventListener('click', () => {
-                    if (confirm('Tem certeza de que deseja limpar todas as tarefas?')) {
-                        tasks = [];
-                        saveTasksToStorage(tasks);
-                        renderTableAndChart();
-                        resetForm();
-                    }
-                });
-
-                renderTableAndChart();
             }
+            
+            function renderProgressTable(containerSelector, tasks) {
+                const container = document.querySelector(containerSelector);
+                if (!container) return;
+                
+                let tableHTML = `
+                    <table class="progress-table">
+                        <thead>
+                            <tr>
+                                <th>Atividade</th>
+                                <th colspan="2" class="text-center">Avanço Previsto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                tasks.forEach(task => {
+                    const plannedProgress = task.progress; 
+                    tableHTML += `
+                        <tr>
+                            <td>${task.name}</td>
+                            <td class="progress-bar-cell">
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-fill" style="width: ${plannedProgress}%;"></div>
+                                </div>
+                            </td>
+                            <td class="progress-text">${plannedProgress}%</td>
+                        </tr>
+                    `;
+                });
+                
+                tableHTML += `</tbody></table>`;
+                container.innerHTML = tableHTML;
+            }
+
+
+            // --- Inicializa os dois gráficos ---
+            ganttFase1 = createGanttChart("#gantt-chart-fase-1", tasksFase1); 
+            ganttFase2 = createGanttChart("#gantt-chart-fase-2", tasksFase2);
+            
+            // --- Renderiza as duas tabelas de progresso ---
+            renderProgressTable("#progress-table-fase-1", tasksFase1);
+            renderProgressTable("#progress-table-fase-2", tasksFase2);
+
+            
+            activeGantt.instance = ganttFase1;
+
+
+            // --- Adiciona listeners para os botões de ZOOM ---
+            const viewButtons = {
+                'day': document.getElementById('gantt-view-day'),
+                'week': document.getElementById('gantt-view-week'),
+                'month': document.getElementById('gantt-view-month')
+            };
+
+            function setActiveZoomButton(mode) {
+                Object.values(viewButtons).forEach(btn => btn.classList.remove('active'));
+                if (mode === 'Day') viewButtons.day.classList.add('active');
+                if (mode === 'Week') viewButtons.week.classList.add('active');
+                if (mode === 'Month') viewButtons.month.classList.add('active');
+            }
+
+            viewButtons.day.addEventListener('click', () => {
+                if (activeGantt.instance) {
+                    activeGantt.instance.change_view_mode('Day');
+                    setActiveZoomButton('Day');
+                }
+            });
+            viewButtons.week.addEventListener('click', () => {
+                 if (activeGantt.instance) {
+                    activeGantt.instance.change_view_mode('Week');
+                    setActiveZoomButton('Week');
+                }
+            });
+            viewButtons.month.addEventListener('click', () => {
+                 if (activeGantt.instance) {
+                    activeGantt.instance.change_view_mode('Month');
+                    setActiveZoomButton('Month');
+                }
+            });
+
+            setActiveZoomButton('Week'); 
+
+            // --- Lógica das ABAS DE FASE (Gantt) ---
+            const btnFase1 = document.getElementById('btn-fase-1');
+            const btnFase2 = document.getElementById('btn-fase-2');
+            const wrapperFase1 = document.getElementById('gantt-fase-1-wrapper');
+            const wrapperFase2 = document.getElementById('gantt-fase-2-wrapper');
+            const tableWrapperFase1 = document.getElementById('progress-table-fase-1');
+            const tableWrapperFase2 = document.getElementById('progress-table-fase-2');
+
+            
+            btnFase1.addEventListener('click', () => {
+                btnFase1.classList.add('active');
+                btnFase2.classList.remove('active');
+                wrapperFase1.style.display = 'block';
+                wrapperFase2.style.display = 'none';
+                tableWrapperFase1.style.display = 'block';
+                tableWrapperFase2.style.display = 'none';
+                
+                activeGantt.instance = ganttFase1;
+                if(ganttFase1) { 
+                    const currentViewMode = ganttFase1.options.view_mode;
+                    setActiveZoomButton(currentViewMode);
+                }
+            });
+
+            btnFase2.addEventListener('click', () => {
+                btnFase2.classList.add('active');
+                btnFase1.classList.remove('active');
+                wrapperFase2.style.display = 'block';
+                wrapperFase1.style.display = 'none';
+                tableWrapperFase2.style.display = 'block';
+                tableWrapperFase1.style.display = 'none';
+                
+                activeGantt.instance = ganttFase2;
+                 if(ganttFase2) { 
+                    const currentViewMode = ganttFase2.options.view_mode;
+                    setActiveZoomButton(currentViewMode);
+                }
+            });
+
         }
     });
 </script>
 </body>
 </html>
+
