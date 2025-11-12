@@ -28,7 +28,14 @@
 {"data":"03/11/2025","viagens":"21","viagens_acum":"521","volume_aprox":"388,50","volume_acum":"9.638,50","obs":"Terreno molhado"}
 {"data":"04/11/2025","viagens":"21","viagens_acum":"542","volume_aprox":"388,50","volume_acum":"10.027,00","obs":"Terreno molhado"}
 {"data":"05/11/2025","viagens":"26","viagens_acum":"568","volume_aprox":"481,00","volume_acum":"10.508,00","obs":"Terreno molhado"}
-{"data":"06/11/2025","viagens":"30","viagens_acum":"598","volume_aprox":"555,00","volume_acum":"11.063,00","obs":"Prev"}
-{"data":"07/11/2025","viagens":"30","viagens_acum":"628","volume_aprox":"555,00","volume_acum":"11.618,00","obs":"Prev"}
-{"data":"08/11/2025","viagens":"20","viagens_acum":"648","volume_aprox":"370,00","volume_acum":"11.988,00","obs":"Prev- dif com Tran"}
-{"data":"09/11/2025","viagens":"","viagens_acum":"648","volume_aprox":"-","volume_acum":"11.988,00","obs":""}
+{"data":"06/11/2025","viagens":"28","viagens_acum":"596","volume_aprox":"518,00","volume_acum":"11.026,00","obs":""}
+{"data":"07/11/2025","viagens":"22","viagens_acum":"618","volume_aprox":"407,00","volume_acum":"11.433,00","obs":""}
+{"data":"08/11/2025","viagens":"28","viagens_acum":"646","volume_aprox":"518,00","volume_acum":"11.951,00","obs":"Chuva"}
+{"data":"09/11/2025","viagens":"","viagens_acum":"646","volume_aprox":"-","volume_acum":"11.951,00","obs":""}
+{"data":"10/11/2025","viagens":"35","viagens_acum":"681","volume_aprox":"647,50","volume_acum":"12.598,50","obs":""}
+{"data":"11/11/2025","viagens":"32","viagens_acum":"713","volume_aprox":"592,00","volume_acum":"13.190,50","obs":""}
+{"data":"12/11/2025","viagens":"30","viagens_acum":"743","volume_aprox":"555,00","volume_acum":"13.745,50","obs":"Prev"}
+{"data":"13/11/2025","viagens":"30","viagens_acum":"773","volume_aprox":"555,00","volume_acum":"14.300,50","obs":"Prev"}
+{"data":"14/11/2025","viagens":"30","viagens_acum":"803","volume_aprox":"555,00","volume_acum":"14.855,50","obs":"Prev"}
+{"data":"15/11/2025","viagens":"30","viagens_acum":"833","volume_aprox":"555,00","volume_acum":"15.410,50","obs":"Prev"}
+{"data":"16/11/2025","viagens":"","viagens_acum":"833","volume_aprox":"-","volume_acum":"15.410,50","obs":""}
