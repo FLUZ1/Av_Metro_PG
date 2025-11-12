@@ -1,0 +1,133 @@
+{"id":"Task0","name":"FASE 01 - TRECHO AVENIDADE DO METRÔ","start":"2025-07-14","end":"2025-10-24","dependencies":null,"fase":"f1"}
+{"id":"Task1","name":"INICIO DA OS","start":"2025-07-14","end":"2025-07-14","dependencies":null,"fase":"f1"}
+{"id":"Task2","name":"Inicio da OS","start":"2025-07-14","end":"2025-07-14","dependencies":null,"fase":"f1"}
+{"id":"Task3","name":"MOBILIZAÇÃO DO CANTEIRO","start":"2025-07-14","end":"2025-08-12","dependencies":null,"fase":"f1"}
+{"id":"Task4","name":"Mobilização do canteiro","start":"2025-07-14","end":"2025-08-12","dependencies":"Task2","fase":"f1"}
+{"id":"Task5","name":"TERRAPLENAGEM","start":"2025-08-12","end":"2025-10-10","dependencies":null,"fase":"f1"}
+{"id":"Task6","name":"ESCAVAÇÃO MECÂNICA, CARGA E REMOÇÃO DE TERRA SOLO RUIM","start":"2025-08-12","end":"2025-09-25","dependencies":"Task4","fase":"f1"}
+{"id":"Task7","name":"ESCAVAÇÃO MECÂNICA, CARGA E REMOÇÃO DE TERRA SOLO BOM","start":"2025-08-13","end":"2025-09-26","dependencies":"Task6","fase":"f1"}
+{"id":"Task8","name":"COMPACTAÇÃO DE TERRA, MEDIDA NO ATERRO","start":"2025-08-14","end":"2025-10-10","dependencies":"Task7","fase":"f1"}
+{"id":"Task9","name":"DISPOSIÇÃO FINAL DE SOLOS E RESÍDUOS, CLASSE I - PERIGOSOS","start":"2025-08-19","end":"2025-10-10","dependencies":"Task6","fase":"f1"}
+{"id":"Task10","name":"REMOÇÃO DE TERRA ALÉM DO PRIMEIRO KM, COM CAMINHÃO DE 17M3","start":"2025-09-01","end":"2025-10-10","dependencies":null,"fase":"f1"}
+{"id":"Task11","name":"REMOÇÃO DE TERRA ALÉM DO PRIMEIRO KM, COM CAMINHÃO DE 17M3","start":"2025-09-01","end":"2025-10-10","dependencies":"Task10","fase":"f1"}
+{"id":"Task12","name":"DESMOBILIZAÇÃO DO CANTEIRO","start":"2025-09-25","end":"2025-10-24","dependencies":null,"fase":"f1"}
+{"id":"Task13","name":"Desmobilização do canteiro","start":"2025-09-25","end":"2025-10-24","dependencies":"Task11","fase":"f1"}
+{"id":"Task14","name":"TERMINO DA OS","start":"2025-10-24","end":"2025-10-24","dependencies":null,"fase":"f1"}
+{"id":"Task15","name":"Termino da OS","start":"2025-10-24","end":"2025-10-24","dependencies":"Task13","fase":"f1"}
+{"id":"Task0","name":"FASE 02 - TRECHO AVENIDA DO METRÔ","start":"2025-10-01","end":"2026-07-01","dependencies":null,"fase":"f2"}
+{"id":"Task1","name":"INICIO DA OS","start":"2025-10-01","end":"2025-10-01","dependencies":null,"fase":"f2"}
+{"id":"Task2","name":"Inicio da OS","start":"2025-10-01","end":"2025-10-01","dependencies":null,"fase":"f2"}
+{"id":"Task3","name":"MOBILIZAÇÃO DO CANTEIRO","start":"2025-10-01","end":"2026-06-26","dependencies":null,"fase":"f2"}
+{"id":"Task4","name":"Mobilização do canteiro","start":"2025-10-01","end":"2026-06-26","dependencies":"Task2","fase":"f2"}
+{"id":"Task5","name":"MANUTENÇÃO DO CANTEIRO","start":"2025-10-01","end":"2026-06-26","dependencies":null,"fase":"f2"}
+{"id":"Task6","name":"MANUTENÇÃO DO CANTEIRO","start":"2025-10-01","end":"2026-06-26","dependencies":"Task5","fase":"f2"}
+{"id":"Task7","name":"TERRAPLENAGEM","start":"2025-10-01","end":"2025-10-10","dependencies":null,"fase":"f2"}
+{"id":"Task8","name":"LIMPEZA DA CAMADA VEGETAL","start":"2025-10-01","end":"2026-01-29","dependencies":"Task2","fase":"f2"}
+{"id":"Task9","name":"DISPOSIÇÃO FINAL DE SOLOS E RESÍDUOS, CLASSE I - PERIGOSOS","start":"2025-10-01","end":"2026-01-29","dependencies":"Task6","fase":"f2"}
+{"id":"Task10","name":"REMOÇÃO DE TERRA ALÉM DO PRIMEIRO KM, COM CAMINHÃO DE 17M3","start":"2025-10-01","end":"2026-01-29","dependencies":"Task9","fase":"f2"}
+{"id":"Task11","name":"REMOÇÃO DE TERRA ALÉM DO PRIMEIRO KM, COM CAMINHÃO DE 17M3","start":"2025-10-01","end":"2026-01-29","dependencies":"Task9","fase":"f2"}
+{"id":"Task12","name":"OMISSO","start":"2025-10-01","end":"2026-04-29","dependencies":"Task10","fase":"f2"}
+{"id":"Task13","name":"EXECUÇÃO DE COLUNA DE BRITA D=0,60M C=1,0M","start":"2025-10-01","end":"2025-11-01","dependencies":"Task11","fase":"f2"}
+{"id":"Task14","name":"EXECUÇÃO DE GEODRENO - DRENAGEM SUB-HORIZONTAL","start":"2025-10-01","end":"2025-11-01","dependencies":"Task12","fase":"f2"}
+{"id":"Task15","name":"Geogrelha - Categoria 150KN/M","start":"2025-11-01","end":"2025-11-01","dependencies":"Task13","fase":"f2"}
+{"id":"Task16","name":"ATERRO - TRANSPORTE INTERNO ATÉ 500M - MATERIAL PROVENIENTE BOTA ESPERA","start":"2025-11-01","end":"2026-01-30","dependencies":"Task14","fase":"f2"}
+{"id":"Task17","name":"MANUTENÇÃO DO ATERRO DE SOBRECARGA","start":"2025-11-01","end":"2026-07-11","dependencies":"Task15","fase":"f2"}
+{"id":"Task18","name":"DRENAGEM","start":"2025-12-03","end":"2026-04-29","dependencies":"Task22","fase":"f2"}
+{"id":"Task19","name":"BASE DE BICA CORRIDA","start":"2025-12-03","end":"2026-04-29","dependencies":"Task18","fase":"f2"}
+{"id":"Task20","name":"ESCAVAÇÃO MECÂNICA PARA FUNDAÇÕES E VALAS COM PROFUNDIDADE MENOR OU IGUAL A 4,0M","start":"2025-12-03","end":"2026-04-29","dependencies":"Task22","fase":"f2"}
+{"id":"Task21","name":"ARRANCAMENTO E REMOÇÃO DE CAMALEÃO, 30,0CM < D < OU = A 45CM","start":"2025-12-03","end":"2026-04-29","dependencies":null,"fase":"f2"}
+{"id":"Task22","name":"BASE DE BICA CORRIDA","start":"2025-12-03","end":"2026-04-29","dependencies":"Task21","fase":"f2"}
+{"id":"Task23","name":"BASE DE BICA CORRIDA","start":"2025-12-03","end":"2026-04-29","dependencies":"Task22","fase":"f2"}
+{"id":"Task24","name":"REATERRO DE VALA COM COMPACTAÇÃO, SEM FORNECIMENTO DE TERRA","start":"2025-12-03","end":"2026-04-29","dependencies":"Task23","fase":"f2"}
+{"id":"Task25","name":"FORNECIMENTO DE TERRA, INCLUINDO ESCAVAÇÃO, CARGA E TRANSPORTE ATÉ A DISTÂNCIA MÉDIA DE 1","start":"2025-12-03","end":"2026-04-29","dependencies":"Task24","fase":"f2"}
+{"id":"Task26","name":"FORNECIMENTO DE PEDRA RACHÃO OU DE MÃO, INCLUSIVE TRANSPORTE","start":"2025-12-03","end":"2026-04-29","dependencies":"Task25","fase":"f2"}
+{"id":"Task27","name":"FORNECIMENTO E ASSENTAMENTO DE TUBO DE CONCRETO SIMPLES, DIÂMETRO 60CM - TIPO PA-1","start":"2025-12-03","end":"2026-04-29","dependencies":"Task26","fase":"f2"}
+{"id":"Task28","name":"FORNECIMENTO E ASSENTAMENTO DE TUBOS DE CONCRETO ARMADO, DIÂMETRO 80CM - TIPO PA-2","start":"2025-12-03","end":"2026-04-29","dependencies":"Task27","fase":"f2"}
+{"id":"Task29","name":"POÇO DE VISITA TIPO 1, 1,20 X 1,20 X 1,20M","start":"2025-12-03","end":"2026-04-29","dependencies":"Task28","fase":"f2"}
+{"id":"Task30","name":"POÇO DE VISITA TIPO 2, 1,60 X 1,60 X 1,60M","start":"2025-12-03","end":"2026-04-29","dependencies":"Task29","fase":"f2"}
+{"id":"Task31","name":"POÇO DE VISITA TIPO 3, 2,20 X 2,20 X 2,20M","start":"2025-12-03","end":"2026-04-29","dependencies":"Task30","fase":"f2"}
+{"id":"Task32","name":"CAIXA DE LIGAÇÃO PLUVIAL, COM OU SEM BOCA DE LOBO, TIPO CAIXA","start":"2025-12-03","end":"2026-04-29","dependencies":"Task31","fase":"f2"}
+{"id":"Task33","name":"FORNECIMENTO DE TAMPÃO - GRELHA DE FERRO FUNDIDO DÚCTIL, CLASSE MÍNIMA 400 (40T) D=600MM","start":"2025-12-03","end":"2026-04-29","dependencies":"Task32","fase":"f2"}
+{"id":"Task34","name":"BOCA DE LOBO TIPO 1","start":"2025-12-03","end":"2026-04-29","dependencies":"Task33","fase":"f2"}
+{"id":"Task35","name":"BOCA DE LOBO TIPO 2","start":"2025-12-03","end":"2026-04-29","dependencies":"Task34","fase":"f2"}
+{"id":"Task36","name":"ESCAVAÇÃO MECÂNICA PARA FUNDAÇÕES E VALAS COM PROFUNDIDADE MENOR OU IGUAL A 4,0M","start":"2025-12-03","end":"2026-04-29","dependencies":"Task35","fase":"f2"}
+{"id":"Task37","name":"REATERRO DE VALA COM COMPACTAÇÃO, SEM FORNECIMENTO DE TERRA","start":"2025-12-03","end":"2026-04-29","dependencies":"Task36","fase":"f2"}
+{"id":"Task38","name":"FORNECIMENTO DE TERRA, INCLUINDO ESCAVAÇÃO, CARGA E TRANSPORTE ATÉ A DISTÂNCIA MÉDIA DE 1","start":"2025-12-03","end":"2026-04-29","dependencies":"Task37","fase":"f2"}
+{"id":"Task39","name":"PAVIMENTAÇÃO","start":"2026-04-01","end":"2026-06-29","dependencies":"Task86","fase":"f2"}
+{"id":"Task40","name":"840.23 - FORNECIMENTO E ASSENTAMENTO DE TUBO DE PEAD CORRUGADO E PREFUADO","start":"2026-04-01","end":"2026-06-29","dependencies":"Task86","fase":"f2"}
+{"id":"Task41","name":"840.24 - FORNECIMENTO E ASSENTAMENTO DE GEOTÊXTIL, COM EXECUÇÃO E DRENAGEM","start":"2026-04-01","end":"2026-06-29","dependencies":"Task86","fase":"f2"}
+{"id":"Task42","name":"SERVIÇOS COMPLEMENTARES","start":"2026-04-01","end":"2026-06-29","dependencies":null,"fase":"f2"}
+{"id":"Task43","name":"REMOÇÃO DE GUIAS OU PASSEIO DE CONCRETO","start":"2026-04-01","end":"2026-06-29","dependencies":"Task22","fase":"f2"}
+{"id":"Task44","name":"ARRANCAMENTO E REMOÇÃO DE CAMALEÃO","start":"2026-04-01","end":"2026-06-29","dependencies":"Task42","fase":"f2"}
+{"id":"Task45","name":"ARRANCAMENTO E RECOLOCAÇÃO DE PLACAS DE SINALIZAÇÃO","start":"2026-04-01","end":"2026-06-29","dependencies":"Task43","fase":"f2"}
+{"id":"Task46","name":"REMOÇÃO DE PLACAS DE SINALIZAÇÃO","start":"2026-04-01","end":"2026-06-29","dependencies":"Task44","fase":"f2"}
+{"id":"Task47","name":"ARRANCAMENTO E RECOLOCAÇÃO DE POSTES","start":"2026-04-01","end":"2026-06-29","dependencies":"Task45","fase":"f2"}
+{"id":"Task48","name":"REMOÇÃO DE POSTES DE ILUMINAÇÃO","start":"2026-04-01","end":"2026-06-29","dependencies":"Task46","fase":"f2"}
+{"id":"Task49","name":"PAVIMENTO","start":"2026-04-01","end":"2026-06-29","dependencies":null,"fase":"f2"}
+{"id":"Task50","name":"DEMOLIÇÃO DE GUIAS, INCLUI CARGA EM CAMINHÃO","start":"2026-04-01","end":"2026-06-29","dependencies":"Task86","fase":"f2"}
+{"id":"Task51","name":"DEMOLIÇÃO DE SARJETA OU SARJETÃO, INCLUSIVE CARGA, INCLUI CARGA EM CAMINHÃO","start":"2026-04-01","end":"2026-06-29","dependencies":"Task86","fase":"f2"}
+{"id":"Task52","name":"DEMOLIÇÃO DE PAVIMENTO ASFÁLTICO, INCLUSIVE CAPA, INCLUI CARGA EM CAMINHÃO","start":"2026-04-01","end":"2026-06-29","dependencies":"Task86","fase":"f2"}
+{"id":"Task53","name":"ABERTURA DE CAIXA PARA REFORÇO DE BASE DE PAVIMENTO","start":"2026-04-01","end":"2026-06-29","dependencies":"Task51","fase":"f2"}
+{"id":"Task54","name":"ABERTURA DE CAIXA ATÉ 1,80M, INCLUI ESCAVAÇÃO, COMPACTAÇÃO, TRANSPORTE E PREPARO DO SUB-LEI","start":"2026-04-01","end":"2026-06-29","dependencies":"Task52","fase":"f2"}
+{"id":"Task55","name":"FORNECIMENTO DE CIMENTO PORTLAND CP-II-32, POSTO NA OBRA (EM SACO)","start":"2026-04-01","end":"2026-06-29","dependencies":"Task53","fase":"f2"}
+{"id":"Task56","name":"FORNECIMENTO DE SAIBRO, EM QUALQUER DOS TIPOS 'A' OU 'B', INCLUSIVE ENCOSTAMENTO DE TERRA - FOR","start":"2026-04-01","end":"2026-06-29","dependencies":"Task54","fase":"f2"}
+{"id":"Task57","name":"EXECUÇÃO DE SARJETA, COM GUIA TIPO PMSP - H = 0,15M; L = 0,40M","start":"2026-04-01","end":"2026-06-29","dependencies":"Task55","fase":"f2"}
+{"id":"Task58","name":"GUIA DE CONCRETO EXTRUSADA","start":"2026-04-01","end":"2026-06-29","dependencies":"Task60","fase":"f2"}
+{"id":"Task59","name":"BASE DE BRITA GRADUADA TRATADA COM CIMENTO - BGTC","start":"2026-04-01","end":"2026-06-29","dependencies":"Task58","fase":"f2"}
+{"id":"Task60","name":"BASE DE MACADAME SECO","start":"2026-04-01","end":"2026-06-29","dependencies":"Task58","fase":"f2"}
+{"id":"Task61","name":"IMPRIMAÇÃO BETUMINOSA LIGANTE","start":"2026-04-01","end":"2026-06-29","dependencies":"Task59","fase":"f2"}
+{"id":"Task62","name":"PINTURA DE LIGAÇÃO BETUMINOSA OBRIGATÓRIA","start":"2026-04-01","end":"2026-06-29","dependencies":"Task60","fase":"f2"}
+{"id":"Task63","name":"REVESTIMENTO DE CONCRETO ASFÁLTICO","start":"2026-04-01","end":"2026-06-29","dependencies":"Task61","fase":"f2"}
+{"id":"Task64","name":"BASE DE MACADAME HIDRÁULICO","start":"2026-04-01","end":"2026-06-29","dependencies":"Task62","fase":"f2"}
+{"id":"Task65","name":"BASE DE MACADAME HIDRÁULICO","start":"2026-04-01","end":"2026-06-29","dependencies":"Task63","fase":"f2"}
+{"id":"Task66","name":"REMOÇÃO DE GUIAS E SARJETAS, LIMPEZA, INCLUSIVE PREPARO DE CAIXA E LASTRO DE BRITA C TELA METÁL","start":"2026-04-01","end":"2026-06-29","dependencies":"Task64","fase":"f2"}
+{"id":"Task67","name":"PASSEIO DE CONCRETO FCK=20MPA, LIMPEZA, INCLUSIVE PREPARO DE CAIXA E LASTRO DE BRITA C TELA METÁL","start":"2026-04-01","end":"2026-06-29","dependencies":"Task65","fase":"f2"}
+{"id":"Task68","name":"PASSEIO DE CONCRETO FCK=20MPA, LIMPEZA, INCLUSIVE PREPARO DE CAIXA E LASTRO DE BRITA C TELA METÁL","start":"2026-04-01","end":"2026-06-29","dependencies":"Task66","fase":"f2"}
+{"id":"Task69","name":"PLANTIO DE GRAMA EM PLACAS","start":"2026-02-02","end":"2026-06-29","dependencies":"Task67","fase":"f2"}
+{"id":"Task70","name":"FUNDAÇÃO DE RADIÊR","start":"2026-02-02","end":"2026-06-29","dependencies":"Task68","fase":"f2"}
+{"id":"Task71","name":"PASSEIO DE CONCRETO ASFÁLTICO COM ESPESSURA ATÉ 3CM, EM VIAS EXPRESSAS, INCLUSIVE REMOÇÃO","start":"2026-02-02","end":"2026-06-29","dependencies":"Task69","fase":"f2"}
+{"id":"Task72","name":"PLANTIO DE GRAMA EM PLACAS","start":"2026-02-02","end":"2026-06-29","dependencies":"Task70","fase":"f2"}
+{"id":"Task73","name":"PLANTIO DE GRAMA EM PLACAS NO TALUDES","start":"2026-02-02","end":"2026-06-29","dependencies":"Task71","fase":"f2"}
+{"id":"Task74","name":"EXECUÇÃO DE SINALIZAÇÃO E ALERTA","start":"2026-04-01","end":"2026-06-29","dependencies":"Task72","fase":"f2"}
+{"id":"Task75","name":"MANUTENÇÃO DE ACESSO","start":"2026-01-29","end":"2026-06-29","dependencies":null,"fase":"f2"}
+{"id":"Task76","name":"OMISSO","start":"2026-01-29","end":"2026-06-29","dependencies":null,"fase":"f2"}
+{"id":"Task77","name":"BASE DE BRINDER DENSO","start":"2026-01-29","end":"2026-06-29","dependencies":"Task79","fase":"f2"}
+{"id":"Task78","name":"FORNECIMENTO E TRANSPORTE DE BRINDER ATÉ A DISTÂNCIA MÉDIA DE IDA E VOLTA DE 1KM","start":"2026-01-29","end":"2026-06-29","dependencies":"Task80","fase":"f2"}
+{"id":"Task79","name":"TRANSPORTE DE BRINDER ALÉM DO PRIMEIRO KM","start":"2026-01-29","end":"2026-06-29","dependencies":"Task81","fase":"f2"}
+{"id":"Task80","name":"BASE DE BRINDER DENSO","start":"2026-01-29","end":"2026-06-29","dependencies":"Task82","fase":"f2"}
+{"id":"Task81","name":"REVESTIMENTO DE BRINDER DENSO","start":"2026-01-29","end":"2026-06-29","dependencies":"Task83","fase":"f2"}
+{"id":"Task82","name":"FRESAGEM DE PAVIMENTO ASFÁLTICO COM ESPESSURA ATÉ 5CM","start":"2026-01-29","end":"2026-06-29","dependencies":"Task84","fase":"f2"}
+{"id":"Task83","name":"ILUMINAÇÃO","start":"2026-04-01","end":"2026-06-30","dependencies":null,"fase":"f2"}
+{"id":"Task84","name":"RETIRADA DE POSTE DE ENTRADA DE ENERGIA EM ALTA TENSÃO - CONCRETO","start":"2026-04-01","end":"2026-06-29","dependencies":"Task86","fase":"f2"}
+{"id":"Task85","name":"RETIRADA DE POSTE DE ENTRADA DE ENERGIA EM ALTA TENSÃO - FERRO GALVANIZADO","start":"2026-04-01","end":"2026-06-29","dependencies":"Task87","fase":"f2"}
+{"id":"Task86","name":"REMANEJAMENTO DE POSTE AUXILIAR - INCLUSIVE RETIRADA E RECOMPOSIÇÃO","start":"2026-04-01","end":"2026-06-29","dependencies":"Task88","fase":"f2"}
+{"id":"Task87","name":"RETIRADA DE ALAMBRADO EM TELA INCLUSIVE ESTRUTURA DE SUSTENTAÇÃO","start":"2026-04-01","end":"2026-06-29","dependencies":"Task89","fase":"f2"}
+{"id":"Task88","name":"DEMOLIÇÃO E REMOÇÃO DE BLOCO DE CONCRETO","start":"2026-04-01","end":"2026-06-29","dependencies":"Task90","fase":"f2"}
+{"id":"Task89","name":"DEMOLIÇÃO E REMOÇÃO DE PAVIMENTO OU LAJOTA DE CONCRETO","start":"2026-04-01","end":"2026-06-29","dependencies":"Task91","fase":"f2"}
+{"id":"Task90","name":"DEMOLIÇÃO DE PAVIMENTO ASFÁLTICO EM MAU ESTADO, INCLUSIVE CAPA","start":"2026-04-01","end":"2026-06-29","dependencies":"Task92","fase":"f2"}
+{"id":"Task91","name":"DEMOLIÇÃO E REMOÇÃO DE CAPA (LOMBAFAIXA)","start":"2026-04-01","end":"2026-06-29","dependencies":"Task93","fase":"f2"}
+{"id":"Task92","name":"DEMOLIÇÃO E REMOÇÃO DE CONCRETO SIMPLES","start":"2026-04-01","end":"2026-06-29","dependencies":"Task94","fase":"f2"}
+{"id":"Task93","name":"SINALIZAÇÃO HORIZONTAL E VERTICAL","start":"2026-04-01","end":"2026-06-30","dependencies":"Task86","fase":"f2"}
+{"id":"Task94","name":"PINTURA TERMOPLÁSTICA POR EXTRUSÃO","start":"2026-04-01","end":"2026-06-30","dependencies":"Task86","fase":"f2"}
+{"id":"Task95","name":"PINTURA MANUAL COM TINTA ACRÍLICA","start":"2026-04-01","end":"2026-06-30","dependencies":"Task86","fase":"f2"}
+{"id":"Task96","name":"PLACAS E PLACAS PADRÃO CET","start":"2026-06-30","end":"2026-06-30","dependencies":"Task99","fase":"f2"}
+{"id":"Task97","name":"FORNECIMENTO E COLOCAÇÃO DE POSTES","start":"2026-06-30","end":"2026-06-30","dependencies":"Task100","fase":"f2"}
+{"id":"Task98","name":"ILUMINAÇÃO","start":"2026-06-30","end":"2026-06-30","dependencies":null,"fase":"f2"}
+{"id":"Task99","name":"FORNECIMENTO E INSTALAÇÃO DE LUMINÁRIAS LP-1(LED) COM INFRAESTRUTURA COMPLETA","start":"2026-06-30","end":"2026-06-30","dependencies":null,"fase":"f2"}
+{"id":"Task100","name":"EXECUÇÃO DE SINALIZAÇÃO E ALERTA DO ATERRO DE SOBRECARGA","start":"2026-06-30","end":"2026-06-30","dependencies":null,"fase":"f2"}
+{"id":"Task101","name":"BARREIRA RÍGIDA NEW JERSEY","start":"2026-04-01","end":"2026-06-30","dependencies":null,"fase":"f2"}
+{"id":"Task102","name":"FORMA DE MADEIRA","start":"2026-04-01","end":"2026-06-30","dependencies":"Task105","fase":"f2"}
+{"id":"Task103","name":"AÇO CA-50 D=1/2''","start":"2026-04-01","end":"2026-06-30","dependencies":"Task106","fase":"f2"}
+{"id":"Task104","name":"AÇO CA-60 D=1/4''","start":"2026-04-01","end":"2026-06-30","dependencies":"Task107","fase":"f2"}
+{"id":"Task105","name":"CONCRETO FCK=30MPA","start":"2026-04-01","end":"2026-06-30","dependencies":"Task108","fase":"f2"}
+{"id":"Task106","name":"DESMOBILIZAÇÃO DO CANTEIRO","start":"2026-06-30","end":"2026-06-30","dependencies":null,"fase":"f2"}
+{"id":"Task107","name":"DESMOBILIZAÇÃO DO CANTEIRO","start":"2026-06-30","end":"2026-06-30","dependencies":"Task105","fase":"f2"}
+{"id":"Task108","name":"DESMOBILIZAÇÃO DO CANTEIRO","start":"2026-06-30","end":"2026-06-30","dependencies":"Task106","fase":"f2"}
+{"id":"Task109","name":"TERMINO DA OS","start":"2026-07-01","end":"2026-07-01","dependencies":null,"fase":"f2"}
+{"id":"Task110","name":"TERMINO DA OS","start":"2026-07-01","end":"2026-07-01","dependencies":"Task106","fase":"f2"}
+{"id":"Task111","name":"TERMINO DA OS","start":"2026-07-01","end":"2026-07-01","dependencies":"Task107","fase":"f2"}
+{"id":"Task112","name":"TERMINO DA OS","start":"2026-07-01","end":"2026-07-01","dependencies":"Task108","fase":"f2"}
+{"id":"Task113","name":"TERMINO DA OS","start":"2026-07-01","end":"2026-07-01","dependencies":"Task108","fase":"f2"}
+{"id":"Task114","name":"TERMINO DA OS","start":"2026-07-01","end":"2026-07-01","dependencies":"Task108","fase":"f2"}
+{"id":"Task115","name":"TERMINO DA OS","start":"2026-07-01","end":"2026-07-01","dependencies":"Task108","fase":"f2"}
+{"id":"Task116","name":"TERMINO DA OS","start":"2026-07-01","end":"2026-07-01","dependencies":"Task108","fase":"f2"}

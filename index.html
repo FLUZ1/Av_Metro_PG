@@ -17,7 +17,7 @@
             --cor-secundaria: #9FC419;
             --cor-texto-claro: #ffffff;
             --cor-texto-escuro: #333;
-            --cor-fundo: #f0f2f5;
+            --cor-fundo: #f0f2ff;
             --cor-linha-ff: #d95f02; /* Laranja escuro para a linha da Curva S */
         }
         body {
@@ -69,6 +69,12 @@
             height: 3px;
             background-color: var(--cor-secundaria);
         }
+        
+        /* Botões com transição suave */
+        .cta-button, .btn-gantt-view, .phase-tab, #maximize-diario-btn {
+            transition: all 0.2s ease-in-out;
+        }
+
         #landing-page {
             display: flex;
             justify-content: center;
@@ -99,7 +105,6 @@
             padding: 0.8rem 2.5rem;
             border-radius: 50px;
             text-decoration: none;
-            transition: transform 0.3s, box-shadow 0.3s;
             cursor: pointer;
         }
         .cta-button:hover {
@@ -126,10 +131,23 @@
             font-size: 1.875rem; /* 3xl */
             font-weight: 700;
         }
+        .page-content h2 {
+             color: var(--cor-primaria);
+             text-align: center;
+             font-size: 1.5rem; /* 2xl */
+             font-weight: 600;
+             margin-bottom: 1rem;
+        }
+        .page-content h3 {
+             color: var(--cor-primaria);
+             font-size: 1.25rem; /* xl */
+             font-weight: 600;
+             margin-bottom: 0.75rem;
+        }
 
         /* Estilos da tabela (reaproveitados de 'atas') */
         .styled-table {
-            table-layout: fixed;
+            table-layout: fixed; /* Mantido fixo para larguras de coluna */
             width: 100%;
         }
         .styled-table th,
@@ -141,6 +159,7 @@
             word-wrap: break-word;
             word-break: break-word;
             white-space: normal;
+            text-align: justify; /* ADICIONADO: Texto justificado */
         }
         .styled-table th {
             font-size: 0.75rem; /* 12px */
@@ -153,11 +172,19 @@
             font-size: 0.875rem; /* 14px */
             color: #374151; /* text-gray-700 */
         }
+        /* ATUALIZAÇÃO UX: Transição suave para hover */
+        .styled-table tbody tr {
+            transition: background-color 0.2s ease-in-out;
+        }
         .styled-table tbody tr:nth-child(odd) {
             background-color: #ffffff;
         }
         .styled-table tbody tr:nth-child(even) {
             background-color: #f9fafb; /* bg-gray-50 */
+        }
+        /* ATUALIZAÇÃO UX: Efeito hover nas linhas da tabela */
+        .styled-table tbody tr:hover {
+            background-color: #f3f4f6; /* bg-gray-100 */
         }
 
         /* Estilos para Frappe Gantt */
@@ -206,7 +233,6 @@
             font-size: 0.875rem;
             font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.2s, border-color 0.2s;
         }
         .btn-gantt-view:hover {
             background-color: #e5e7eb;
@@ -227,7 +253,6 @@
             color: #6b7280; /* Cor de inativo (cinza) */
             border-bottom: 3px solid transparent;
             cursor: pointer;
-            transition: color 0.3s, border-color 0.3s;
             margin-bottom: -2px; /* Alinha com a borda inferior */
         }
         .phase-tab:hover {
@@ -263,6 +288,13 @@
             color: #374151; /* text-gray-700 */
             position: sticky; /* Cabeçalho fixo */
             top: 0;
+        }
+        /* ATUALIZAÇÃO UX: Efeito hover nas linhas da tabela de progresso */
+        .progress-table tbody tr {
+            transition: background-color 0.2s ease-in-out;
+        }
+        .progress-table tbody tr:hover {
+            background-color: #f3f4f6; /* bg-gray-100 */
         }
         .progress-table td:first-child {
             white-space: normal; /* Permite que o nome da tarefa quebre a linha */
@@ -345,7 +377,7 @@
             position: absolute;
             top: -4px; /* Ajuste para centralizar na barra */
             bottom: -4px;
-            left: 64.83%; /* Posição calculada (25000 / 38561.224) */
+            left: 62.24%; /* ATUALIZADO: Posição calculada (24000 / 38561.224) */
             width: 3px; /* Largura da linha */
             background-color: #ef4444; /* Vermelho (red-500) */
             border-radius: 2px;
@@ -392,7 +424,6 @@
             border-radius: 2px;
         }
 
-        /* ADICIONADO: Wrapper para os gráficos Físico-Financeiros */
         .ff-chart-wrapper {
             width: 100%;
             min-height: 500px; /* Altura mínima para o gráfico */
@@ -402,6 +433,27 @@
             background-color: #ffffff;
         }
 
+        /* --- NOVOS ESTILOS: Indicador de Carregamento (Spinner) --- */
+        .loading-spinner {
+            display: none; /* Oculto por padrão */
+            width: 48px;
+            height: 48px;
+            border: 5px solid var(--cor-primaria);
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            margin: 4rem auto; /* Centraliza */
+            animation: rotation 1s linear infinite;
+        }
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        /* --- FIM NOVOS ESTILOS --- */
+
 
         /* Otimização para impressão */
         @media print {
@@ -410,12 +462,21 @@
                 padding: 0 !important;
                 margin: 0 !important;
             }
-            .container {
+            header, nav, footer, .cta-button, .kpi-card, .progress-table-wrapper, .progress-title, #diario-page, #maximize-diario-btn {
+                display: none !important;
+            }
+            .container, .container-full-width {
                 max-width: none !important;
                 padding: 10px !important;
+                width: 100%;
+                box-shadow: none !important;
+                border: none !important;
             }
-             .container-full-width {
-                padding: 10px !important;
+            .page-content, .page-content > div {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
             }
             .styled-table {
                 font-size: 10px !important;
@@ -428,34 +489,22 @@
             .styled-table tbody tr {
                 page-break-inside: avoid;
             }
-            .page-content > div {
-                box-shadow: none !important;
-                border: 1px solid #ccc !important;
-            }
-            
             .gantt-wrapper-outer {
                 max-height: none !important;
                 overflow: visible !important;
                 border: none !important;
             }
-            /* Oculta tabelas de progresso na impressão */
-            .progress-table-wrapper, .progress-title {
-                display: none !important;
-            }
-            /* Oculta KPI na impressão */
-            .kpi-card {
-                display: none !important;
-            }
-            /* Ajusta gráficos FF para impressão */
             .ff-chart-wrapper {
                 border: none !important;
                 padding: 0 !important;
                 min-height: auto !important;
+                page-break-inside: avoid;
             }
         }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
+    
     <header>
         <div class="logo">Gestão de Obras</div>
         <nav>
@@ -463,465 +512,198 @@
                 <li><a id="nav-home" class="active">Página Principal</a></li>
                 <li><a id="nav-assuntos">Assuntos Relevantes</a></li>
                 <li><a id="nav-planejamento">Planejamento</a></li>
-                <!-- ATUALIZADO: Guia oculta -->
+                <!-- Guia oculta -->
                 <li style="display: none;"><a id="nav-fisico-financeiro">Físico-Financeiro</a></li>
                 <li><a id="nav-gestao-cava">Gestão Cava</a></li>
-                <!-- NOVO: Guia Diário de Obra -->
                 <li><a id="nav-diario">Diário de Obra</a></li>
             </ul>
         </nav>
     </header>
+    
     <main>
-        <section id="landing-page" class="container">
+        <!-- Página Principal -->
+        <section id="landing-page" class="container page-content" style="display: flex;">
             <div class="hero">
                 <h1>Sistema de Gestão de Obras</h1>
-                <h1>Contrapartida Viária Avênida do Metrô</h1>
+                <h2>Contrapartida Viária Avênida do Metrô</h2>
                 <p>
-                    Plataforma centralizada para o monitoramento e gestão da obra. Navegue pelas guias para acessar os painéis de assuntos relevante, planejamento, gestão de cava e diário de obras.
+                    Plataforma centralizada para o monitoramento e gestão de todas as frentes da obra. Navegue pelas guias para acessar a painéis de assuntos, planejamento, análise de riscos, controle de custos e gestão de cava.
                 </p>
                 <a id="cta-button" class="cta-button">Acessar aos Painéis</a>
             </div>
         </section>
 
-        <!-- MANTIDO: assuntos-page -->
-        <div id="assuntos-page" class="container page-content" style="display: none;">
+        <!-- Página Assuntos Relevantes -->
+        <section id="assuntos-page" class="container page-content" style="display: none;">
             <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
                 <h1>Assuntos Relevantes</h1>
+                <!-- Indicador de Carregamento -->
+                <div id="assuntos-loading" class="loading-spinner"></div>
+                <!-- Mensagem de Erro -->
+                <div id="assuntos-error" class="hidden text-center p-4 text-red-600 bg-red-100 border border-red-400 rounded-lg"></div>
                 <!-- Tabela de Assuntos -->
-                <div class="overflow-x-auto rounded-lg border border-gray-200">
+                <div id="assuntos-content" class="overflow-x-auto rounded-lg border border-gray-200" style="display: none;">
                     <table id="assuntos-table" class="styled-table min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-100">
                             <tr>
-                                <th class="w-16">Item</th>
-                                <th class="w-48">Assunto</th>
-                                <th>Descrição</th>
-                                <th class="w-48">Responsável</th>
+                                <!-- CORREÇÃO: Larguras de coluna ajustadas para priorizar Descrição -->
+                                <th class="w-1/12">Item</th>
+                                <th class="w-2/12">Assunto</th>
+                                <th class="w-7/12">Descrição</th>
+                                <th class="w-2/12">Responsável</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            <!-- Dados Inseridos da Análise -->
-                            <tr>
-                                <td class="text-center font-medium">01</td>
-                                <td>Remanejamento rede gás</td>
-                                <td class="break-words">
-                                    Consórcio-Rede de 79mm de gas- já identificada por sondagens manuais na área da obra, porém essa rede não consta do cadastro da Comgás- Fizemos a solicitação de atualização do cadastro para poder fazer um projeto de rede alternativo e remoção da existente-teriamos uma visita técnica da Congás hoje, porém devido ao mau tempo foi adiada para segunda -13/10. Foram feitas 2 visitas técnicas da Comgás ao local:
-                                    <br>-Na primeira, foi constatado que a rede não está no cadastro da Congás, e foi acionando o departamento responsável para confirmação e possível inclusão da rede no cadastro, para seguir com os passos de remoção;
-                                    <br>Na segunda, foi confirmado que a rede é rede interna do GPA, - foi solicitado os projetos e algumas sondagens, e a solicitação de remoção será encaminhada ao gerente Congás que cuida especificamente dessa conta- GPA.
-                                    <br>2810//25-Foram solicitados orçamentos para remanejamento da rede. Prazo 06/11/25.
-                                </td>
-                                <td>Penna</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center font-medium">02</td>
-                                <td>PV de esgoto assoreados</td>
-                                <td class="break-words">
-                                    Consórcio-Estamos concluindo o levantamento da área (são 11 tampões-de PVs, que estão assoreados e aparentemente fora de uso)- Limpamos e sondamos ao redor e imediação e estaremos apresentando os quantitativos para autorização de remoção/demolição dos mesmos, pois vão interferir na execução das estacas de brita; Identificamos novas interligações na região, e estamos cadastrando as novas redes e PVS.
-                                    <br>28/10/25-Consórcio estuda a demolição das caixas dos PVs ou ajuste da malha da coluna de brita. Prazo:07/11/25
-                                </td>
-                                <td>Penna</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center font-medium">03</td>
-                                <td>Rede de esgoto coletor Paes Mendonça</td>
-                                <td class="break-words">28/10/25-Consórcio vai solicitar cadastro oficial da rede de esgoto da Sabesp do coletor paes mendonça acredita-se estar ao lado da galeria pluvial, também sondara para encontrar a rede e/ou ajustar a malha das colunas de brita conforme reunião com GBX (21/10) e Tecnogeo (24/10) para evitar danos a rede.</td>
-                                <td>Penna</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center font-medium">04</td>
-                                <td>Rede de esgoto Mercado e Ice Brasil</td>
-                                <td class="break-words">28/10/25-Em reunião com Fábio da GBX (21/10) ficou definido o ajuste da malha da coluna de brita para não sobrepor com a rede de esgoto, consorcio apenas precisa levantar as redes e sobrepor com o projeto de fundação.</td>
-                                <td>Penna</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center font-medium">05</td>
-                                <td>Galeria Pluvial</td>
-                                <td class="break-words">
-                                    Consórcio-Galeria de águas pluviais- já identificada no cadastro, falta confirmar as profundidades da mesma e verificar a capacidade de suporte-pois está cruzando na perpendicular as pistas da av projetada. Profundidade já foi cadastrada e encaminhada para a GBX, que está fazendo as verificações.
-                                    <br>28/10/25-Em reunião com GBX (21/10) ficou definido ajuste da locação das colunas de brita para não sobrepor com a galeria.
-                                </td>
-                                <td>Penna</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center font-medium">06</td>
-                                <td>Remanejamento postes da ENEL</td>
-                                <td class="break-words">
-                                    Postes Enel-foi solicitada a remoção/remanejamento de 2 postes - processo em andamento, o processo de solicitação foi aberto em nome da ARCONTE e apresentou restrições, encaminhamos os documentos para nova solicitação em nome da Golf.
-                                    <br>28/10/25-Processo ainda não formalizado em nome da Golf, Thiago da Arc enviou modelo de procuração para assinatura da Golf (27/10/25). CTP acredita que a o poste que ficou na ilha da saida da benedito monte próximo a estaca 25 deva ser remanejado também.
-                                </td>
-                                <td>Penna</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center font-medium">07</td>
-                                <td>Remanejamento ponto de ônibus</td>
-                                <td class="break-words">
-                                    Ponto de ônibus-haverá necessidade de remanejar, foi encaminhado a SPTRans fotos e projeto do local.
-                                    <br>28/10/25-Será necessario reencaminhar documentração conforme orientação SPTrans.
-                                </td>
-                                <td>Penna</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center font-medium">08</td>
-                                <td>TPOV</td>
-                                <td class="break-words">Aguarda-se aprovação na Siurb.</td>
-                                <td>Thiago M. (Arc)</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center font-medium">09</td>
-                                <td>ATO Shibuya</td>
-                                <td class="break-words">28/10/25-A Shibuya realizou levantamento no dia 17/10/25 dos pontos locados pela Topografare (Consorcio), os pontos que foram locados na região do pão de açúcar (na face da guia) foram coincidentes, pede-se que no acesso da Marginal Local a Topografares faça também a locação dos pontos (face da guia) para facilitar a conferência pela Shibuya e visualização do levantamento.</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td class="text-center font-medium">10</td>
-                                <td>Escavação</td>
-                                <td class="break-words">FBS e BNX-C (24/10/25) ajustaram a mudança de local na frente de escavação até a BNX-C fazer o remanejamento da rede elétrica,</td>
-                                <td>Penna Consórcio x Luis M. BNX-C</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center font-medium">11</td>
-                                <td>Processo llume/SP Regula Av metrő</td>
-                                <td class="break-words">Em 14/10/25, a Arc enviou para SPRegula os projetos para andamento no processo</td>
-                                <td>Thiago M. (Arc)</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center font-medium">12</td>
-                                <td>Postes da marginal local llume/SP Regula</td>
-                                <td class="break-words">Arc solicitou a remoção dos postes para SPRegula, CTP orienta que o consórcio registre o envio desses materiais com quantidades, especificações, fotos e assinatura do responsável pela remoção dos postes e luminárias.</td>
-                                <td>Thiago/Penna</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center font-medium">13</td>
-                                <td>Coluna de Brita</td>
-                                <td class="break-words">2810//25-Em reunião com GBX (21/10) o Fábio Romero esclareceu duvidas sobre a execução das colunas de brita, e que a medida do avanço da execução pode-se realizar ajustes na malha para evitar as interferencias, desde que devidamente noicados/alinhados.com o projetista,</td>
-                                <td>Penna</td>
-                            </tr>
+                        <tbody id="assuntos-table-body" class="divide-y divide-gray-200">
+                            <!-- O conteúdo será carregado pelo JS -->
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- MANTIDO: planejamento-page -->
-        <div id="planejamento-page" class="container-full-width page-content" style="display: none; padding-top: 20px;">
+        <!-- Página Planejamento -->
+        <section id="planejamento-page" class="container-full-width page-content" style="display: none; padding-top: 20px;">
              <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-                <h1 class="text-3xl font-bold text-center mb-6" style="color: var(--cor-primaria);">Gráfico de Gantt do Projeto</h1>
+                <h1>Gráfico de Gantt do Projeto</h1>
                 
-                <div class="flex justify-center border-b border-gray-300 mb-4">
-                    <button id="btn-fase-1" class="phase-tab active">FASE 01</button>
-                    <button id="btn-fase-2" class="phase-tab">FASE 02</button>
-                </div>
+                <!-- Indicador de Carregamento -->
+                <div id="planejamento-loading" class="loading-spinner"></div>
+                <!-- Mensagem de Erro -->
+                <div id="planejamento-error" class="hidden text-center p-4 text-red-600 bg-red-100 border border-red-400 rounded-lg"></div>
+                
+                <!-- Conteúdo do Planejamento (oculto até carregar) -->
+                <div id="planejamento-content" style="display: none;">
+                    <div class="flex justify-center border-b border-gray-300 mb-4">
+                        <button id="btn-fase-1" class="phase-tab active">FASE 01</button>
+                        <button id="btn-fase-2" class="phase-tab">FASE 02</button>
+                    </div>
 
-                <div class="flex flex-col md:flex-row items-center justify-end mb-4 gap-2">
-                    <span class="text-sm font-medium text-gray-700">Zoom:</span>
-                    <button id="gantt-view-day" class="btn-gantt-view">Dia</button>
-                    <button id="gantt-view-week" class="btn-gantt-view active">Semana</button>
-                    <button id="gantt-view-month" class="btn-gantt-view">Mês</button>
-                </div>
+                    <div class="flex flex-col md:flex-row items-center justify-end mb-4 gap-2">
+                        <span class="text-sm font-medium text-gray-700">Zoom:</span>
+                        <button id="gantt-view-day" class="btn-gantt-view">Dia</button>
+                        <button id="gantt-view-week" class="btn-gantt-view active">Semana</button>
+                        <button id="gantt-view-month" class="btn-gantt-view">Mês</button>
+                    </div>
 
-                <div id="gantt-fase-1-wrapper" class="gantt-wrapper-outer mt-4">
-                    <div id="gantt-chart-fase-1"></div>
-                </div>
+                    <div id="gantt-fase-1-wrapper" class="gantt-wrapper-outer mt-4">
+                        <div id="gantt-chart-fase-1"></div>
+                    </div>
 
-                <div id="gantt-fase-2-wrapper" class="gantt-wrapper-outer mt-4" style="display: none;">
-                    <div id="gantt-chart-fase-2"></div>
-                </div>
+                    <div id="gantt-fase-2-wrapper" class="gantt-wrapper-outer mt-4" style="display: none;">
+                        <div id="gantt-chart-fase-2"></div>
+                    </div>
 
-                <div class="mt-8">
-                    <h2 class="text-2xl font-bold text-center mb-4 progress-title" style="color: var(--cor-primaria);">
-                        Avanço Previsto (Data de Controle: <span id="control-date-display">--/--/----</span>)
-                    </h2>
+                    <div class="mt-8">
+                        <h2 class="progress-title">
+                            Avanço Previsto (Data de Controle: <span id="control-date-display">--/--/----</span>)
+                        </h2>
+                        
+                        <div id="progress-table-fase-1" class="progress-table-wrapper" style="display: block;">
+                            <!-- A tabela será gerada pelo JS -->
+                        </div>
+
+                        <div id="progress-table-fase-2" class="progress-table-wrapper" style="display: none;">
+                            <!-- A tabela será gerada pelo JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Página Físico-Financeiro (Oculta) -->
+        <section id="fisico-financeiro-page" class="container-full-width page-content" style="display: none; padding-top: 20px;">
+             <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h1>Curva S - Físico-Financeiro</h1>
+                
+                <!-- Indicador de Carregamento -->
+                <div id="ff-loading" class="loading-spinner"></div>
+                <!-- Mensagem de Erro -->
+                <div id="ff-error" class="hidden text-center p-4 text-red-600 bg-red-100 border border-red-400 rounded-lg"></div>
+                
+                <!-- Conteúdo do FF (oculto até carregar) -->
+                <div id="ff-content" style="display: none;">
+                    <div class="flex justify-center border-b border-gray-300 mb-4">
+                        <button id="btn-ff-fase-1" class="phase-tab active">FASE 01</button>
+                        <button id="btn-ff-fase-2" class="phase-tab">FASE 02</button>
+                    </div>
+
+                    <!-- Wrapper do Gráfico Fase 1 -->
+                    <div id="ff-chart-fase-1-wrapper" class="ff-chart-wrapper" style="display: block;">
+                        <div id="ff-chart-fase-1" style="width: 100%; height: 500px;"></div>
+                    </div>
                     
-                    <div id="progress-table-fase-1" class="progress-table-wrapper" style="display: block;">
-                        <!-- A tabela será gerada pelo JS -->
-                    </div>
-
-                    <div id="progress-table-fase-2" class="progress-table-wrapper" style="display: none;">
-                        <!-- A tabela será gerada pelo JS -->
+                    <!-- Wrapper do Gráfico Fase 2 -->
+                    <div id="ff-chart-fase-2-wrapper" class="ff-chart-wrapper" style="display: none;">
+                        <div id="ff-chart-fase-2" style="width: 100%; height: 500px;"></div>
                     </div>
                 </div>
-
             </div>
-        </div>
+        </section>
 
-        <!-- MANTIDO: fisico-financeiro-page -->
-        <div id="fisico-financeiro-page" class="container-full-width page-content" style="display: none; padding-top: 20px;">
-             <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-                <h1 class="text-3xl font-bold text-center mb-6" style="color: var(--cor-primaria);">Curva S - Físico-Financeiro</h1>
-                
-                <div class="flex justify-center border-b border-gray-300 mb-4">
-                    <button id="btn-ff-fase-1" class="phase-tab active">FASE 01</button>
-                    <button id="btn-ff-fase-2" class="phase-tab">FASE 02</button>
-                </div>
-
-                <!-- Wrapper do Gráfico Fase 1 -->
-                <div id="ff-chart-fase-1-wrapper" class="ff-chart-wrapper" style="display: block;">
-                    <div id="ff-chart-fase-1" style="width: 100%; height: 500px;"></div>
-                </div>
-                
-                <!-- Wrapper do Gráfico Fase 2 -->
-                <div id="ff-chart-fase-2-wrapper" class="ff-chart-wrapper" style="display: none;">
-                    <div id="ff-chart-fase-2" style="width: 100%; height: 500px;"></div>
-                </div>
-                
-            </div>
-        </div>
-
-        <!-- MANTIDO: gestao-cava-page -->
-        <div id="gestao-cava-page" class="container page-content" style="display: none;">
+        <!-- Página Gestão Cava -->
+        <section id="gestao-cava-page" class="container page-content" style="display: none;">
             <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
                 <h1>Gestão Cava - Controle de Escavação</h1>
                 
-                <div class="max-w-md mx-auto my-8">
-                    <div class="kpi-card">
-                        <h3 class="kpi-title">Avanço Total da Escavação</h3>
-                        <div class="kpi-value" id="kpi-cava-percent">0%</div>
-                        <div class="kpi-progress-bar-bg">
-                            <div id="kpi-cava-bar" class="kpi-progress-bar-fill" style="width: 0%;">
-                                <span id="kpi-cava-bar-text">0%</span>
+                <!-- Indicador de Carregamento -->
+                <div id="cava-loading" class="loading-spinner"></div>
+                <!-- Mensagem de Erro -->
+                <div id="cava-error" class="hidden text-center p-4 text-red-600 bg-red-100 border border-red-400 rounded-lg"></div>
+
+                <!-- Conteúdo Cava (oculto até carregar) -->
+                <div id="cava-content" style="display: none;">
+                    <div class="max-w-md mx-auto my-8">
+                        <div class="kpi-card">
+                            <h3 class="kpi-title">Avanço Total da Escavação</h3>
+                            <div class="kpi-value" id="kpi-cava-percent">0%</div>
+                            <div class="kpi-progress-bar-bg">
+                                <div id="kpi-cava-bar" class="kpi-progress-bar-fill" style="width: 0%;">
+                                    <span id="kpi-cava-bar-text">0%</span>
+                                </div>
+                                <div class="kpi-limit-marker" style="left: 62.24%;">
+                                    <span class="tooltip-text">*Limite contratado CAVA (24.000 m³), consórcio precisar revisar o contrato com o fornecedor.</span>
+                                </div>
                             </div>
-                            <div class="kpi-limit-marker">
-                                <span class="tooltip-text">*Limite contratado CAVA (25.000 m³), consórcio precisar revisar o contrato com o fornecedor.</span>
+                            <p class="kpi-meta">
+                                <span id="kpi-cava-acumulado">0,00</span> m³ de <span id="kpi-cava-total">38.561,224</span> m³
+                            </p>
+                            
+                            <div class="kpi-legend">
+                                <span class="kpi-legend-line"></span>
+                                Limite contratual (24.000 m³)
                             </div>
-                        </div>
-                        <p class="kpi-meta">
-                            <span id="kpi-cava-acumulado">0,00</span> m³ de <span id="kpi-cava-total">38.561,224</span> m³
-                        </p>
-                        
-                        <div class="kpi-legend">
-                            <span class="kpi-legend-line"></span>
-                            Limite contratual CAVA (25.000 m³)
                         </div>
                     </div>
-                </div>
-                
-                <h2 class="text-2xl font-bold text-center mb-4 mt-8" style="color: var(--cor-primaria);">Histórico de Escavação</h2>
-                <div class="overflow-x-auto rounded-lg border border-gray-200">
-                    <table id="cava-table" class="styled-table min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-100">
-                            <tr>
-                                <th>Data</th>
-                                <th>Viagens</th>
-                                <th>Viagens Acum</th>
-                                <th>Volume Aprox</th>
-                                <th>Volume Acum</th>
-                                <th>OBS</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            <!-- Dados da imagem -->
-                            <tr>
-                                <td>03/out</td>
-                                <td>3</td>
-                                <td>3</td>
-                                <td>55,50</td>
-                                <td>55,50</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>08/out</td>
-                                <td>10</td>
-                                <td>13</td>
-                                <td>185,00</td>
-                                <td>240,50</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>09/out</td>
-                                <td>15</td>
-                                <td>28</td>
-                                <td>277,50</td>
-                                <td>518,00</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>10/out</td>
-                                <td>19</td>
-                                <td>47</td>
-                                <td>351,50</td>
-                                <td>869,50</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>11/out</td>
-                                <td>20</td>
-                                <td>67</td>
-                                <td>370,00</td>
-                                <td>1.239,50</td>
-                                <td></td>
-                            </tr>
-                            <tr style="background-color: #fff7ed;">
-                                <td>12/out</td>
-                                <td>0</td>
-                                <td>67</td>
-                                <td>-</td>
-                                <td>1.239,50</td>
-                                <td>Dom</td>
-                            </tr>
-                            <tr>
-                                <td>13/out</td>
-                                <td>19</td>
-                                <td>86</td>
-                                <td>351,50</td>
-                                <td>1.591,00</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>14/out</td>
-                                <td>33</td>
-                                <td>119</td>
-                                <td>610,50</td>
-                                <td>2.201,50</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>15/out</td>
-                                <td>34</td>
-                                <td>153</td>
-                                <td>629,00</td>
-                                <td>2.830,50</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>16/out</td>
-                                <td>34</td>
-                                <td>187</td>
-                                <td>629,00</td>
-                                <td>3.459,50</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>17/out</td>
-                                <td>31</td>
-                                <td>218</td>
-                                <td>573,50</td>
-                                <td>4.033,00</td>
-                                <td></td>
-                            </tr>
-                            <tr style="background-color: #fef2f2;">
-                                <td>18/out</td>
-                                <td>10</td>
-                                <td>228</td>
-                                <td>185,00</td>
-                                <td>4.218,00</td>
-                                <td>Sab/Chuva</td>
-                            </tr>
-                            <tr style="background-color: #fff7ed;">
-                                <td>19/out</td>
-                                <td>0</td>
-                                <td>228</td>
-                                <td>-</td>
-                                <td>4.218,00</td>
-                                <td>Dom</td>
-                            </tr>
-                            <tr style="background-color: #fef2f2;">
-                                <td>20/out</td>
-                                <td>21</td>
-                                <td>249</td>
-                                <td>388,50</td>
-                                <td>4.606,50</td>
-                                <td>Terreno molhado</td>
-                            </tr>
-                            <tr>
-                                <td>21/out</td>
-                                <td>29</td>
-                                <td>278</td>
-                                <td>536,50</td>
-                                <td>5.143,00</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>22/out</td>
-                                <td>24</td>
-                                <td>302</td>
-                                <td>444,00</td>
-                                <td>5.587,00</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>23/out</td>
-                                <td>26</td>
-                                <td>328</td>
-                                <td>481,00</td>
-                                <td>6.068,00</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>24/out</td>
-                                <td>11</td>
-                                <td>339</td>
-                                <td>203,50</td>
-                                <td>6.271,50</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>25/out</td>
-                                <td>18</td>
-                                <td>357</td>
-                                <td>333,00</td>
-                                <td>6.604,50</td>
-                                <td></td>
-                            </tr>
-                            <tr style="background-color: #fff7ed;">
-                                <td>26/out</td>
-                                <td>0</td>
-                                <td>357</td>
-                                <td>0</td>
-                                <td>6.604,50</td>
-                                <td>Dom</td>
-                            </tr>
-                            <tr>
-                                <td>27/out</td>
-                                <td>28</td>
-                                <td>385</td>
-                                <td>518,00</td>
-                                <td>7.122,50</td>
-                                <td></td>
-                            </tr>
-                            <tr style="background-color: #fef2f2;">
-                                <td>28/out</td>
-                                <td>24</td>
-                                <td>409</td>
-                                <td>444,00</td>
-                                <td>7.566,50</td>
-                                <td>Chuva</td>
-                            </tr>
-                            <tr style="background-color: #fef2f2;">
-                                <td>29/out</td>
-                                <td>21</td>
-                                <td>430</td>
-                                <td>388,50</td>
-                                <td>7.955,00</td>
-                                <td>Chuva</td>
-                            </tr>
-                            <tr>
-                                <td>30/out</td>
-                                <td>24</td>
-                                <td>454</td>
-                                <td>444,00</td>
-                                <td>8.399,00</td>
-                                <td style="color: #ea580c;">Prev</td>
-                            </tr>
-                            <tr>
-                                <td>31/out</td>
-                                <td>32</td>
-                                <td>486</td>
-                                <td>592,00</td>
-                                <td>8.991,00</td>
-                                <td style="color: #ea580c;">Prev</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    
+                    <h2 class="mt-8">Histórico de Escavação</h2>
+                    <div class="overflow-x-auto rounded-lg border border-gray-200">
+                        <table id="cava-table" class="styled-table min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Viagens</th>
+                                    <th>Viagens Acum</th>
+                                    <th>Volume Aprox</th>
+                                    <th>Volume Acum</th>
+                                    <th>OBS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cava-table-body" class="divide-y divide-gray-200">
+                                <!-- Os dados serão carregados pelo JS -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- NOVO: Página Diário de Obra -->
-        <div id="diario-page" class="container-full-width page-content" style="display: none; padding-top: 20px;">
+        <!-- Página Diário de Obra -->
+        <section id="diario-page" class="container-full-width page-content" style="display: none; padding-top: 20px;">
              <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-                <h1 class="text-3xl font-bold text-center mb-6" style="color: var(--cor-primaria);">Diário de Obra</h1>
+                <h1>Diário de Obra</h1>
                 
                 <div class="flex justify-end mb-4">
-                    <button id="maximize-diario-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition flex items-center gap-2">
+                    <button id="maximize-diario-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m0 0v4m0-4l-5 5M4 16v4m0 0h4m0 0l5-5m11 5h-4m0 0v-4m0 4l-5-5" />
                         </svg>
@@ -939,27 +721,341 @@
                 </div>
                  <p class="text-sm text-gray-500 mt-2 text-center">Carregando Diário de Obra... (Se a tela permanecer em branco, clique em "Maximizar" ou abra o link <a href="https://web.diariodeobra.app/#/app/obras" target="_blank" class="text-blue-600 hover:underline">numa nova guia</a>).</p>
             </div>
-        </div>
+        </section>
     </main>
+    
     <footer class="bg-white text-center p-4 mt-8">
         <p class="text-sm text-gray-600">Sistema de Gestão de Obras © 2025</p>
     </footer>
 
 <script>
+    /**
+     * Script principal do Dashboard de Gestão de Obras
+     * Este script controla a navegação entre as páginas (abas),
+     * carrega dados de ficheiros .jsonl externos para as guias
+     * "Assuntos Relevantes", "Planejamento" e "Gestão Cava",
+     * e renderiza os gráficos (Gantt e Curva S).
+     */
     document.addEventListener('DOMContentLoaded', function () {
+        
+        // --- Seletores de Elementos Globais ---
         const navLinks = document.querySelectorAll('nav a');
         const pages = document.querySelectorAll('.page-content');
         const landingPage = document.getElementById('landing-page');
         const ctaButton = document.getElementById('cta-button');
         
+        // --- Flags de Inicialização (Evita recarregamento) ---
         let planejamentoInicializado = false;
-        let fisicoFinanceiroInicializado = false; // Flag para FF
+        let fisicoFinanceiroInicializado = false;
+        let assuntosInicializado = false;
+        let cavaInicializada = false;
         
-        // Lógica do KPI de Gestão Cava
-        function initializeCavaPage() {
-            const volumeTotal = 38561.224; // m³
-            const volumeAcumulado = 8991.00; // m³ (último valor da tabela)
+        // --- Funções Auxiliares de Exibição ---
 
+        /**
+         * Esconde todos os indicadores de carregamento (spinners).
+         */
+        function hideAllLoaders() {
+            document.querySelectorAll('.loading-spinner').forEach(spinner => {
+                spinner.style.display = 'none';
+            });
+        }
+        
+        /**
+         * Oculta todas as páginas de conteúdo e a página principal.
+         */
+        function hideAllPages() {
+            pages.forEach(page => page.style.display = 'none');
+            landingPage.style.display = 'none';
+        }
+
+        /**
+         * Exibe a página solicitada e inicializa seus dados se for a primeira vez.
+         * @param {string} pageId - O ID da página a ser exibida (ex: 'assuntos-page').
+         */
+        function showPage(pageId) {
+            hideAllPages();
+            
+            // Ativa o link de navegação correspondente
+            navLinks.forEach(link => {
+                const linkPageId = (link.id === 'nav-home') ? 'landing-page' : link.id.replace('nav-', '') + '-page';
+                link.classList.toggle('active', linkPageId === pageId);
+            });
+
+            // Encontra e exibe a página
+            const pageToShow = document.getElementById(pageId);
+            if (pageToShow) {
+                pageToShow.style.display = 'block';
+                if (pageId === 'landing-page') {
+                    pageToShow.style.display = 'flex';
+                }
+            } else {
+                console.error("Página não encontrada:", pageId);
+                document.getElementById('landing-page').style.display = 'flex'; // Volta para a Home
+                return;
+            }
+            
+            // --- Lógica de Inicialização de Página (Carregamento de Dados) ---
+            // Cada página só é inicializada uma vez.
+            
+            try {
+                if (pageId === 'assuntos-page' && !assuntosInicializado) {
+                    initializeAssuntosPage(); // Função Async
+                    assuntosInicializado = true;
+                }
+                if (pageId === 'planejamento-page' && !planejamentoInicializado) {
+                    initializeGanttPage(); // Função Async
+                    planejamentoInicializado = true;
+                }
+                if (pageId === 'fisico-financeiro-page' && !fisicoFinanceiroInicializado) {
+                    initializeFisicoFinanceiroPage(); // Carrega Google Charts (tem seu próprio callback)
+                    // A flag 'fisicoFinanceiroInicializado' é definida dentro do callback do Google Charts
+                }
+                if (pageId === 'gestao-cava-page' && !cavaInicializada) {
+                    loadCavaData(); // Função Async
+                    cavaInicializada = true;
+                }
+            } catch (error) {
+                console.error(`Falha ao inicializar a página ${pageId}:`, error);
+                // Exibe um erro genérico se a inicialização falhar
+                const errorDiv = document.getElementById(pageId.replace('-page', '-error'));
+                if(errorDiv) {
+                    errorDiv.textContent = `Erro crítico ao carregar a página: ${error.message}`;
+                    errorDiv.style.display = 'block';
+                }
+            }
+        }
+
+        // --- Event Listeners da Navegação ---
+        navLinks.forEach(link => {
+            link.addEventListener('click', (event) => {
+                const navId = event.currentTarget.id;
+                const pageId = (navId === 'nav-home') ? 'landing-page' : navId.replace('nav-', '') + '-page';
+                showPage(pageId);
+            });
+        });
+
+        // ATUALIZADO: Botão CTA agora aponta para Assuntos Relevantes
+        ctaButton.addEventListener('click', () => showPage('assuntos-page')); 
+        showPage('landing-page'); // Exibe a página principal ao carregar
+
+        // --- Lógica da Página: Diário de Obra (Iframe) ---
+        const maximizeDiarioBtn = document.getElementById('maximize-diario-btn');
+        const diarioIframeContainer = document.getElementById('diario-iframe-container');
+
+        if (maximizeDiarioBtn && diarioIframeContainer) {
+            maximizeDiarioBtn.addEventListener('click', () => {
+                // Tenta entrar em tela cheia com prefixos de navegador
+                if (diarioIframeContainer.requestFullscreen) {
+                    diarioIframeContainer.requestFullscreen();
+                } else if (diarioIframeContainer.webkitRequestFullscreen) { /* Safari */
+                    diarioIframeContainer.webkitRequestFullscreen();
+                } else if (diarioIframeContainer.msRequestFullscreen) { /* IE11 */
+                    diarioIframeContainer.msRequestFullscreen();
+                }
+            });
+        }
+        
+        // --- Lógica da Página: Assuntos Relevantes (Carregamento JSONL) ---
+        
+        /**
+         * Inicializa a página de Assuntos Relevantes, carregando do .jsonl ou localStorage.
+         */
+        async function initializeAssuntosPage() {
+            const tableBody = document.getElementById('assuntos-table-body');
+            const loading = document.getElementById('assuntos-loading');
+            const errorDiv = document.getElementById('assuntos-error');
+            const contentDiv = document.getElementById('assuntos-content');
+
+            if (!tableBody || !loading || !errorDiv || !contentDiv) return;
+
+            loading.style.display = 'block'; // Mostra o spinner
+            errorDiv.style.display = 'none';
+            contentDiv.style.display = 'none';
+
+            try {
+                // Tenta carregar dados do localStorage primeiro
+                const storedData = localStorage.getItem('assuntos-db');
+                if (storedData) {
+                    console.log('Carregando Assuntos do localStorage.');
+                    renderAssuntosTable(JSON.parse(storedData));
+                } else {
+                    console.log('Buscando assuntos.jsonl...');
+                    const response = await fetch('assuntos.jsonl'); // Carrega o arquivo
+                    if (!response.ok) {
+                        throw new Error(`Não foi possível carregar assuntos.jsonl (Status: ${response.status})`);
+                    }
+                    const text = await response.text();
+                    const lines = text.trim().split('\n');
+                    
+                    if (lines.length === 0 || (lines.length === 1 && lines[0] === '')) {
+                         throw new Error('O ficheiro assuntos.jsonl está vazio.');
+                    }
+
+                    const data = [];
+                    lines.forEach((line) => {
+                        if (line.trim() === '') return;
+                        try {
+                            data.push(JSON.parse(line));
+                        } catch (e) {
+                            console.warn('Erro ao parsear linha do assuntos.jsonl:', line, e);
+                        }
+                    });
+                    
+                    localStorage.setItem('assuntos-db', JSON.stringify(data)); // Salva no localStorage
+                    renderAssuntosTable(data); // Renderiza a tabela
+                }
+            } catch (error) {
+                console.error("Falha ao carregar o banco de dados de Assuntos:", error);
+                errorDiv.textContent = `Erro ao carregar dados: ${error.message}`;
+                errorDiv.style.display = 'block';
+            } finally {
+                loading.style.display = 'none'; // Esconde o spinner
+            }
+        }
+        
+        /**
+         * Renderiza os dados dos Assuntos na tabela.
+         * @param {Array} data - Array de objetos de assuntos.
+         */
+        function renderAssuntosTable(data) {
+            const tableBody = document.getElementById('assuntos-table-body');
+            const contentDiv = document.getElementById('assuntos-content');
+            let tableHTML = "";
+
+            data.forEach((item) => {
+                // Converte quebras de linha \n para <br>
+                const descricaoHtml = item.descricao.replace(/\n/g, '<br>');
+                tableHTML += `
+                    <tr>
+                        <td class="text-center font-medium">${item.item}</td>
+                        <td class="break-words">${item.assunto}</td>
+                        <td class="break-words">${descricaoHtml}</td>
+                        <td class="whitespace-nowrap">${item.responsavel}</td>
+                    </tr>
+                `;
+            });
+
+            tableBody.innerHTML = tableHTML; // Insere todo o HTML de uma vez
+            contentDiv.style.display = 'block'; // Mostra o conteúdo
+        }
+
+        // --- Lógica da Página: Gestão Cava (Carregamento JSONL) ---
+        
+        /**
+         * Inicializa a página de Gestão Cava, carregando do .jsonl ou localStorage.
+         */
+        async function loadCavaData() {
+            const tableBody = document.getElementById('cava-table-body');
+            const loading = document.getElementById('cava-loading');
+            const errorDiv = document.getElementById('cava-error');
+            const contentDiv = document.getElementById('cava-content');
+
+            if (!tableBody || !loading || !errorDiv || !contentDiv) return;
+
+            loading.style.display = 'block';
+            errorDiv.style.display = 'none';
+            contentDiv.style.display = 'none';
+
+            let ultimoVolumeAcumulado = 0; // Para o KPI
+
+            try {
+                // Tenta carregar do localStorage
+                const storedData = localStorage.getItem('gestao-cava-db');
+                if(storedData) {
+                    console.log('Carregando Gestão Cava do localStorage.');
+                    ultimoVolumeAcumulado = renderCavaTable(JSON.parse(storedData));
+                } else {
+                    console.log('Buscando gestao_cava.jsonl...');
+                    const response = await fetch('gestao_cava.jsonl'); // Carrega o novo arquivo
+                    if (!response.ok) {
+                        throw new Error(`Não foi possível carregar gestao_cava.jsonl (Status: ${response.status})`);
+                    }
+                    const text = await response.text();
+                    const lines = text.trim().split('\n');
+                    
+                    if (lines.length === 0 || (lines.length === 1 && lines[0] === '')) {
+                         throw new Error('O ficheiro gestao_cava.jsonl está vazio.');
+                    }
+                    
+                    const data = [];
+                    lines.forEach((line) => {
+                        if (line.trim() === '') return;
+                        try {
+                            data.push(JSON.parse(line));
+                        } catch (e) {
+                            console.warn('Erro ao parsear linha do gestao_cava.jsonl:', line, e);
+                        }
+                    });
+                    
+                    localStorage.setItem('gestao-cava-db', JSON.stringify(data)); // Salva no localStorage
+                    ultimoVolumeAcumulado = renderCavaTable(data); // Renderiza e obtém o último valor
+                }
+                
+                // Atualiza o KPI com o último valor válido encontrado
+                updateCavaKPI(ultimoVolumeAcumulado);
+
+            } catch (error) {
+                console.error("Falha ao carregar o banco de dados da Cava:", error);
+                errorDiv.textContent = `Erro ao carregar dados: ${error.message}`;
+                errorDiv.style.display = 'block';
+                updateCavaKPI(0); // Zera o KPI em caso de erro
+            } finally {
+                loading.style.display = 'none'; // Esconde o spinner
+            }
+        }
+        
+        /**
+         * Renderiza os dados da Cava na tabela.
+         * @param {Array} data - Array de objetos de registro da cava.
+         * @returns {number} - O último volume acumulado encontrado.
+         */
+        function renderCavaTable(data) {
+            const tableBody = document.getElementById('cava-table-body');
+            const contentDiv = document.getElementById('cava-content');
+            let tableHTML = "";
+            let ultimoVolumeAcumulado = 0;
+
+            data.forEach((item) => {
+                // Define estilos com base no OBS
+                let trClass = '';
+                if (item.obs.includes('Dom')) trClass = 'style="background-color: #fff7ed;"'; // Fundo Dom
+                if (item.obs.includes('Chuva') || item.obs.includes('molhado')) trClass = 'style="background-color: #fef2f2;"'; // Fundo Chuva
+                
+                let obsStyle = item.obs.includes('Prev') ? 'style="color: #ea580c;"' : '';
+                let numStyle = item.obs.includes('Prev') ? 'style="color: #dc2626;"' : ''; // Vermelho para Previsto
+
+                tableHTML += `
+                    <tr ${trClass}>
+                        <td>${item.data || ''}</td>
+                        <td ${numStyle}>${item.viagens || ''}</td>
+                        <td ${numStyle}>${item.viagens_acum || ''}</td>
+                        <td ${numStyle}>${item.volume_aprox || ''}</td>
+                        <td ${numStyle}>${item.volume_acum || ''}</td>
+                        <td ${obsStyle}>${item.obs || ''}</td>
+                    </tr>
+                `;
+                
+                // Atualiza o último volume acumulado para o KPI
+                // Remove pontos de milhar, substitui vírgula por ponto decimal
+                const volAcumLimpo = item.volume_acum.replace(/\./g, '').replace(',', '.');
+                const volFloat = parseFloat(volAcumLimpo);
+                if (!isNaN(volFloat)) {
+                    ultimoVolumeAcumulado = volFloat;
+                }
+            });
+
+            tableBody.innerHTML = tableHTML; // Insere todo o HTML de uma vez
+            contentDiv.style.display = 'block'; // Mostra o conteúdo
+            return ultimoVolumeAcumulado;
+        }
+
+        /**
+         * Atualiza o KPI de Gestão Cava com base no volume.
+         * @param {number} volumeAcumulado - O volume acumulado total.
+         */
+        function updateCavaKPI(volumeAcumulado) {
+            const volumeTotal = 38561.224; // m³
             const percentual = (volumeAcumulado / volumeTotal) * 100;
             const percentualFormatado = percentual.toFixed(2);
             
@@ -983,79 +1079,32 @@
             if (kpiTotal) kpiTotal.textContent = formatNumberMeta(volumeTotal);
         }
 
-        function hideAllPages() {
-            pages.forEach(page => page.style.display = 'none');
-            landingPage.style.display = 'none';
-        }
-
-        function showPage(pageId) {
-            hideAllPages();
-            const pageToShow = document.getElementById(pageId);
-            if (pageToShow) {
-                pageToShow.style.display = 'block';
-                if (pageId === 'landing-page') {
-                    pageToShow.style.display = 'flex';
-                }
-            }
-            navLinks.forEach(link => {
-                const linkPageId = (link.id === 'nav-home') ? 'landing-page' : link.id.replace('nav-', '') + '-page';
-                link.classList.toggle('active', linkPageId === pageId);
-            });
-            
-            // Inicializa Gantt
-            if (pageId === 'planejamento-page' && !planejamentoInicializado) {
-                initializeGanttPage();
-                planejamentoInicializado = true;
-            }
-            // Inicializa Físico-Financeiro
-            if (pageId === 'fisico-financeiro-page' && !fisicoFinanceiroInicializado) {
-                initializeFisicoFinanceiroPage();
-                // Flag é movida para dentro do callback do Google Charts
-            }
-            if (pageId === 'gestao-cava-page') {
-                initializeCavaPage();
-            }
-        }
-
-        navLinks.forEach(link => {
-            link.addEventListener('click', (event) => {
-                const navId = event.currentTarget.id;
-                const pageId = (navId === 'nav-home') ? 'landing-page' : navId.replace('nav-', '') + '-page';
-                showPage(pageId);
-            });
-        });
-
-        ctaButton.addEventListener('click', () => showPage('planejamento-page'));
-        showPage('landing-page');
-
-        // --- NOVO: Lógica do Diário de Obra ---
-        const maximizeDiarioBtn = document.getElementById('maximize-diario-btn');
-        const diarioIframeContainer = document.getElementById('diario-iframe-container');
-
-        if (maximizeDiarioBtn && diarioIframeContainer) {
-            maximizeDiarioBtn.addEventListener('click', () => {
-                if (diarioIframeContainer.requestFullscreen) {
-                    diarioIframeContainer.requestFullscreen();
-                } else if (diarioIframeContainer.webkitRequestFullscreen) { /* Safari */
-                    diarioIframeContainer.webkitRequestFullscreen();
-                } else if (diarioIframeContainer.msRequestFullscreen) { /* IE11 */
-                    diarioIframeContainer.msRequestFullscreen();
-                }
-            });
-        }
-        // --- FIM NOVO ---
-        
-        // Lógica da Página Físico-Financeiro
+        // --- Lógica da Página: Físico-Financeiro (Google Charts) ---
         function initializeFisicoFinanceiroPage() {
-            google.charts.load('current', {'packages':['corechart']});
-            google.charts.setOnLoadCallback(drawFFCharts);
+            const loading = document.getElementById('ff-loading');
+            const errorDiv = document.getElementById('ff-error');
+            const contentDiv = document.getElementById('ff-content');
+            
+            loading.style.display = 'block';
+            errorDiv.style.display = 'none';
+            contentDiv.style.display = 'none';
+            
+            // Carrega a biblioteca e define a função de callback
+            try {
+                google.charts.load('current', {'packages':['corechart']});
+                google.charts.setOnLoadCallback(drawFFCharts);
+            } catch(e) {
+                 console.error("Falha ao carregar Google Charts:", e);
+                 errorDiv.textContent = 'Erro ao carregar a biblioteca de gráficos do Google.';
+                 errorDiv.style.display = 'block';
+                 loading.style.display = 'none';
+            }
 
-            let formatter; // Declarado aqui
+            let formatter; // Declarado no escopo da função de inicialização
 
             // Função para formatar os dados da Tooltip
             function createTooltip(periodo, despInd, trecho, cumul) {
-                // O formatter será inicializado em drawFFCharts antes disto ser chamado
-                if (!formatter) return ''; // Proteção caso o formatter não esteja pronto
+                if (!formatter) return ''; // Proteção
                 return `
                     <div class="p-2 shadow-md rounded-md bg-white text-sm" style="min-width: 250px;">
                         <h4 class="font-bold text-base mb-2" style="color: var(--cor-primaria);">${periodo}</h4>
@@ -1164,47 +1213,60 @@
                 chart.draw(data, options);
             }
 
+            /**
+             * Função de Callback principal do Google Charts
+             */
             function drawFFCharts() {
-                // ATUALIZADO: Inicializado aqui, dentro do callback
-                formatter = new google.visualization.NumberFormat({
-                    prefix: 'R$ ',
-                    decimalSymbol: ',',
-                    groupingSymbol: '.',
-                    fractionDigits: 2
-                });
+                try {
+                    // Inicializa o formatador de moeda
+                    formatter = new google.visualization.NumberFormat({
+                        prefix: 'R$ ',
+                        decimalSymbol: ',',
+                        groupingSymbol: '.',
+                        fractionDigits: 2
+                    });
 
-                drawChart(getFase1FFData(), 'ff-chart-fase-1', 'Curva S - Físico-Financeiro (Fase 01)');
-                drawChart(getFase2FFData(), 'ff-chart-fase-2', 'Curva S - Físico-Financeiro (Fase 02)');
+                    // Desenha os gráficos
+                    drawChart(getFase1FFData(), 'ff-chart-fase-1', 'Curva S - Físico-Financeiro (Fase 01)');
+                    drawChart(getFase2FFData(), 'ff-chart-fase-2', 'Curva S - Físico-Financeiro (Fase 02)');
 
-                // Lógica das Abas
-                const btnFase1 = document.getElementById('btn-ff-fase-1');
-                const btnFase2 = document.getElementById('btn-ff-fase-2');
-                const wrapperFase1 = document.getElementById('ff-chart-fase-1-wrapper');
-                const wrapperFase2 = document.getElementById('ff-chart-fase-2-wrapper');
-                
-                btnFase1.addEventListener('click', () => {
-                    btnFase1.classList.add('active');
-                    btnFase2.classList.remove('active');
-                    wrapperFase1.style.display = 'block';
-                    wrapperFase2.style.display = 'none';
-                });
-                
-                btnFase2.addEventListener('click', () => {
-                    btnFase2.classList.add('active');
-                    btnFase1.classList.remove('active');
-                    wrapperFase2.style.display = 'block';
-                    wrapperFase1.style.display = 'none';
-                });
-                
-                // ATUALIZADO: Flag de inicialização movida para o FIM do callback
-                fisicoFinanceiroInicializado = true;
+                    // Lógica das Abas
+                    const btnFase1 = document.getElementById('btn-ff-fase-1');
+                    const btnFase2 = document.getElementById('btn-ff-fase-2');
+                    const wrapperFase1 = document.getElementById('ff-chart-fase-1-wrapper');
+                    const wrapperFase2 = document.getElementById('ff-chart-fase-2-wrapper');
+                    
+                    btnFase1.addEventListener('click', () => {
+                        btnFase1.classList.add('active');
+                        btnFase2.classList.remove('active');
+                        wrapperFase1.style.display = 'block';
+                        wrapperFase2.style.display = 'none';
+                    });
+                    
+                    btnFase2.addEventListener('click', () => {
+                        btnFase2.classList.add('active');
+                        btnFase1.classList.remove('active');
+                        wrapperFase2.style.display = 'block';
+                        wrapperFase1.style.display = 'none';
+                    });
+                    
+                    // Marca como inicializado e exibe o conteúdo
+                    fisicoFinanceiroInicializado = true;
+                    loading.style.display = 'none';
+                    contentDiv.style.display = 'block';
+
+                } catch (e) {
+                     console.error("Falha ao desenhar gráficos FF:", e);
+                     errorDiv.textContent = 'Erro ao desenhar gráficos: ' + e.message;
+                     errorDiv.style.display = 'block';
+                     loading.style.display = 'none';
+                }
             }
              
              // Redesenha os gráficos quando a janela muda de tamanho
              window.addEventListener('resize', function() {
                 // ATUALIZADO: Verifica a flag ANTES de tentar redesenhar
                 if (fisicoFinanceiroInicializado && document.getElementById('fisico-financeiro-page').style.display === 'block') {
-                    // Adicionado try...catch para robustez
                     try {
                         drawFFCharts();
                     } catch (e) {
@@ -1214,22 +1276,55 @@
             }, true);
         }
 
-        // Lógica de Gantt (Frappe)
-        function initializeGanttPage() {
+        // --- Lógica da Página: Planejamento (Gantt com JSONL) ---
+        
+        /**
+         * Inicializa a página de Planeamento, carregando dados e renderizando o Gantt.
+         */
+        async function initializeGanttPage() {
+            
+            const loading = document.getElementById('planejamento-loading');
+            const errorDiv = document.getElementById('planejamento-error');
+            const contentDiv = document.getElementById('planejamento-content');
+
+            loading.style.display = 'block';
+            errorDiv.style.display = 'none';
+            contentDiv.style.display = 'none';
             
             let activeGantt = { instance: null };
             let ganttFase1 = null;
             let ganttFase2 = null;
             
+            // Data de controle é sempre "hoje"
             const today = new Date();
             today.setHours(0, 0, 0, 0); 
 
+            // Atualiza o display da data de controle
             const controlDateString = today.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
             const controlDateDisplay = document.getElementById('control-date-display');
             if(controlDateDisplay) {
                 controlDateDisplay.textContent = controlDateString;
             }
             
+            /**
+             * Converte uma string YYYY-MM-DD para um objeto Date local (meia-noite).
+             */
+            function parseDateFromISO(dateStr) {
+                if (!dateStr || !dateStr.includes('-')) {
+                    console.warn('Data ISO inválida:', dateStr);
+                    return new Date(); 
+                }
+                const parts = dateStr.split('T')[0].split('-').map(Number);
+                if (parts.length < 3 || isNaN(parts[0]) || isNaN(parts[1]) || isNaN(parts[2])) {
+                        console.warn('Data NaN:', dateStr);
+                        return new Date();
+                }
+                return new Date(parts[0], parts[1] - 1, parts[2], 0, 0, 0); // (Ano, Mês-1, Dia)
+            }
+            
+            /**
+             * Carrega tarefas do localStorage.
+             */
             function loadTasksFromStorage(key) {
                 const stored = localStorage.getItem(key);
                 if (stored) {
@@ -1237,27 +1332,46 @@
                         const parsed = JSON.parse(stored);
                         return parsed.map(task => ({
                             ...task,
-                            start: new Date(task.start),
-                            end: new Date(task.end)
+                            start: parseDateFromISO(task.start), // Converte de string para Date
+                            end: parseDateFromISO(task.end)
                         }));
                     } catch (e) {
+                        console.warn("Erro ao ler localStorage, limpando dados:", e);
+                        localStorage.removeItem(key); // Limpa dados corrompidos
                         return [];
                     }
                 }
                 return [];
             }
 
+            /**
+             * Salva tarefas no localStorage no formato YYYY-MM-DD.
+             */
             function saveTasksToStorage(key, tasks) {
-                const serializable = tasks.map(task => ({
-                    ...task,
-                    start: task.start.toISOString(),
-                    end: task.end.toISOString(),
-                    progress: task.progress
-                }));
-                localStorage.setItem(key, JSON.stringify(serializable));
+                try {
+                    const serializable = tasks.map(task => ({
+                        id: task.id,
+                        name: task.name,
+                        start: formatDateForFrappe(task.start), // Salva como YYYY-MM-DD
+                        end: formatDateForFrappe(task.end),     // Salva como YYYY-MM-DD
+                        progress: task.progress,
+                        dependencies: task.dependencies,
+                        fase: task.fase // Preserva a fase
+                    }));
+                    localStorage.setItem(key, JSON.stringify(serializable));
+                } catch (e) {
+                    console.error("Erro ao salvar no localStorage:", e);
+                }
             }
 
+            /**
+             * Formata um objeto Date para YYYY-MM-DD.
+             */
             function formatDateForFrappe(date) {
+                if (!(date instanceof Date) || isNaN(date)) {
+                    console.warn("Tentando formatar data inválida:", date);
+                    return '2025-01-01'; // Data de fallback
+                }
                 const d = new Date(date);
                 let month = '' + (d.getMonth() + 1);
                 let day = '' + d.getDate();
@@ -1267,30 +1381,16 @@
                 return [year, month, day].join('-');
             }
 
-            function parseImgDate(dateStr) {
-                if (!dateStr || dateStr.split('/').length < 3) {
-                    console.warn('Data inválida encontrada:', dateStr);
-                    return new Date(); 
-                }
-                const [day, month, year] = dateStr.split('/').map(Number);
-                if (isNaN(day) || isNaN(month) || isNaN(year)) {
-                    console.warn('Data NaN:', dateStr);
-                    return new Date();
-                }
-                // CORRIGIDO: 2F025 -> 2025
-                let fullYear = (year < 100) ? (year + 2000) : year;
-                if (year > 2000 && year < 2020) { // Suposição para anos "25"
-                     fullYear = year + 2000;
-                }
-                // Tratamento específico para o erro que vimos
-                if (dateStr.includes("2F025")) {
-                    fullYear = 2025;
+            /**
+             * Calcula o progresso planeado de uma tarefa com base na data de controlo.
+             */
+            function calculatePlannedProgress(task, controlDate) {
+                // Validação de datas
+                if (!(task.start instanceof Date) || isNaN(task.start) || !(task.end instanceof Date) || isNaN(task.end)) {
+                    console.warn("Tarefa com data inválida:", task);
+                    return 0;
                 }
 
-                return new Date(fullYear, month - 1, day, 0, 0, 0);
-            }
-            
-            function calculatePlannedProgress(task, controlDate) {
                 const endOfDay = new Date(task.end.getTime());
                 endOfDay.setHours(23, 59, 59, 999);
 
@@ -1298,9 +1398,9 @@
                 const end = endOfDay.getTime();
                 const todayTime = controlDate.getTime(); 
 
-                if (todayTime < start) return 0;
-                if (todayTime >= end) return 100;
-                if (start === end && todayTime >= start) return 100;
+                if (todayTime < start) return 0; // Tarefa ainda não começou
+                if (todayTime >= end) return 100; // Tarefa concluída
+                if (start === end && todayTime >= start) return 100; // Tarefa de dia único (marco)
                 
                 const totalDuration = end - start;
                 if (totalDuration <= 0) { 
@@ -1313,172 +1413,87 @@
                 return Math.max(0, Math.min(100, Math.round(progress)));
             }
 
-            // --- DADOS FASE 01 ---
-            const defaultTasksFase1 = [
-                { id: "Task0", name: "FASE 01 - TRECHO AVENIDADE DO METRÔ", start: parseImgDate("14/07/2025"), end: parseImgDate("24/10/2025"), dependencies: null, progress: 0 },
-                { id: "Task1", name: "INICIO DA OS", start: parseImgDate("14/07/2025"), end: parseImgDate("14/07/2025"), dependencies: null, progress: 0 },
-                { id: "Task2", name: "Inicio da OS", start: parseImgDate("14/07/2025"), end: parseImgDate("14/07/2025"), dependencies: null, progress: 0 },
-                { id: "Task3", name: "MOBILIZAÇÃO DO CANTEIRO", start: parseImgDate("14/07/2025"), end: parseImgDate("12/08/2025"), dependencies: null, progress: 0 },
-                { id: "Task4", name: "Mobilização do canteiro", start: parseImgDate("14/07/2025"), end: parseImgDate("12/08/2025"), dependencies: "Task2", progress: 0 },
-                { id: "Task5", name: "TERRAPLENAGEM", start: parseImgDate("12/08/2025"), end: parseImgDate("10/10/2025"), dependencies: null, progress: 0 },
-                { id: "Task6", name: "ESCAVAÇÃO MECÂNICA, CARGA E REMOÇÃO DE TERRA SOLO RUIM", start: parseImgDate("12/08/2025"), end: parseImgDate("25/09/2025"), dependencies: "Task4", progress: 0 },
-                { id: "Task7", name: "ESCAVAÇÃO MECÂNICA, CARGA E REMOÇÃO DE TERRA SOLO BOM", start: parseImgDate("13/08/2025"), end: parseImgDate("26/09/2025"), dependencies: "Task6", progress: 0 },
-                { id: "Task8", name: "COMPACTAÇÃO DE TERRA, MEDIDA NO ATERRO", start: parseImgDate("14/08/2025"), end: parseImgDate("10/10/2025"), dependencies: "Task7", progress: 0 },
-                { id: "Task9", name: "DISPOSIÇÃO FINAL DE SOLOS E RESÍDUOS, CLASSE I - PERIGOSOS", start: parseImgDate("19/08/2025"), end: parseImgDate("10/10/2025"), dependencies: "Task6", progress: 0 },
-                { id: "Task10", name: "REMOÇÃO DE TERRA ALÉM DO PRIMEIRO KM, COM CAMINHÃO DE 17M3", start: parseImgDate("01/09/2025"), end: parseImgDate("10/10/2025"), dependencies: null, progress: 0 },
-                { id: "Task11", name: "REMOÇÃO DE TERRA ALÉM DO PRIMEIRO KM, COM CAMINHÃO DE 17M3", start: parseImgDate("01/09/2025"), end: parseImgDate("10/10/2025"), dependencies: "Task10", progress: 0 },
-                { id: "Task12", name: "DESMOBILIZAÇÃO DO CANTEIRO", start: parseImgDate("25/09/2025"), end: parseImgDate("24/10/2025"), dependencies: null, progress: 0 },
-                { id: "Task13", name: "Desmobilização do canteiro", start: parseImgDate("25/09/2025"), end: parseImgDate("24/10/2025"), dependencies: "Task11", progress: 0 },
-                { id: "Task14", name: "TERMINO DA OS", start: parseImgDate("24/10/2025"), end: parseImgDate("24/10/2025"), dependencies: null, progress: 0 },
-                { id: "Task15", name: "Termino da OS", start: parseImgDate("24/10/2025"), end: parseImgDate("24/10/2025"), dependencies: "Task13", progress: 0 }
-            ];
-
-            // --- DADOS FASE 02 ---
-            // (Esta é a lista que estava corrompida, agora completa)
-            const defaultTasksFase2 = [
-                { id: "Task0", name: "FASE 02 - TRECHO AVENIDA DO METRÔ", start: parseImgDate("01/10/2025"), end: parseImgDate("01/07/2026"), dependencies: null, progress: 0 },
-                { id: "Task1", name: "INICIO DA OS", start: parseImgDate("01/10/2025"), end: parseImgDate("01/10/2025"), dependencies: null, progress: 0 },
-                { id: "Task2", name: "Inicio da OS", start: parseImgDate("01/10/2025"), end: parseImgDate("01/10/2025"), dependencies: null, progress: 0 },
-                { id: "Task3", name: "MOBILIZAÇÃO DO CANTEIRO", start: parseImgDate("01/10/2025"), end: parseImgDate("26/06/2026"), dependencies: null, progress: 0 },
-                { id: "Task4", name: "Mobilização do canteiro", start: parseImgDate("01/10/2025"), end: parseImgDate("26/06/2026"), dependencies: "Task2", progress: 0 },
-                { id: "Task5", name: "MANUTENÇÃO DO CANTEIRO", start: parseImgDate("01/10/2025"), end: parseImgDate("26/06/2026"), dependencies: null, progress: 0 },
-                { id: "Task6", name: "MANUTENÇÃO DO CANTEIRO", start: parseImgDate("01/10/2025"), end: parseImgDate("26/06/2026"), dependencies: "Task5", progress: 0 },
-                { id: "Task7", name: "TERRAPLENAGEM", start: parseImgDate("01/10/2025"), end: parseImgDate("10/10/2025"), dependencies: null, progress: 0 },
-                { id: "Task8", name: "LIMPEZA DA CAMADA VEGETAL", start: parseImgDate("01/10/2025"), end: parseImgDate("29/01/2026"), dependencies: "Task2", progress: 0 },
-                { id: "Task9", name: "DISPOSIÇÃO FINAL DE SOLOS E RESÍDUOS, CLASSE I - PERIGOSOS", start: parseImgDate("01/10/2025"), end: parseImgDate("29/01/2026"), dependencies: "Task6", progress: 0 },
-                { id: "Task10", name: "REMOÇÃO DE TERRA ALÉM DO PRIMEIRO KM, COM CAMINHÃO DE 17M3", start: parseImgDate("01/10/2025"), end: parseImgDate("29/01/2026"), dependencies: "Task9", progress: 0 },
-                { id: "Task11", name: "REMOÇÃO DE TERRA ALÉM DO PRIMEIRO KM, COM CAMINHÃO DE 17M3", start: parseImgDate("01/10/2025"), end: parseImgDate("29/01/2026"), dependencies: "Task9", progress: 0 },
-                { id: "Task12", name: "OMISSO", start: parseImgDate("01/10/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task10", progress: 0 },
-                { id: "Task13", name: "EXECUÇÃO DE COLUNA DE BRITA D=0,60M C=1,0M", start: parseImgDate("01/10/2025"), end: parseImgDate("01/11/2025"), dependencies: "Task11", progress: 0 },
-                { id: "Task14", name: "EXECUÇÃO DE GEODRENO - DRENAGEM SUB-HORIZONTAL", start: parseImgDate("01/10/2025"), end: parseImgDate("01/11/2025"), dependencies: "Task12", progress: 0 },
-                { id: "Task15", name: "Geogrelha - Categoria 150KN/M", start: parseImgDate("01/11/2025"), end: parseImgDate("01/11/2025"), dependencies: "Task13", progress: 0 },
-                { id: "Task16", name: "ATERRO - TRANSPORTE INTERNO ATÉ 500M - MATERIAL PROVENIENTE BOTA ESPERA", start: parseImgDate("01/11/2025"), end: parseImgDate("30/01/2026"), dependencies: "Task14", progress: 0 },
-                { id: "Task17", name: "MANUTENÇÃO DO ATERRO DE SOBRECARGA", start: parseImgDate("01/11/2025"), end: parseImgDate("11/07/2026"), dependencies: "Task15", progress: 0 }, 
-                { id: "Task18", name: "DRENAGEM", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task22", progress: 0 },
-                { id: "Task19", name: "BASE DE BICA CORRIDA", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task18", progress: 0 },
-                { id: "Task20", name: "ESCAVAÇÃO MECÂNICA PARA FUNDAÇÕES E VALAS COM PROFUNDIDADE MENOR OU IGUAL A 4,0M", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task22", progress: 0 },
-                { id: "Task21", name: "ARRANCAMENTO E REMOÇÃO DE CAMALEÃO, 30,0CM < D < OU = A 45CM", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: null, progress: 0 },
-                { id: "Task22", name: "BASE DE BICA CORRIDA", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task21", progress: 0 }, 
-                { id: "Task23", name: "BASE DE BICA CORRIDA", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task22", progress: 0 }, 
-                { id: "Task24", name: "REATERRO DE VALA COM COMPACTAÇÃO, SEM FORNECIMENTO DE TERRA", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task23", progress: 0 },
-                { id: "Task25", name: "FORNECIMENTO DE TERRA, INCLUINDO ESCAVAÇÃO, CARGA E TRANSPORTE ATÉ A DISTÂNCIA MÉDIA DE 1", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task24", progress: 0 },
-                { id: "Task26", name: "FORNECIMENTO DE PEDRA RACHÃO OU DE MÃO, INCLUSIVE TRANSPORTE", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task25", progress: 0 },
-                { id: "Task27", name: "FORNECIMENTO E ASSENTAMENTO DE TUBO DE CONCRETO SIMPLES, DIÂMETRO 60CM - TIPO PA-1", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task26", progress: 0 },
-                { id: "Task28", name: "FORNECIMENTO E ASSENTAMENTO DE TUBOS DE CONCRETO ARMADO, DIÂMETRO 80CM - TIPO PA-2", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task27", progress: 0 },
-                { id: "Task29", name: "POÇO DE VISITA TIPO 1, 1,20 X 1,20 X 1,20M", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task28", progress: 0 },
-                { id: "Task30", name: "POÇO DE VISITA TIPO 2, 1,60 X 1,60 X 1,60M", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task29", progress: 0 },
-                { id: "Task31", name: "POÇO DE VISITA TIPO 3, 2,20 X 2,20 X 2,20M", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task30", progress: 0 },
-                { id: "Task32", name: "CAIXA DE LIGAÇÃO PLUVIAL, COM OU SEM BOCA DE LOBO, TIPO CAIXA", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task31", progress: 0 },
-                { id: "Task33", name: "FORNECIMENTO DE TAMPÃO - GRELHA DE FERRO FUNDIDO DÚCTIL, CLASSE MÍNIMA 400 (40T) D=600MM", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task32", progress: 0 },
-                { id: "Task34", name: "BOCA DE LOBO TIPO 1", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task33", progress: 0 },
-                { id: "Task35", name: "BOCA DE LOBO TIPO 2", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task34", progress: 0 },
-                { id: "Task36", name: "ESCAVAÇÃO MECÂNICA PARA FUNDAÇÕES E VALAS COM PROFUNDIDADE MENOR OU IGUAL A 4,0M", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task35", progress: 0 },
-                { id: "Task37", name: "REATERRO DE VALA COM COMPACTAÇÃO, SEM FORNECIMENTO DE TERRA", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task36", progress: 0 },
-                { id: "Task38", name: "FORNECIMENTO DE TERRA, INCLUINDO ESCAVAÇÃO, CARGA E TRANSPORTE ATÉ A DISTÂNCIA MÉDIA DE 1", start: parseImgDate("03/12/2025"), end: parseImgDate("29/04/2026"), dependencies: "Task37", progress: 0 },
-                { id: "Task39", name: "PAVIMENTAÇÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task86", progress: 0 },
-                { id: "Task40", name: "840.23 - FORNECIMENTO E ASSENTAMENTO DE TUBO DE PEAD CORRUGADO E PREFUADO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task86", progress: 0 },
-                { id: "Task41", name: "840.24 - FORNECIMENTO E ASSENTAMENTO DE GEOTÊXTIL, COM EXECUÇÃO E DRENAGEM", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task86", progress: 0 },
-                { id: "Task42", name: "SERVIÇOS COMPLEMENTARES", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: null, progress: 0 },
-                { id: "Task43", name: "REMOÇÃO DE GUIAS OU PASSEIO DE CONCRETO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task22", progress: 0 },
-                { id: "Task44", name: "ARRANCAMENTO E REMOÇÃO DE CAMALEÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task42", progress: 0 },
-                { id: "Task45", name: "ARRANCAMENTO E RECOLOCAÇÃO DE PLACAS DE SINALIZAÇÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task43", progress: 0 },
-                { id: "Task46", name: "REMOÇÃO DE PLACAS DE SINALIZAÇÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task44", progress: 0 },
-                { id: "Task47", name: "ARRANCAMENTO E RECOLOCAÇÃO DE POSTES", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task45", progress: 0 },
-                { id: "Task48", name: "REMOÇÃO DE POSTES DE ILUMINAÇÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task46", progress: 0 },
-                { id: "Task49", name: "PAVIMENTO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: null, progress: 0 },
-                { id: "Task50", name: "DEMOLIÇÃO DE GUIAS, INCLUI CARGA EM CAMINHÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task86", progress: 0 },
-                { id: "Task51", name: "DEMOLIÇÃO DE SARJETA OU SARJETÃO, INCLUSIVE CARGA, INCLUI CARGA EM CAMINHÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task86", progress: 0 },
-                { id: "Task52", name: "DEMOLIÇÃO DE PAVIMENTO ASFÁLTICO, INCLUSIVE CAPA, INCLUI CARGA EM CAMINHÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task86", progress: 0 },
-                { id: "Task53", name: "ABERTURA DE CAIXA PARA REFORÇO DE BASE DE PAVIMENTO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task51", progress: 0 },
-                { id: "Task54", name: "ABERTURA DE CAIXA ATÉ 1,80M, INCLUI ESCAVAÇÃO, COMPACTAÇÃO, TRANSPORTE E PREPARO DO SUB-LEI", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task52", progress: 0 },
-                { id: "Task55", name: "FORNECIMENTO DE CIMENTO PORTLAND CP-II-32, POSTO NA OBRA (EM SACO)", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task53", progress: 0 },
-                { id: "Task56", name: "FORNECIMENTO DE SAIBRO, EM QUALQUER DOS TIPOS 'A' OU 'B', INCLUSIVE ENCOSTAMENTO DE TERRA - FOR", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task54", progress: 0 },
-                { id: "Task57", name: "EXECUÇÃO DE SARJETA, COM GUIA TIPO PMSP - H = 0,15M; L = 0,40M", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task55", progress: 0 },
-                { id: "Task58", name: "GUIA DE CONCRETO EXTRUSADA", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task60", progress: 0 },
-                { id: "Task59", name: "BASE DE BRITA GRADUADA TRATADA COM CIMENTO - BGTC", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task58", progress: 0 },
-                { id: "Task60", name: "BASE DE MACADAME SECO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task58", progress: 0 },
-                { id: "Task61", name: "IMPRIMAÇÃO BETUMINOSA LIGANTE", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task59", progress: 0 },
-                { id: "Task62", name: "PINTURA DE LIGAÇÃO BETUMINOSA OBRIGATÓRIA", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task60", progress: 0 },
-                { id: "Task63", name: "REVESTIMENTO DE CONCRETO ASFÁLTICO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task61", progress: 0 },
-                { id: "Task64", name: "BASE DE MACADAME HIDRÁULICO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task62", progress: 0 },
-                { id: "Task65", name: "BASE DE MACADAME HIDRÁULICO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task63", progress: 0 },
-                { id: "Task66", name: "REMOÇÃO DE GUIAS E SARJETAS, LIMPEZA, INCLUSIVE PREPARO DE CAIXA E LASTRO DE BRITA C TELA METÁL", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task64", progress: 0 },
-                { id: "Task67", name: "PASSEIO DE CONCRETO FCK=20MPA, LIMPEZA, INCLUSIVE PREPARO DE CAIXA E LASTRO DE BRITA C TELA METÁL", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task65", progress: 0 },
-                { id: "Task68", name: "PASSEIO DE CONCRETO FCK=20MPA, LIMPEZA, INCLUSIVE PREPARO DE CAIXA E LASTRO DE BRITA C TELA METÁL", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task66", progress: 0 },
-                { id: "Task69", name: "PLANTIO DE GRAMA EM PLACAS", start: parseImgDate("02/02/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task67", progress: 0 },
-                { id: "Task70", name: "FUNDAÇÃO DE RADIÊR", start: parseImgDate("02/02/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task68", progress: 0 },
-                { id: "Task71", name: "PASSEIO DE CONCRETO ASFÁLTICO COM ESPESSURA ATÉ 3CM, EM VIAS EXPRESSAS, INCLUSIVE REMOÇÃO", start: parseImgDate("02/02/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task69", progress: 0 },
-                { id: "Task72", name: "PLANTIO DE GRAMA EM PLACAS", start: parseImgDate("02/02/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task70", progress: 0 },
-                { id: "Task73", name: "PLANTIO DE GRAMA EM PLACAS NO TALUDES", start: parseImgDate("02/02/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task71", progress: 0 },
-                { id: "Task74", name: "EXECUÇÃO DE SINALIZAÇÃO E ALERTA", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task72", progress: 0 },
-                { id: "Task75", name: "MANUTENÇÃO DE ACESSO", start: parseImgDate("29/01/2026"), end: parseImgDate("29/06/2026"), dependencies: null, progress: 0 },
-                { id: "Task76", name: "OMISSO", start: parseImgDate("29/01/2026"), end: parseImgDate("29/06/2026"), dependencies: null, progress: 0 },
-                { id: "Task77", name: "BASE DE BRINDER DENSO", start: parseImgDate("29/01/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task79", progress: 0 },
-                { id: "Task78", name: "FORNECIMENTO E TRANSPORTE DE BRINDER ATÉ A DISTÂNCIA MÉDIA DE IDA E VOLTA DE 1KM", start: parseImgDate("29/01/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task80", progress: 0 },
-                { id: "Task79", name: "TRANSPORTE DE BRINDER ALÉM DO PRIMEIRO KM", start: parseImgDate("29/01/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task81", progress: 0 },
-                { id: "Task80", name: "BASE DE BRINDER DENSO", start: parseImgDate("29/01/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task82", progress: 0 },
-                { id: "Task81", name: "REVESTIMENTO DE BRINDER DENSO", start: parseImgDate("29/01/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task83", progress: 0 },
-                { id: "Task82", name: "FRESAGEM DE PAVIMENTO ASFÁLTICO COM ESPESSURA ATÉ 5CM", start: parseImgDate("29/01/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task84", progress: 0 },
-                { id: "Task83", name: "ILUMINAÇÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("30/06/2026"), dependencies: null, progress: 0 },
-                { id: "Task84", name: "RETIRADA DE POSTE DE ENTRADA DE ENERGIA EM ALTA TENSÃO - CONCRETO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task86", progress: 0 },
-                { id: "Task85", name: "RETIRADA DE POSTE DE ENTRADA DE ENERGIA EM ALTA TENSÃO - FERRO GALVANIZADO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task87", progress: 0 },
-                { id: "Task86", name: "REMANEJAMENTO DE POSTE AUXILIAR - INCLUSIVE RETIRADA E RECOMPOSIÇÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task88", progress: 0 },
-                { id: "Task87", name: "RETIRADA DE ALAMBRADO EM TELA INCLUSIVE ESTRUTURA DE SUSTENTAÇÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task89", progress: 0 },
-                { id: "Task88", name: "DEMOLIÇÃO E REMOÇÃO DE BLOCO DE CONCRETO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task90", progress: 0 },
-                { id: "Task89", name: "DEMOLIÇÃO E REMOÇÃO DE PAVIMENTO OU LAJOTA DE CONCRETO", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task91", progress: 0 },
-                { id: "Task90", name: "DEMOLIÇÃO DE PAVIMENTO ASFÁLTICO EM MAU ESTADO, INCLUSIVE CAPA", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task92", progress: 0 },
-                { id: "Task91", name: "DEMOLIÇÃO E REMOÇÃO DE CAPA (LOMBAFAIXA)", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task93", progress: 0 },
-                { id: "Task92", name: "DEMOLIÇÃO E REMOÇÃO DE CONCRETO SIMPLES", start: parseImgDate("01/04/2026"), end: parseImgDate("29/06/2026"), dependencies: "Task94", progress: 0 },
-                { id: "Task93", name: "SINALIZAÇÃO HORIZONTAL E VERTICAL", start: parseImgDate("01/04/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task86", progress: 0 },
-                { id: "Task94", name: "PINTURA TERMOPLÁSTICA POR EXTRUSÃO", start: parseImgDate("01/04/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task86", progress: 0 },
-                { id: "Task95", name: "PINTURA MANUAL COM TINTA ACRÍLICA", start: parseImgDate("01/04/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task86", progress: 0 },
-                { id: "Task96", name: "PLACAS E PLACAS PADRÃO CET", start: parseImgDate("30/06/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task99", progress: 0 },
-                { id: "Task97", name: "FORNECIMENTO E COLOCAÇÃO DE POSTES", start: parseImgDate("30/06/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task100", progress: 0 },
-                { id: "Task98", name: "ILUMINAÇÃO", start: parseImgDate("30/06/2026"), end: parseImgDate("30/06/2026"), dependencies: null, progress: 0 },
-                { id: "Task99", name: "FORNECIMENTO E INSTALAÇÃO DE LUMINÁRIAS LP-1(LED) COM INFRAESTRUTURA COMPLETA", start: parseImgDate("30/06/2026"), end: parseImgDate("30/06/2026"), dependencies: null, progress: 0 },
-                { id: "Task100", name: "EXECUÇÃO DE SINALIZAÇÃO E ALERTA DO ATERRO DE SOBRECARGA", start: parseImgDate("30/06/2026"), end: parseImgDate("30/06/2026"), dependencies: null, progress: 0 },
-                { id: "Task101", name: "BARREIRA RÍGIDA NEW JERSEY", start: parseImgDate("01/04/2026"), end: parseImgDate("30/06/2026"), dependencies: null, progress: 0 },
-                { id: "Task102", name: "FORMA DE MADEIRA", start: parseImgDate("01/04/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task105", progress: 0 },
-                { id: "Task103", name: "AÇO CA-50 D=1/2''", start: parseImgDate("01/04/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task106", progress: 0 },
-                { id: "Task104", name: "AÇO CA-60 D=1/4''", start: parseImgDate("01/04/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task107", progress: 0 },
-                { id: "Task105", name: "CONCRETO FCK=30MPA", start: parseImgDate("01/04/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task108", progress: 0 },
-                { id: "Task106", name: "DESMOBILIZAÇÃO DO CANTEIRO", start: parseImgDate("30/06/2026"), end: parseImgDate("30/06/2026"), dependencies: null, progress: 0 },
-                { id: "Task107", name: "DESMOBILIZAÇÃO DO CANTEIRO", start: parseImgDate("30/06/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task105", progress: 0 },
-                { id: "Task108", name: "DESMOBILIZAÇÃO DO CANTEIRO", start: parseImgDate("30/06/2026"), end: parseImgDate("30/06/2026"), dependencies: "Task106", progress: 0 },
-                { id: "Task109", name: "TERMINO DA OS", start: parseImgDate("01/07/2026"), end: parseImgDate("01/07/2026"), dependencies: null, progress: 0 },
-                { id: "Task110", name: "TERMINO DA OS", start: parseImgDate("01/07/2026"), end: parseImgDate("01/07/2026"), dependencies: "Task106", progress: 0 },
-                { id: "Task111", name: "TERMINO DA OS", start: parseImgDate("01/07/2026"), end: parseImgDate("01/07/2026"), dependencies: "Task107", progress: 0 },
-                { id: "Task112", name: "TERMINO DA OS", start: parseImgDate("01/07/2026"), end: parseImgDate("01/07/2026"), dependencies: "Task108", progress: 0 },
-                { id: "Task113", name: "TERMINO DA OS", start: parseImgDate("01/07/2026"), end: parseImgDate("01/07/2026"), dependencies: "Task108", progress: 0 },
-                { id: "Task114", name: "TERMINO DA OS", start: parseImgDate("01/07/2026"), end: parseImgDate("01/07/2026"), dependencies: "Task108", progress: 0 },
-                { id: "Task115", name: "TERMINO DA OS", start: parseImgDate("01/07/2026"), end: parseImgDate("01/07/2026"), dependencies: "Task108", progress: 0 },
-                { id: "Task116", name: "TERMINO DA OS", start: parseImgDate("01/07/2026"), end: parseImgDate("01/07/2026"), dependencies: "Task108", progress: 0 }
-            ];
             
-            // --- FIM DOS DADOS ---
+            /**
+             * Carrega tarefas do localStorage ou, se vazio, busca do cronograma.jsonl.
+             */
+            async function fetchAndLoadTasks() {
+                const storageKeyFase1 = 'planejamento-tasks-f1';
+                const storageKeyFase2 = 'planejamento-tasks-f2';
 
-            // Carrega tarefas FASE 1
-            const storageKeyFase1 = 'planejamento-tasks-f1';
-            let tasksFase1 = loadTasksFromStorage(storageKeyFase1);
-            if (tasksFase1.length === 0) {
-                console.log('Nenhuma tarefa no localStorage (F1), carregando dados padrões.');
-                tasksFase1 = defaultTasksFase1;
+                let tasksFase1 = loadTasksFromStorage(storageKeyFase1);
+                let tasksFase2 = loadTasksFromStorage(storageKeyFase2);
+
+                // Se não houver dados no localStorage, busca do JSONL
+                if (tasksFase1.length === 0 || tasksFase2.length === 0) {
+                    console.log('Nenhuma tarefa no localStorage, buscando de cronograma.jsonl...');
+                    tasksFase1 = [];
+                    tasksFase2 = [];
+                    try {
+                        const response = await fetch('cronograma.jsonl'); // Carrega o novo arquivo
+                        if (!response.ok) {
+                            throw new Error(`Não foi possível carregar cronograma.jsonl (Status: ${response.status})`);
+                        }
+                        const text = await response.text();
+                        const lines = text.trim().split('\n');
+
+                        if (lines.length === 0 || (lines.length === 1 && lines[0] === '')) {
+                             throw new Error('O ficheiro cronograma.jsonl está vazio.');
+                        }
+
+                        lines.forEach(line => {
+                            if (line.trim() === '') return;
+                            try {
+                                const taskData = JSON.parse(line);
+                                const task = {
+                                    ...taskData,
+                                    start: parseDateFromISO(taskData.start), // Converte YYYY-MM-DD para Date
+                                    end: parseDateFromISO(taskData.end),
+                                    progress: 0 // Progresso inicial
+                                };
+
+                                if (task.fase === 'f1') {
+                                    tasksFase1.push(task);
+                                } else if (task.fase === 'f2') {
+                                    tasksFase2.push(task);
+                                }
+                            } catch (e) {
+                                console.warn('Erro ao parsear linha do cronograma.jsonl:', line, e);
+                            }
+                        });
+
+                        // Salva os dados baixados no localStorage
+                        saveTasksToStorage(storageKeyFase1, tasksFase1);
+                        saveTasksToStorage(storageKeyFase2, tasksFase2);
+                        console.log('Dados do JSONL carregados e salvos no localStorage.');
+
+                    } catch (error) {
+                        // Exibe um erro claro na UI
+                        errorDiv.textContent = `Erro Crítico: ${error.message}. Verifique se o ficheiro 'cronograma.jsonl' existe.`;
+                        errorDiv.style.display = 'block';
+                        loading.style.display = 'none'; // Esconde o spinner
+                        return null; // Interrompe a execução
+                    }
+                }
+
+                // Calcula o progresso para ambas as fases
+                tasksFase1.forEach(task => task.progress = calculatePlannedProgress(task, today));
+                tasksFase2.forEach(task => task.progress = calculatePlannedProgress(task, today));
+                
+                // Retorna as tarefas prontas
+                return { tasksFase1, tasksFase2 };
             }
-            tasksFase1.forEach(task => task.progress = calculatePlannedProgress(task, today));
-            saveTasksToStorage(storageKeyFase1, tasksFase1);
+            // --- FIM DA LÓGICA DE CARREGAMENTO ---
+
+            // Inicia o carregamento das tarefas
+            const taskData = await fetchAndLoadTasks();
+            if (!taskData) return; // Encerra se o carregamento falhar
+
+            const { tasksFase1, tasksFase2 } = taskData;
             
-             // Carrega tarefas FASE 2
-            const storageKeyFase2 = 'planejamento-tasks-f2';
-            let tasksFase2 = loadTasksFromStorage(storageKeyFase2);
-            if (tasksFase2.length === 0) {
-                console.log('Nenhuma tarefa no localStorage (F2), carregando dados padrões.');
-                tasksFase2 = defaultTasksFase2;
-            }
-            tasksFase2.forEach(task => task.progress = calculatePlannedProgress(task, today));
-            saveTasksToStorage(storageKeyFase2, tasksFase2);
-
-
-            // --- Lógica de criação de Gráfico (Refatorada) ---
+            /**
+             * Cria uma instância do Frappe Gantt.
+             */
             function createGanttChart(containerSelector, tasksData) {
                 const ganttContainer = document.querySelector(containerSelector);
                 if (!ganttContainer) {
@@ -1492,8 +1507,8 @@
                 const frappeTasks = tasksData.map(task => ({
                     id: task.id,
                     name: task.name,
-                    start: formatDateForFrappe(task.start),
-                    end: formatDateForFrappe(task.end),
+                    start: formatDateForFrappe(task.start), // Converte Date para YYYY-MM-DD
+                    end: formatDateForFrappe(task.end),     // Converte Date para YYYY-MM-DD
                     progress: task.progress, 
                     dependencies: task.dependencies
                 }));
@@ -1501,7 +1516,7 @@
                 try {
                     return new Gantt(containerSelector, frappeTasks, {
                         header_height: 50,
-                        column_width: 10, 
+                        column_width: 10, // Largura da coluna na "Visualização Dia"
                         step: 24,
                         view_modes: ['Day', 'Week', 'Month'],
                         bar_height: 25,
@@ -1510,8 +1525,9 @@
                         padding: 18,
                         view_mode: 'Week',
                         date_format: 'YYYY-MM-DD',
-                        today_marker: true, 
+                        today_marker: true, // Habilita o marcador de hoje (linha vermelha)
                         custom_popup_html: function(task) {
+                            // Cria o popup customizado
                             const originalTask = tasksDataMap.get(task.id);
                             const startDate = originalTask ? originalTask.start.toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'N/A';
                             const endDate = originalTask ? originalTask.end.toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'N/A';
@@ -1521,7 +1537,7 @@
                                   <h4 class="font-bold text-base mb-1" style="color: var(--cor-primaria);">${task.name}</h4>
                                   <p class="text-gray-600 mb-1">Início: ${startDate}</p>
                                   <p class="text-gray-600 mb-2">Fim: ${endDate}</p>
-                                  <p class="text-gray-600">Progresso: ${task.progress}%</p>
+                                  <p class="text-gray-600">Progresso Previsto: ${task.progress}%</p>
                                 </div>
                             `;
                         }
@@ -1533,6 +1549,9 @@
                 }
             }
             
+            /**
+             * Renderiza a tabela de progresso abaixo do Gantt.
+             */
             function renderProgressTable(containerSelector, tasks) {
                 const container = document.querySelector(containerSelector);
                 if (!container) return;
@@ -1567,7 +1586,6 @@
                 container.innerHTML = tableHTML;
             }
 
-
             // --- Inicializa os dois gráficos ---
             ganttFase1 = createGanttChart("#gantt-chart-fase-1", tasksFase1); 
             ganttFase2 = createGanttChart("#gantt-chart-fase-2", tasksFase2);
@@ -1577,8 +1595,11 @@
             renderProgressTable("#progress-table-fase-2", tasksFase2);
 
             
-            activeGantt.instance = ganttFase1;
+            activeGantt.instance = ganttFase1; // Define Fase 1 como ativa por padrão
 
+            // --- Esconde o spinner e mostra o conteúdo ---
+            loading.style.display = 'none';
+            contentDiv.style.display = 'block';
 
             // --- Adiciona listeners para os botões de ZOOM ---
             const viewButtons = {
@@ -1613,7 +1634,7 @@
                 }
             });
 
-            setActiveZoomButton('Week'); 
+            setActiveZoomButton('Week'); // Define 'Semana' como padrão
 
             // --- Lógica das ABAS DE FASE (Gantt) ---
             const btnFase1 = document.getElementById('btn-fase-1');
@@ -1659,4 +1680,3 @@
 </script>
 </body>
 </html>
-
