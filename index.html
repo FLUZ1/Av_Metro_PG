@@ -146,9 +146,10 @@
         }
 
         /* Estilos da tabela (reaproveitados de 'atas') */
+        /* CORREÇÃO: Removido table-layout: fixed e width: 100% para responsividade */
         .styled-table {
-            table-layout: fixed; /* Mantido fixo para larguras de coluna */
-            width: 100%;
+            /* table-layout: fixed; */ /* Removido */
+            /* width: 100%; */ /* Removido */
         }
         .styled-table th,
         .styled-table td {
@@ -159,7 +160,7 @@
             word-wrap: break-word;
             word-break: break-word;
             white-space: normal;
-            text-align: justify; /* ADICIONADO: Texto justificado */
+            text-align: justify; /* Texto justificado */
         }
         .styled-table th {
             font-size: 0.75rem; /* 12px */
@@ -172,7 +173,6 @@
             font-size: 0.875rem; /* 14px */
             color: #374151; /* text-gray-700 */
         }
-        /* ATUALIZAÇÃO UX: Transição suave para hover */
         .styled-table tbody tr {
             transition: background-color 0.2s ease-in-out;
         }
@@ -182,9 +182,8 @@
         .styled-table tbody tr:nth-child(even) {
             background-color: #f9fafb; /* bg-gray-50 */
         }
-        /* ATUALIZAÇÃO UX: Efeito hover nas linhas da tabela */
         .styled-table tbody tr:hover {
-            background-color: #f3f4f6; /* bg-gray-100 */
+            background-color: #f3f4f6; /* Equivalent to hover:bg-gray-100 */
         }
 
         /* Estilos para Frappe Gantt */
@@ -257,10 +256,15 @@
         }
         .phase-tab:hover {
             color: var(--cor-primaria);
+            background-color: #f9fafb; /* bg-gray-50 */
         }
         .phase-tab.active {
             color: var(--cor-primaria);
             border-bottom-color: var(--cor-primaria);
+            background-color: transparent; /* Garante que o fundo saia ao estar ativo */
+        }
+        .phase-tab.active:hover {
+             background-color: transparent; /* Impede o hover de mudar o fundo da aba ativa */
         }
 
         /* Estilos para a tabela de progresso */
@@ -289,7 +293,6 @@
             position: sticky; /* Cabeçalho fixo */
             top: 0;
         }
-        /* ATUALIZAÇÃO UX: Efeito hover nas linhas da tabela de progresso */
         .progress-table tbody tr {
             transition: background-color 0.2s ease-in-out;
         }
@@ -515,6 +518,8 @@
                 <!-- Guia oculta -->
                 <li style="display: none;"><a id="nav-fisico-financeiro">Físico-Financeiro</a></li>
                 <li><a id="nav-gestao-cava">Gestão Cava</a></li>
+                <!-- NOVA GUIA -->
+                <li><a id="nav-suprimentos">Gestão de Suprimentos</a></li>
                 <li><a id="nav-diario">Diário de Obra</a></li>
             </ul>
         </nav>
@@ -543,14 +548,14 @@
                 <div id="assuntos-error" class="hidden text-center p-4 text-red-600 bg-red-100 border border-red-400 rounded-lg"></div>
                 <!-- Tabela de Assuntos -->
                 <div id="assuntos-content" class="overflow-x-auto rounded-lg border border-gray-200" style="display: none;">
-                    <table id="assuntos-table" class="styled-table min-w-full divide-y divide-gray-200">
+                    <table id="assuntos-table" class="styled-table divide-y divide-gray-200">
                         <thead class="bg-gray-100">
                             <tr>
-                                <!-- CORREÇÃO: Larguras de coluna ajustadas para priorizar Descrição -->
-                                <th class="w-1/12">Item</th>
-                                <th class="w-2/12">Assunto</th>
-                                <th class="w-7/12">Descrição</th>
-                                <th class="w-2/12">Responsável</th>
+                                <!-- CORREÇÃO: Larguras mínimas fixas para responsividade móvel -->
+                                <th class="w-[5rem]">Item</th>
+                                <th class="w-[12rem]">Assunto</th>
+                                <th class="w-[40rem]">Descrição</th>
+                                <th class="w-[12rem]">Responsável</th>
                             </tr>
                         </thead>
                         <tbody id="assuntos-table-body" class="divide-y divide-gray-200">
@@ -697,6 +702,73 @@
             </div>
         </section>
 
+        <!-- NOVA PÁGINA: Gestão de Suprimentos -->
+        <section id="suprimentos-page" class="container-full-width page-content" style="display: none; padding-top: 20px;">
+             <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h1>Gestão de Suprimentos - Matriz de Kraljic</h1>
+                
+                <!-- Indicador de Carregamento -->
+                <div id="suprimentos-loading" class="loading-spinner"></div>
+                <!-- Mensagem de Erro -->
+                <div id="suprimentos-error" class="hidden text-center p-4 text-red-600 bg-red-100 border border-red-400 rounded-lg"></div>
+
+                <!-- Conteúdo Suprimentos (oculto até carregar) -->
+                <div id="suprimentos-content" style="display: none;">
+                    
+                    <!-- Matriz de Kraljic -->
+                    <h2 class="mt-4">Matriz de Risco vs. Impacto no Prazo</h2>
+                    <div id="kraljic-chart-wrapper" class="w-full h-[500px] border border-gray-300 rounded-lg p-4 bg-gray-50">
+                        <div id="kraljic-chart" style="width: 100%; height: 100%;"></div>
+                    </div>
+
+                    <!-- Resumo dos Quadrantes -->
+                    <div class="mt-6 p-4 bg-gray-50 rounded-lg shadow-inner border border-gray-200">
+                        <h3 class="text-xl font-semibold mb-4 text-center" style="color: var(--cor-primaria);">Resumo dos Quadrantes Estratégicos</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-sm">
+                            <div>
+                                <h4 class="font-bold text-gray-800">Itens Estratégicos (Alto Risco, Alto Impacto no Prazo)</h4>
+                                <p class="text-gray-700">Críticos para o prazo e difíceis de obter. Exigem gestão de topo e parcerias estratégicas com fornecedores.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">Itens de Alavancagem (Baixo Risco, Alto Impacto no Prazo)</h4>
+                                <p class="text-gray-700">Itens importantes para o prazo, mas fáceis de comprar. O foco deve ser a negociação de preços e condições (ex: cimento, aço comum).</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">Itens de Gargalo (Alto Risco, Baixo Impacto no Prazo)</h4>
+                                <p class="text-gray-700">Não têm grande impacto direto no prazo, mas a sua falta (por ser item raro ou de fornecedor único) pode parar a obra. Focar em garantir o fornecimento.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">Itens Não Críticos (Baixo Risco, Baixo Impacto no Prazo)</h4>
+                                <p class="text-gray-700">Itens de rotina, fáceis de comprar e com baixo impacto. O foco deve ser em simplificar e automatizar o processo de compra (ex: EPIs, pregos).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabela de Suprimentos -->
+                    <h2 class="mt-8">Tabela de Acompanhamento de Suprimentos</h2>
+                    <div id="suprimentos-table-wrapper" class="overflow-x-auto rounded-lg border border-gray-200">
+                        <table id="suprimentos-table" class="styled-table divide-y divide-gray-200">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="w-[8rem]">ID</th>
+                                    <th class="w-[20rem]">Item</th>
+                                    <th class="w-[12rem]">Categoria</th>
+                                    <th class="w-[15rem]">Fornecedor Principal</th>
+                                    <th class="w-[10rem]">Status Entrega</th>
+                                    <th class="w-[6rem] text-center">Impacto Prazo</th>
+                                    <th class="w-[6rem] text-center">Risco Fornec.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="suprimentos-table-body" class="divide-y divide-gray-200">
+                                <!-- O conteúdo será carregado pelo JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
         <!-- Página Diário de Obra -->
         <section id="diario-page" class="container-full-width page-content" style="display: none; padding-top: 20px;">
              <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
@@ -749,6 +821,7 @@
         let fisicoFinanceiroInicializado = false;
         let assuntosInicializado = false;
         let cavaInicializada = false;
+        let suprimentosInicializado = false; // NOVA FLAG
         
         // --- Funções Auxiliares de Exibição ---
 
@@ -814,6 +887,11 @@
                 if (pageId === 'gestao-cava-page' && !cavaInicializada) {
                     loadCavaData(); // Função Async
                     cavaInicializada = true;
+                }
+                // NOVO: Inicializa a página de Suprimentos
+                if (pageId === 'suprimentos-page' && !suprimentosInicializado) {
+                    initializeSuprimentosPage();
+                    suprimentosInicializado = true;
                 }
             } catch (error) {
                 console.error(`Falha ao inicializar a página ${pageId}:`, error);
@@ -1676,6 +1754,265 @@
             });
 
         }
+        
+        // --- NOVA LÓGICA DA PÁGINA: Gestão de Suprimentos (Kraljic) ---
+        
+        /**
+         * Inicializa a página de Gestão de Suprimentos.
+         */
+        function initializeSuprimentosPage() {
+            const loading = document.getElementById('suprimentos-loading');
+            const errorDiv = document.getElementById('suprimentos-error');
+            const contentDiv = document.getElementById('suprimentos-content');
+            
+            loading.style.display = 'block';
+            errorDiv.style.display = 'none';
+            contentDiv.style.display = 'none';
+            
+            try {
+                // Carrega os pacotes 'corechart' (para tabelas) e 'annotationchart' (para os rótulos do scatter)
+                google.charts.load('current', {'packages':['corechart', 'annotationchart']});
+                google.charts.setOnLoadCallback(loadSuprimentosData); // Chama a função que busca o .jsonl
+            } catch(e) {
+                 console.error("Falha ao carregar Google Charts para Suprimentos:", e);
+                 errorDiv.textContent = 'Erro ao carregar a biblioteca de gráficos do Google.';
+                 errorDiv.style.display = 'block';
+                 loading.style.display = 'none';
+            }
+        }
+
+        /**
+         * Carrega os dados de 'suprimentos.jsonl' (ou localStorage) e renderiza.
+         */
+        async function loadSuprimentosData() {
+            const loading = document.getElementById('suprimentos-loading');
+            const errorDiv = document.getElementById('suprimentos-error');
+            const contentDiv = document.getElementById('suprimentos-content');
+            const storageKey = 'suprimentos-db';
+            let data = [];
+
+            try {
+                const storedData = localStorage.getItem(storageKey);
+                if (storedData) {
+                    console.log('Carregando Suprimentos do localStorage.');
+                    data = JSON.parse(storedData);
+                } else {
+                    console.log('Buscando suprimentos.jsonl...');
+                    const response = await fetch('suprimentos.jsonl'); // Carrega o arquivo
+                    if (!response.ok) {
+                        throw new Error(`Não foi possível carregar suprimentos.jsonl (Status: ${response.status})`);
+                    }
+                    const text = await response.text();
+                    const lines = text.trim().split('\n');
+                    
+                    if (lines.length === 0 || (lines.length === 1 && lines[0] === '')) {
+                         throw new Error('O ficheiro suprimentos.jsonl está vazio.');
+                    }
+                    
+                    lines.forEach((line) => {
+                        if (line.trim() === '') return;
+                        try {
+                            data.push(JSON.parse(line));
+                        } catch (e) {
+                            console.warn('Erro ao parsear linha do suprimentos.jsonl:', line, e);
+                        }
+                    });
+                    
+                    localStorage.setItem(storageKey, JSON.stringify(data)); // Salva no localStorage
+                }
+                
+                if (!data || data.length === 0) {
+                    throw new Error("Não há dados de suprimentos para exibir.");
+                }
+
+                // Renderiza os componentes da página
+                renderSuprimentosTable(data);
+                updateKraljicChart(data);
+                
+                contentDiv.style.display = 'block'; // Mostra o conteúdo
+
+            } catch (error) {
+                console.error("Falha ao carregar o banco de dados de Suprimentos:", error);
+                errorDiv.textContent = `Erro ao carregar dados: ${error.message}`;
+                errorDiv.style.display = 'block';
+            } finally {
+                loading.style.display = 'none'; // Esconde o spinner
+            }
+        }
+        
+        /**
+         * Renderiza a tabela de suprimentos.
+         */
+        function renderSuprimentosTable(data) {
+            const tableBody = document.getElementById('suprimentos-table-body');
+            let tableHTML = "";
+
+            data.forEach((item) => {
+                let statusClass = '';
+                if (item.status_entrega === 'Atrasado') statusClass = 'text-red-600 font-medium';
+                if (item.status_entrega === 'Em trânsito') statusClass = 'text-blue-600';
+                if (item.status_entrega === 'Em estoque') statusClass = 'text-green-600';
+
+                tableHTML += `
+                    <tr>
+                        <td class="whitespace-nowrap font-medium">${item.id}</td>
+                        <td class="break-words">${item.item}</td>
+                        <td class="whitespace-nowrap">${item.categoria}</td>
+                        <td class="whitespace-nowrap">${item.fornecedor_principal}</td>
+                        <td class="whitespace-nowrap ${statusClass}">${item.status_entrega}</td>
+                        <td class="text-center">${item.impacto_prazo}</td>
+                        <td class="text-center">${item.risco_fornecimento}</td>
+                    </tr>
+                `;
+            });
+            tableBody.innerHTML = tableHTML;
+        }
+
+        /**
+         * Cria o HTML para o tooltip customizado do gráfico Kraljic.
+         */
+        function createKraljicTooltip(item, quadrante) {
+            return `
+                <div class="p-2 shadow-lg rounded-md bg-white text-sm" style="min-width: 250px;">
+                    <h4 class="font-bold text-base mb-1" style="color: var(--cor-primaria);">${item.item} (ID: ${item.id})</h4>
+                    <p class="font-medium text-gray-700">${quadrante}</p>
+                    <hr class="my-1">
+                    <p class="text-gray-600">Impacto no Prazo: ${item.impacto_prazo} / 10</p>
+                    <p class="text-gray-600">Risco de Fornecimento: ${item.risco_fornecimento} / 10</p>
+                </div>
+            `;
+        }
+        
+        /**
+         * Atualiza (desenha) o gráfico da Matriz de Kraljic.
+         */
+        function updateKraljicChart(data) {
+            const chartData = new google.visualization.DataTable();
+            chartData.addColumn('number', 'Impacto no Prazo');
+            
+            // Colunas de DADOS (com tooltips)
+            chartData.addColumn('number', 'Itens Não Críticos');
+            chartData.addColumn({type: 'string', role: 'tooltip', p: {html: true}});
+            chartData.addColumn('number', 'Itens de Gargalo');
+            chartData.addColumn({type: 'string', role: 'tooltip', p: {html: true}});
+            chartData.addColumn('number', 'Itens de Alavancagem');
+            chartData.addColumn({type: 'string', role: 'tooltip', p: {html: true}});
+            chartData.addColumn('number', 'Itens Estratégicos');
+            chartData.addColumn({type: 'string', role: 'tooltip', p: {html: true}});
+
+            // Colunas de RÓTULOS (com tooltips nulos)
+            chartData.addColumn('number', 'Rótulo Não Críticos');
+            chartData.addColumn({type: 'string', role: 'annotation'});
+            chartData.addColumn({type: 'string', role: 'annotationText'});
+            chartData.addColumn('number', 'Rótulo Gargalo');
+            chartData.addColumn({type: 'string', role: 'annotation'});
+            chartData.addColumn({type: 'string', role: 'annotationText'});
+            chartData.addColumn('number', 'Rótulo Alavancagem');
+            chartData.addColumn({type: 'string', role: 'annotation'});
+            chartData.addColumn({type: 'string', role: 'annotationText'});
+            chartData.addColumn('number', 'Rótulo Estratégicos');
+            chartData.addColumn({type: 'string', role: 'annotation'});
+            chartData.addColumn({type: 'string', role: 'annotationText'});
+
+
+            // Processa os dados do JSONL
+            data.forEach(item => {
+                const impacto = item.impacto_prazo;
+                const risco = item.risco_fornecimento;
+                
+                let row = [impacto, 
+                    null, null, null, null, null, null, null, null, // Pontos de dados
+                    null, null, null, null, null, null, null, null, null, null, null, null // Pontos de rótulo
+                ];
+                
+                if (impacto <= 5 && risco <= 5) { // Não Críticos (Q1)
+                    row[1] = risco;
+                    row[2] = createKraljicTooltip(item, 'Não Crítico');
+                } else if (impacto <= 5 && risco > 5) { // Gargalo (Q2)
+                    row[3] = risco;
+                    row[4] = createKraljicTooltip(item, 'Gargalo (Bottleneck)');
+                } else if (impacto > 5 && risco <= 5) { // Alavancagem (Q3)
+                    row[5] = risco;
+                    row[6] = createKraljicTooltip(item, 'Alavancagem');
+                } else { // Estratégicos (Q4)
+                    row[7] = risco;
+                    row[8] = createKraljicTooltip(item, 'Estratégico');
+                }
+                chartData.addRow(row);
+            });
+
+            // Adiciona os rótulos dos quadrantes
+            chartData.addRow([2.5, null, null, null, null, null, null, null, null, 2.5, 'Itens Não Críticos', 'Baixo Risco, Baixo Impacto no Prazo', null, null, null, null, null, null, null, null, null]);
+            chartData.addRow([2.5, null, null, null, null, null, null, null, null, null, null, null, 7.5, 'Itens de Gargalo', 'Alto Risco, Baixo Impacto no Prazo', null, null, null, null, null, null]);
+            chartData.addRow([7.5, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 2.5, 'Itens de Alavancagem', 'Baixo Risco, Alto Impacto no Prazo', null, null, null]);
+            chartData.addRow([7.5, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 7.5, 'Itens Estratégicos', 'Alto Risco, Alto Impacto no Prazo']);
+
+            const options = {
+                fontName: 'system-ui',
+                title: 'Matriz de Kraljic - Portfólio de Suprimentos',
+                titleTextStyle: { color: '#333', fontSize: 18, bold: false },
+                chartArea: {'width': '85%', 'height': '75%'},
+                hAxis: {
+                    title: 'Impacto no Prazo',
+                    minValue: 0,
+                    maxValue: 10,
+                    ticks: [
+                        {v: 2.5, f: 'Baixo Impacto no Prazo'}, 
+                        {v: 5, f: ''}, // Linha central
+                        {v: 7.5, f: 'Alto Impacto no Prazo'}
+                    ],
+                    gridlines: { color: '#ccc', count: 2 } // Grelha central
+                },
+                vAxis: {
+                    title: 'Risco de Fornecimento',
+                    minValue: 0,
+                    maxValue: 10,
+                    ticks: [
+                        {v: 2.5, f: 'Baixo Risco'}, 
+                        {v: 5, f: ''}, // Linha central
+                        {v: 7.5, f: 'Alto Risco'}
+                    ],
+                    gridlines: { color: '#ccc', count: 2 } // Grelha central
+                },
+                legend: { position: 'bottom', alignment: 'center' }, 
+                tooltip: { isHtml: true, trigger: 'selection' },
+                
+                series: {
+                    0: { color: '#6b7280', pointSize: 7, pointShape: 'circle', dataVisibility: 'all', visibleInLegend: true }, // Não Críticos
+                    1: { color: '#f59e0b', pointSize: 7, pointShape: 'triangle', dataVisibility: 'all', visibleInLegend: true }, // Gargalo
+                    2: { color: '#01455C', pointSize: 7, pointShape: 'square', dataVisibility: 'all', visibleInLegend: true }, // Alavancagem
+                    3: { color: '#dc2626', pointSize: 9, pointShape: 'star', dataVisibility: 'all', visibleInLegend: true }, // Estratégicos
+                    
+                    // Séries de RÓTULOS (invisíveis)
+                    4: { color: 'transparent', pointSize: 0, dataVisibility: 'all', visibleInLegend: false, annotations: { textStyle: { color: '#6b7280', fontSize: 14, bold: true, opacity: 0.7 } } },
+                    5: { color: 'transparent', pointSize: 0, dataVisibility: 'all', visibleInLegend: false, annotations: { textStyle: { color: '#f59e0b', fontSize: 14, bold: true, opacity: 0.7 } } },
+                    6: { color: 'transparent', pointSize: 0, dataVisibility: 'all', visibleInLegend: false, annotations: { textStyle: { color: '#01455C', fontSize: 14, bold: true, opacity: 0.7 } } },
+                    7: { color: 'transparent', pointSize: 0, dataVisibility: 'all', visibleInLegend: false, annotations: { textStyle: { color: '#dc2626', fontSize: 14, bold: true, opacity: 0.7 } } },
+                },
+
+                crosshair: { trigger: 'both', orientation: 'both', color: '#ccc', opacity: 0.6 },
+                animation:{
+                    duration: 1000,
+                    easing: 'out',
+                    startup: true
+                }
+            };
+
+            const chart = new google.visualization.ScatterChart(document.getElementById('kraljic-chart'));
+            chart.draw(chartData, options);
+        }
+         
+        // NOVO: Redesenha o gráfico de Suprimentos ao redimensionar
+         window.addEventListener('resize', function() {
+            if (suprimentosInicializado && document.getElementById('suprimentos-page').style.display === 'block') {
+                try {
+                    loadSuprimentosData(); // Recarrega os dados (do localStorage) e redesenha
+                } catch (e) {
+                    console.error("Erro ao redesenhar gráfico de Suprimentos:", e);
+                }
+            }
+        }, true);
+
     });
 </script>
 </body>
